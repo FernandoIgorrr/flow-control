@@ -1,0 +1,106 @@
+/* =========================
+   ROOT / FUNDO TOTAL
+========================= */
+.root {
+    -fx-font-family: "Inter", "Segoe UI", Arial;
+}
+
+/* FUNDO GLOBAL (DEGRADÊ) */
+.app-background {
+    -fx-background-color: linear-gradient(
+        from 0% 0% to 100% 100%,
+        #F1FDF3 0%,
+        #FFFBEB 45%,
+        #FFFBEB 55%,
+        #F1FDF3 100%
+    );
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar {
+    -fx-background-color: #f0fdf4;
+    -fx-border-color: #dcfce7;
+    -fx-border-width: 0 1 0 0;
+}
+
+
+.green-degrade-background {
+    -fx-background-color: linear-gradient(to right, #15813D, #16A34A);
+    
+    /* Centraliza o logo dentro do StackPane */
+    -fx-alignment: center;
+}
+
+/* =========================
+   BOTÕES
+========================= */
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #000000;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 16;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-graphic-text-gap: 15px;
+    -fx-translate-x: 20;
+    
+    -fx-pref-width: 260px;
+    -fx-pref-height: 50px;
+}
+
+/* ÍCONE PADRÃO */
+.sidebar-button .sidebar-icon {
+    -fx-effect: innershadow(gaussian, #000000, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+}
+
+
+/* ============================= */
+/* HOVER */
+/* ============================= */
+.sidebar-button:hover {
+    -fx-background-color: #dff5e1; /* verde extremamente claro */
+    -fx-text-fill: #2e7d32;        /* verde escuro */
+}
+
+/* ÍCONE NO HOVER */
+.sidebar-button:hover .sidebar-icon {
+    -fx-effect: innershadow(gaussian, #2e7d32, 10, 0.5, 0, 0);
+}
+
+/* ============================= */
+/* SELECIONADO */
+/* ============================= */
+.sidebar-button.selected {
+    -fx-background-color: linear-gradient(to right, #15813D, #16A34A);
+    -fx-text-fill: white;
+}
+
+/* ÍCONE SELECIONADO */
+.sidebar-button.selected .sidebar-icon {
+    -fx-effect: innershadow(gaussian, #f1c40f, 15, 0.7, 0, 0);
+}
+
+
+/* =========================
+   CONTEÚDO
+========================= */
+.content-area {
+    -fx-background-color: transparent;
+}
+
+/* =========================
+   TEXTO
+========================= */
+.text-main {
+    -fx-text-fill: #111827;
+}
+
+.text-muted {
+    -fx-text-fill: #4b5563;
+}
