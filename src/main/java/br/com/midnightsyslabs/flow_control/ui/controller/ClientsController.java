@@ -1,8 +1,141 @@
 package br.com.midnightsyslabs.flow_control.ui.controller;
 
+import java.util.List;
+import java.io.IOException;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.midnightsyslabs.flow_control.dto.ClientDTO;
+import br.com.midnightsyslabs.flow_control.repository.view.ClientRepository;
+import br.com.midnightsyslabs.flow_control.ui.controller.card.ClientCardController;
+
+import javafx.fxml.FXML;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.Screen;
+import javafx.scene.Parent;
+import javafx.stage.Modality;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Button;
+import javafx.scene.layout.TilePane;
+import javafx.scene.control.TextField;
+import javafx.scene.effect.ColorAdjust;
 
 @Controller
 public class ClientsController {
-    
+
+    @Autowired
+    private ClientRepository clientRepository;
+
+    @Autowired
+    private ApplicationContext context;
+
+    private List<ClientDTO> clients;
+
+    @FXML
+    private Button btnAddClient;
+
+    @FXML
+    private TextField txtSearch;
+
+    @FXML
+    private TilePane cardsPane;
+
+    @FXML
+    public void initialize() {
+
+        clients = clientRepository.findAll();
+
+        renderCards(clients);
+
+        txtSearch.textProperty().addListener((obs, oldValue, newValue) -> {
+            filterCards(newValue);
+        });
+    }
+
+
+
+    private void filterCards(String search) {
+
+        if (search == null || search.isBlank()) {
+            renderCards(clients);
+            return;
+        }
+
+        String query = search.toLowerCase();
+
+        List<ClientDTO> filtered = clients.stream()
+                .filter(c -> safe(c.getName()).contains(query) ||
+                        safe(c.getCity()).contains(query) ||
+                        safe(c.getDocument()).contains(query))
+                .toList();
+
+        renderCards(filtered);
+    }
+
+    private void renderCards(List<ClientDTO> clients) {
+
+        cardsPane.getChildren().clear();
+
+        for (ClientDTO client : clients) {
+            try {
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/fxml/card/client-card.fxml"));
+
+                Parent card = loader.load();
+
+                ClientCardController controller = loader.getController();
+                controller.setClient(client);
+
+                cardsPane.getChildren().add(card);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value.toLowerCase();
+    }
+
+    @FXML
+    private void onAddClient() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/client-form.fxml"));
+
+            loader.setControllerFactory(context::getBean);
+
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            double width = screenBounds.getWidth() * 0.5;
+            double height = screenBounds.getHeight() * 0.5;
+
+            Stage dialog = new Stage();
+            dialog.setTitle("Cadastrar Cliente");
+            dialog.setScene(new Scene(loader.load(), width, height));
+
+            Stage mainStage = (Stage) btnAddClient.getScene().getWindow();
+
+            dialog.initOwner(mainStage);
+            dialog.initModality(Modality.WINDOW_MODAL);
+
+            dialog.setResizable(false);
+            // stage.showAndWait();
+
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.8);
+            mainStage.getScene().getRoot().setEffect(darken);
+
+            dialog.setOnHidden(e -> mainStage.getScene().getRoot().setEffect(null));
+
+            dialog.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

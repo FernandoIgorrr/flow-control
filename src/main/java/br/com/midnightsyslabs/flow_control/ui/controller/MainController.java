@@ -45,8 +45,8 @@ public class MainController {
     public void initialize() {
         navService.setMainContainer(conteudoPrincipal);
         // Carrega uma tela inicial opcional
-        navService.navigateTo("/fxml/dashboard.fxml");
-        setActive(dashboardButton);
+        navService.navigateTo("/fxml/clients.fxml");
+        setActive(clientsButton);
     }
 
     private void setActive(Button activeButton) {
@@ -91,7 +91,7 @@ public class MainController {
 
     @FXML
     public void goToStatementFinance() {
-        navService.navigateTo("/fxml/statement_finance.fxml");
+        navService.navigateTo("/fxml/statement-finance.fxml");
          setActive(statementFinanceButton);
     }
 }

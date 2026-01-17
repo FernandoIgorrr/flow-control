@@ -41,7 +41,7 @@
     -fx-background-color: transparent;
     -fx-text-fill: #000000;
     -fx-font-size: 14px;
-    -fx-font-weight: 500;
+    -fx-font-weight: 600;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 10 16;
     -fx-background-radius: 12;
@@ -87,10 +87,57 @@
 }
 
 
+
+.page-header {
+    -fx-background-color: transparent;
+}
+
+.page-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f2937;
+}
+
+.page-subtitle {
+    -fx-font-size: 15px;
+    -fx-text-fill: #6b7280;
+}
+
+/*  botão padrão */
+.btn-primary {
+    -fx-background-color: linear-gradient(to right, #15813D, #16A34A);
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+     -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 18;
+    -fx-pref-height: 22px;
+     -fx-cursor: hand;
+     -fx-graphic-text-gap: 15px;
+}
+
+.btn-primary .btn-primary-icon {
+    -fx-effect: innershadow(gaussian, white, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+}
+
+
+
+
+
+
 /* =========================
    CONTEÚDO
 ========================= */
-.content-area {
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.flow-pane {
     -fx-background-color: transparent;
 }
 

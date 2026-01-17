@@ -1,0 +1,115 @@
+.client-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+
+    -fx-effect: dropshadow(gaussian,
+            rgba(0, 0, 0, 0.15),
+            10,
+            0.2,
+            0,
+            3);
+}
+
+.client-card:hover {
+    -fx-effect: dropshadow(gaussian,
+            rgba(0, 0, 0, 0.25),
+            14,
+            0.3,
+            0,
+            6);
+}
+
+
+/* HEADER */
+.client-name {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.client-category-personal {
+    -fx-font-size: 11px;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: #166534;
+    -fx-background-color: #dcfce7;
+    -fx-padding: 4 8 4 8; 
+}
+
+.client-category-company {
+    -fx-background-radius: 8;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2563eb;
+    -fx-background-color: #e0edff;
+    -fx-padding: 4 8 4 8; 
+}
+
+/* INFO */
+.client-info {
+    -fx-font-size: 13px;
+    -fx-text-fill: #374151;
+}
+
+/* ICON */
+.icon-container {
+    -fx-background-radius: 8;
+}
+
+/* COMPANY */
+.icon-company {
+    -fx-background-color: #e0edff;
+
+}
+
+.icon-company ImageView {
+    -fx-effect: innershadow(gaussian, #2563eb, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+}
+
+/* PERSONAL */
+.icon-person {
+    -fx-background-color: #dcfce7;
+}
+
+.icon-person ImageView {
+    -fx-effect: innershadow(gaussian, #166534, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+}
+
+/* ACTION BUTTONS */
+.btn-action-edit,
+.btn-action-delete {
+    -fx-background-color: transparent;
+    /* cinza claro */
+
+    -fx-pref-width: 50;
+    -fx-pref-height: 50;
+    -fx-cursor: hand;
+
+}
+
+
+.icon-edit {
+    -fx-effect: innershadow(gaussian, #16A34A, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+}
+
+.icon-delete {
+    -fx-effect: innershadow(gaussian, #DC2626, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+
+}
+
+/* ============================= */
+/* HOVER */
+/* ============================= */
+.btn-action-edit :hover {
+    -fx-background-color: #DCFCE7;
+    -fx-background-radius: 8;
+}
+
+.btn-action-delete :hover {
+    -fx-background-color: #FFEBEE;
+    -fx-background-radius: 8;
+}
