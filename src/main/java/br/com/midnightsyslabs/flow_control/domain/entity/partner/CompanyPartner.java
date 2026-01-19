@@ -1,11 +1,16 @@
 package br.com.midnightsyslabs.flow_control.domain.entity.partner;
 
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 public class CompanyPartner extends Partner {
 
     
@@ -17,18 +22,20 @@ public class CompanyPartner extends Partner {
         return this.cnpj;
     }
 
-    // 🔹 Obrigatório para JPA
     protected CompanyPartner() {
     }
 
     public CompanyPartner(
+            UUID id,
             String name,
-            String cnpj,
+            String CNPJ,
             String phone,
             String email,
             City city,
-            PartnerRole category) {
-        super(null, name, email, phone, city, category);
-        this.cnpj = cnpj;
+            PartnerRole category,
+            OffsetDateTime createdAt,
+            OffsetDateTime deletedAt) {
+        super(id, name, email, phone, city, category, createdAt, deletedAt);
+        this.cnpj = CNPJ;
     }
 }

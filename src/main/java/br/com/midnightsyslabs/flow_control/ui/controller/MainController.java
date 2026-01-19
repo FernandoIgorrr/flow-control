@@ -45,8 +45,8 @@ public class MainController {
     public void initialize() {
         navService.setMainContainer(conteudoPrincipal);
         // Carrega uma tela inicial opcional
-        navService.navigateTo("/fxml/clients.fxml");
-        setActive(clientsButton);
+        navService.navigateTo("/fxml/products.fxml");
+        setActive(productsButton);
     }
 
     private void setActive(Button activeButton) {

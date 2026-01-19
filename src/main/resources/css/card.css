@@ -113,3 +113,14 @@
     -fx-background-color: #FFEBEE;
     -fx-background-radius: 8;
 }
+
+.product-info{
+    -fx-font-size: 14;
+    -fx-font-weight: 600;
+}
+
+.price-info{
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-text-fill: #15803D;
+}

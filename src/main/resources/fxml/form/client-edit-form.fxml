@@ -6,7 +6,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/21"
     xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="br.com.midnightsyslabs.flow_control.ui.controller.form.ClientFormController"
+    fx:controller="br.com.midnightsyslabs.flow_control.ui.controller.form.ClientEditFormController"
     stylesheets="@../../css/form.css"
     styleClass="form-root">
 
@@ -21,7 +21,7 @@
             </padding>
             <VBox spacing="4">
                 <Label
-                    text="Novo Cliente"
+                    text="Editar Cliente"
                     styleClass="form-title" />
             </VBox>
         </HBox>
@@ -52,9 +52,7 @@
 
                     <VBox spacing="4" GridPane.rowIndex="1" GridPane.columnIndex="0">
                         <Label text="Categoria" />
-                        <ComboBox fx:id="partnerCategoryComboBox"
-                            maxWidth="Infinity"
-                            promptText="Selecione o tipo..." />
+                        <TextField fx:id="partnerCategoryText" disable="true" />
                     </VBox>
 
                     <VBox spacing="4" GridPane.rowIndex="1" GridPane.columnIndex="1">
@@ -99,7 +97,7 @@
                 styleClass="btn-secondary" />
 
             <Button text="Salvar"
-                onAction="#onSave"
+                onAction="#onEdit"
                 styleClass="btn-primary" />
         </HBox>
     </bottom>

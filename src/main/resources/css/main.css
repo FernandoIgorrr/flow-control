@@ -7,13 +7,11 @@
 
 /* FUNDO GLOBAL (DEGRADÊ) */
 .app-background {
-    -fx-background-color: linear-gradient(
-        from 0% 0% to 100% 100%,
-        #F1FDF3 0%,
-        #FFFBEB 45%,
-        #FFFBEB 55%,
-        #F1FDF3 100%
-    );
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%,
+            #F1FDF3 0%,
+            #FFFBEB 45%,
+            #FFFBEB 55%,
+            #F1FDF3 100%);
 }
 
 /* =========================
@@ -28,7 +26,7 @@
 
 .green-degrade-background {
     -fx-background-color: linear-gradient(to right, #15813D, #16A34A);
-    
+
     /* Centraliza o logo dentro do StackPane */
     -fx-alignment: center;
 }
@@ -48,7 +46,7 @@
     -fx-cursor: hand;
     -fx-graphic-text-gap: 15px;
     -fx-translate-x: 20;
-    
+
     -fx-pref-width: 260px;
     -fx-pref-height: 50px;
 }
@@ -64,8 +62,10 @@
 /* HOVER */
 /* ============================= */
 .sidebar-button:hover {
-    -fx-background-color: #dff5e1; /* verde extremamente claro */
-    -fx-text-fill: #2e7d32;        /* verde escuro */
+    -fx-background-color: #dff5e1;
+    /* verde extremamente claro */
+    -fx-text-fill: #2e7d32;
+    /* verde escuro */
 }
 
 /* ÍCONE NO HOVER */
@@ -108,12 +108,12 @@
     -fx-background-color: linear-gradient(to right, #15813D, #16A34A);
     -fx-text-fill: white;
     -fx-background-radius: 8;
-     -fx-font-size: 15px;
+    -fx-font-size: 15px;
     -fx-font-weight: 600;
     -fx-padding: 10 18;
     -fx-pref-height: 22px;
-     -fx-cursor: hand;
-     -fx-graphic-text-gap: 15px;
+    -fx-cursor: hand;
+    -fx-graphic-text-gap: 15px;
 }
 
 .btn-primary .btn-primary-icon {
@@ -123,17 +123,48 @@
 
 
 
-
-
-
 /* =========================
    CONTEÚDO
 ========================= */
+
+/*========================
+    SEARCH BAR
+==========================*/
+
+.search-field {
+
+    -fx-font-size: 14px;
+
+    -fx-background-color: white;
+    -fx-background-radius: 4;
+
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 4;
+
+    -fx-min-height: 40;
+    -fx-pref-height: 40;
+    -fx-max-height: 40;
+
+    -fx-padding: 0 12;
+}
+
+
+.search-field:focused {
+    -fx-border-color: #2563eb;
+    -fx-border-width: 1.5px;
+    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.15), 6, 0, 0, 0);
+}
+
+
+/* =========================
+    CARDS
+==========================*/
+
 .scroll-pane {
     -fx-background-color: transparent;
 }
 
-.scroll-pane > .viewport {
+.scroll-pane>.viewport {
     -fx-background-color: transparent;
 }
 

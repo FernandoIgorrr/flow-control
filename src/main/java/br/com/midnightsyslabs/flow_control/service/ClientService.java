@@ -1,5 +1,8 @@
 package br.com.midnightsyslabs.flow_control.service;
 
+import java.time.OffsetDateTime;
+import java.util.InputMismatchException;
+
 import org.springframework.stereotype.Service;
 
 import br.com.midnightsyslabs.flow_control.config.Constants;
@@ -11,6 +14,7 @@ import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentExcepti
 import br.com.midnightsyslabs.flow_control.exception.InvalidCNPJException;
 import br.com.midnightsyslabs.flow_control.exception.InvalidCPFException;
 import br.com.midnightsyslabs.flow_control.repository.partner.CompanyPartnerRepository;
+import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRoleRepository;
 import br.com.midnightsyslabs.flow_control.repository.partner.PersonalPartnerRepository;
 
 @Service
@@ -18,14 +22,17 @@ public class ClientService {
 
     private final PersonalPartnerRepository personalPartnerRepository;
     private final CompanyPartnerRepository companyPartnerRepository;
+    private final PartnerRoleRepository partnerRoleRepository;
 
     public ClientService(
 
             CompanyPartnerRepository companyPartnerRepository,
-            PersonalPartnerRepository personalPartnerRepository) {
+            PersonalPartnerRepository personalPartnerRepository,
+            PartnerRoleRepository partnerRoleRepository) {
 
         this.companyPartnerRepository = companyPartnerRepository;
         this.personalPartnerRepository = personalPartnerRepository;
+        this.partnerRoleRepository = partnerRoleRepository;
 
     }
 
@@ -34,43 +41,115 @@ public class ClientService {
             String phone,
             String email,
             City city,
+            String partnerCategory) {
+
+        PartnerRole role = partnerRoleRepository.findById(Constants.PARTNER_ROLE_CLIENT)
+                .orElseThrow();
+
+        dataValidations(
+                document,
+                email,
+                partnerCategory);
+
+        if (partnerCategory.equals(Constants.PERSONAL)) {
+            var client = new PersonalPartner(null, name,
+                    document.isBlank() ? null : document,
+                    phone,
+                    email,
+                    city,
+                    role,
+                    null, null);
+            personalPartnerRepository.save(client);
+        } else {
+
+            var client = new CompanyPartner(null, name,
+                    document.isBlank() ? null : document,
+                    phone,
+                    email,
+                    city,
+                    role,
+                    null, null);
+            companyPartnerRepository.save(client);
+        }
+    }
+
+    public void updatePersonalClient(
+            PersonalPartner client,
+            String name,
+            String CPF,
+            String phone,
+            String email,
+            City city) {
+
+        dataValidations(
+                CPF,
+                email,
+                Constants.PERSONAL);
+
+        client.setName(name);
+        client.setCpf(CPF.isBlank() ? null : CPF);
+        client.setPhone(phone);
+        client.setEmail(email);
+        client.setCity(city);
+
+        personalPartnerRepository.save(client);
+
+    }
+
+    public void updateCompanyClient(
+            CompanyPartner client,
+            String name,
+            String CNPJ,
+            String phone,
+            String email,
+            City city) {
+
+        dataValidations(
+                CNPJ,
+                email,
+                Constants.COMPANY);
+
+        client.setName(name);
+        client.setCnpj(CNPJ.isBlank() ? null : CNPJ);
+        client.setPhone(phone);
+        client.setEmail(email);
+        client.setCity(city);
+
+        companyPartnerRepository.save(client);
+
+    }
+
+    public void deletePersonalClient(PersonalPartner client) {
+        client.setDeletedAt(OffsetDateTime.now());
+        personalPartnerRepository.save(client);
+
+    }
+
+    public void deleteCompanyClient(CompanyPartner client) {
+        client.setDeletedAt(OffsetDateTime.now());
+        companyPartnerRepository.save(client);
+    }
+
+    private void dataValidations(String document,
+            String email,
             String partnerRole) {
 
         if (email != null && !email.isBlank() && !isValidEmail(email)) {
             throw new IllegalEmailArgumentException();
         }
-        
-        document = document.replaceAll("\\D", "");
-        phone = phone.replaceAll("\\D", "");
 
-        
+        String documentWithoutMask = document.replaceAll("\\D", "");
 
-        if (partnerRole.equals(Constants.PESSOA_FISICA)) {
+        if (partnerRole.equals(Constants.PERSONAL)) {
 
-            if(!cPFValidator(document)) {
+            if (!cPFValidator(documentWithoutMask)) {
                 throw new InvalidCPFException();
             }
 
-            var client = new PersonalPartner(name,
-                    document.isBlank() ? null : document,
-                    phone,
-                    email,
-                    city,
-                    new PartnerRole(Constants.PARTNER_ROLE_CLIENT, null));
-            personalPartnerRepository.save(client);
-
         } else {
-               if(!cNPJValidator(document)) {
-                throw new InvalidCNPJException();
+            if (!cNPJValidator(documentWithoutMask)) {
+                throw new InvalidCNPJException("CNPJ: " + documentWithoutMask);
             }
-            var client = new CompanyPartner(name,
-                    document.isBlank() ? null : document,
-                    phone,
-                    email,
-                    city,
-                    new PartnerRole(Constants.PARTNER_ROLE_CLIENT, null));
-            companyPartnerRepository.save(client);
-
         }
     }
 
@@ -79,7 +158,7 @@ public class ClientService {
     }
 
     public static boolean cPFValidator(String cpf) {
-        if(cpf == null || cpf.isBlank()) {
+        if (cpf == null || cpf.isBlank()) {
             return true;
         }
 
@@ -128,56 +207,71 @@ public class ClientService {
         }
     }
 
-    public boolean cNPJValidator(String cnpj) {
-        if(cnpj == null || cnpj.isBlank()) {
+    public boolean cNPJValidator(String CNPJ) {
+
+        if (CNPJ == null || CNPJ.isBlank()) {
             return true;
         }
-        // Remove tudo que não for dígito
-        cnpj = cnpj.replaceAll("\\D", "");
 
-        // Deve ter 14 dígitos
-        if (cnpj.length() != 14) {
-            return false;
-        }
+        // considera-se erro CNPJ's formados por uma sequencia de numeros iguais
+        if (CNPJ.equals("00000000000000") || CNPJ.equals("11111111111111") ||
+                CNPJ.equals("22222222222222") || CNPJ.equals("33333333333333") ||
+                CNPJ.equals("44444444444444") || CNPJ.equals("55555555555555") ||
+                CNPJ.equals("66666666666666") || CNPJ.equals("77777777777777") ||
+                CNPJ.equals("88888888888888") || CNPJ.equals("99999999999999") ||
+                (CNPJ.length() != 14))
+            return (false);
 
-        // Não pode ser todos os dígitos iguais
-        if (cnpj.chars().distinct().count() == 1) {
-            return false;
-        }
+        char dig13, dig14;
+        int sm, i, r, num, peso;
 
-        int[] weight1 = { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
-        int[] weight2 = { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
-
+        // "try" - protege o código para eventuais erros de conversao de tipo (int)
         try {
-            int sum = 0;
-
-            // Primeiro dígito verificador
-            for (int i = 0; i < 12; i++) {
-                sum += (cnpj.charAt(i) - '0') * weight1[i];
+            // Calculo do 1o. Digito Verificador
+            sm = 0;
+            peso = 2;
+            for (i = 11; i >= 0; i--) {
+                // converte o i-ésimo caractere do CNPJ em um número:
+                // por exemplo, transforma o caractere '0' no inteiro 0
+                // (48 eh a posição de '0' na tabela ASCII)
+                num = (int) (CNPJ.charAt(i) - 48);
+                sm = sm + (num * peso);
+                peso = peso + 1;
+                if (peso == 10)
+                    peso = 2;
             }
 
-            int firstCheck = sum % 11;
-            firstCheck = (firstCheck < 2) ? 0 : 11 - firstCheck;
+            r = sm % 11;
+            if ((r == 0) || (r == 1))
+                dig13 = '0';
+            else
+                dig13 = (char) ((11 - r) + 48);
 
-            if (firstCheck != (cnpj.charAt(12) - '0')) {
-                return false;
+            // Calculo do 2o. Digito Verificador
+            sm = 0;
+            peso = 2;
+            for (i = 12; i >= 0; i--) {
+                num = (int) (CNPJ.charAt(i) - 48);
+                sm = sm + (num * peso);
+                peso = peso + 1;
+                if (peso == 10)
+                    peso = 2;
             }
 
-            sum = 0;
+            r = sm % 11;
+            if ((r == 0) || (r == 1))
+                dig14 = '0';
+            else
+                dig14 = (char) ((11 - r) + 48);
 
-            // Segundo dígito verificador
-            for (int i = 0; i < 13; i++) {
-                sum += (cnpj.charAt(i) - '0') * weight2[i];
-            }
-
-            int secondCheck = sum % 11;
-            secondCheck = (secondCheck < 2) ? 0 : 11 - secondCheck;
-
-            return secondCheck == (cnpj.charAt(13) - '0');
-
-        } catch (NumberFormatException e) {
-            return false;
+            // Verifica se os dígitos calculados conferem com os dígitos informados.
+            if ((dig13 == CNPJ.charAt(12)) && (dig14 == CNPJ.charAt(13)))
+                return (true);
+            else
+                return (false);
+        } catch (InputMismatchException erro) {
+            return (false);
         }
-    }
 
+    }
 }

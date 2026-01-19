@@ -18,9 +18,8 @@ import javafx.stage.Screen;
 import javafx.scene.Parent;
 import javafx.stage.Modality;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.TilePane;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.ColorAdjust;
@@ -86,10 +85,15 @@ public class ClientsController {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/fxml/card/client-card.fxml"));
 
+                loader.setControllerFactory(context::getBean);
+
                 Parent card = loader.load();
 
                 ClientCardController controller = loader.getController();
-                controller.setClient(client);
+                controller.setClientDTO(client);
+
+                //  CALLBACK
+                controller.setOnDataChanged(this::reloadClients);
 
                 cardsPane.getChildren().add(card);
 
@@ -102,6 +106,11 @@ public class ClientsController {
     private String safe(String value) {
         return value == null ? "" : value.toLowerCase();
     }
+
+    private void reloadClients() {
+    this.clients = clientRepository.findAll();
+    filterCards(txtSearch.getText());
+}
 
     @FXML
     private void onAddClient() {

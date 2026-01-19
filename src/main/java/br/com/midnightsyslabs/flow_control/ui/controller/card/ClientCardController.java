@@ -1,73 +1,235 @@
 package br.com.midnightsyslabs.flow_control.ui.controller.card;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 
-import br.com.midnightsyslabs.flow_control.dto.ClientCategory;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import br.com.midnightsyslabs.flow_control.dto.ClientDTO;
+import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
 import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import br.com.midnightsyslabs.flow_control.dto.ClientCategory;
+import br.com.midnightsyslabs.flow_control.service.ClientService;
+import br.com.midnightsyslabs.flow_control.repository.CityRepository;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.ClientEditFormController;
+import br.com.midnightsyslabs.flow_control.repository.partner.CompanyPartnerRepository;
+import br.com.midnightsyslabs.flow_control.repository.partner.PersonalPartnerRepository;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.stage.Screen;
+import javafx.stage.Modality;
+
 import javafx.scene.image.Image;
+import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.scene.effect.ColorAdjust;
+
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+
+import javafx.geometry.Rectangle2D;
 
 @Controller
+@Scope("prototype")
 public class ClientCardController {
 
-    @FXML private Label lblName;
-    @FXML private Label lblSubtitle;
-    @FXML private Label lblPhone;
-    @FXML private Label lblEmail;
-    @FXML private Label lblDocument;
-    @FXML private Label lblCity;
-    @FXML private ImageView imgType;
+    @Autowired
+    private ApplicationContext context;
 
-  //  @FXML private Button btnEdit;
-  //  @FXML private Button btnDelete;
+    @Autowired
+    private PersonalPartnerRepository personalPartnerRepository;
 
-    private ClientDTO client;
+    @Autowired
+    private CompanyPartnerRepository companyPartnerRepository;
 
-    @FXML private StackPane iconContainer;
+    @Autowired
+    private ClientService clientService;
 
-public void setClient(ClientDTO client) {
-    this.client = client;
+    private ClientDTO clientDTO;
 
-    lblName.setText(client.getName());
-    
-    String document = client.getCategory() == ClientCategory.PERSONAL
-            ? "CPF: " + MaskUtils.applyMask(client.getDocument(), "###.###.###-##")
-            : "CNPJ: " + MaskUtils.applyMask(client.getDocument(), "##.###.###/####-##");
+    private Runnable onDataChanged; // callback
 
-    lblDocument.setText(document);
-    lblPhone.setText("Tel: " + MaskUtils.applyMask(client.getPhone(), "(##) #####-####"));
-    lblEmail.setText("Email: " + client.getEmail());
-    lblCity.setText("Cidade: " + client.getCity());
+    @FXML
+    private Label lblName;
+    @FXML
+    private Label lblSubtitle;
+    @FXML
+    private Label lblPhone;
+    @FXML
+    private Label lblEmail;
+    @FXML
+    private Label lblDocument;
+    @FXML
+    private Label lblCity;
+    @FXML
+    private ImageView imgType;
 
+    @FXML
+    private Button btnEdit;
+    @FXML
+    private Button btnDelete;
+    @FXML
+    private StackPane iconContainer;
 
-    if (client.getCategory() == ClientCategory.COMPANY) {
-        lblSubtitle.setText("Companhia");
-        lblSubtitle.getStyleClass().add("client-category-company");
-        imgType.setImage(new Image(
-                getClass().getResourceAsStream("/images/company.png")));
-        iconContainer.getStyleClass().add("icon-company");
+    public void setClientDTO(ClientDTO client) {
+        this.clientDTO = client;
 
-    } else {
-        lblSubtitle.setText("Pessoa Física");
-        
-        lblSubtitle.getStyleClass().add("client-category-personal");
-        imgType.setImage(new Image(
-                getClass().getResourceAsStream("/images/person.png")));
-        iconContainer.getStyleClass().add("icon-person");
+        lblName.setText(client.getName());
+
+        String document = client.getCategory() == ClientCategory.PERSONAL
+                ? "CPF: " + MaskUtils.applyMask(client.getDocument(), "###.###.###-##")
+                : "CNPJ: " + MaskUtils.applyMask(client.getDocument(), "##.###.###/####-##");
+
+        lblDocument.setText(document);
+        lblPhone.setText("Tel: " + MaskUtils.applyMask(client.getPhone(), "(##) #####-####"));
+        lblEmail.setText("Email: " + client.getEmail());
+        lblCity.setText("Cidade: " + client.getCity());
+
+        if (client.getCategory() == ClientCategory.COMPANY) {
+            lblSubtitle.setText("Companhia");
+            lblSubtitle.getStyleClass().add("client-category-company");
+            imgType.setImage(new Image(
+                    getClass().getResourceAsStream("/images/company.png")));
+            iconContainer.getStyleClass().add("icon-company");
+
+        } else {
+            lblSubtitle.setText("Pessoa Física");
+
+            lblSubtitle.getStyleClass().add("client-category-personal");
+            imgType.setImage(new Image(
+                    getClass().getResourceAsStream("/images/person.png")));
+            iconContainer.getStyleClass().add("icon-person");
+        }
     }
-}
+
+    public void setOnDataChanged(Runnable onDataChanged) {
+        this.onDataChanged = onDataChanged;
+    }
 
     @FXML
     private void onEdit() {
-        System.out.println("Editar: " + client.getId());
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/client-edit-form.fxml"));
+
+            var controller = new ClientEditFormController(
+                    context.getBean(CompanyPartnerRepository.class),
+                    context.getBean(PersonalPartnerRepository.class),
+                    context.getBean(ClientService.class),
+                    context.getBean(CityRepository.class));
+
+            controller.editClientForm(clientDTO);
+            loader.setControllerFactory(ctr -> controller);
+
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            double width = screenBounds.getWidth() * 0.5;
+            double height = screenBounds.getHeight() * 0.5;
+
+            Stage dialog = new Stage();
+
+            dialog.setTitle("Editar Cliente");
+
+            dialog.setScene(new Scene(loader.load(), width, height));
+
+            Stage mainStage = (Stage) btnEdit.getScene().getWindow();
+
+            dialog.initOwner(mainStage);
+            dialog.initModality(Modality.WINDOW_MODAL);
+
+            dialog.setResizable(false);
+            // stage.showAndWait();
+
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.8);
+            mainStage.getScene().getRoot().setEffect(darken);
+
+            dialog.setOnHidden(e -> mainStage.getScene().getRoot().setEffect(null));
+
+            dialog.showAndWait();
+
+            // avisa o controller pai
+            if (onDataChanged != null) {
+                onDataChanged.run();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @FXML
-    private void onDelete() {
-        System.out.println("Excluir: " + client.getId());
+    public void onDelete() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("⚠️ CONFIRMAÇÃO DE EXCLUSÃO");
+        alert.setHeaderText("VOCÊ TEM CERTEZA?");
+        /*
+         * alert.setContentText(
+         * "Esta ação é IRREVERSÍVEL.\n\n" +
+         * "O cliente " + clientDTO.getName() +
+         * " será removido permanentemente do sistema.");
+         */
+
+        Label content = new Label(
+                "Esta ação é IRREVERSÍVEL.\n\n" +
+                        "O cliente " + clientDTO.getName() + " será removido permanentemente do sistema.");
+        content.setWrapText(true);
+
+        Text warningText = new Text("Esta ação é IRREVERSÍVEL. ");
+        warningText.getStyleClass().add("danger-text");
+
+        Text startText = new Text("\n\nO cliente: ");
+        startText.getStyleClass().add("common-text");
+
+        Text clientName = new Text(clientDTO.getName());
+        clientName.getStyleClass().add("danger-name");
+
+        Text endText = new Text(" será removido permanentemente do sistema.");
+        endText.getStyleClass().add("common-text");
+
+        TextFlow textFlow = new TextFlow(warningText, startText, clientName, endText);
+        textFlow.setMaxWidth(420);
+
+        alert.getDialogPane().setContent(textFlow);
+
+        // Botões personalizados
+        ButtonType cancelButton = new ButtonType("CANCELAR", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType deleteButton = new ButtonType("DELETAR", ButtonBar.ButtonData.OK_DONE);
+
+        alert.getButtonTypes().setAll(cancelButton, deleteButton);
+
+        // Estilização após o dialog ser criado
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(
+                getClass().getResource("/css/alert-danger.css").toExternalForm());
+        dialogPane.getStyleClass().add("danger-alert");
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == deleteButton) {
+            // 👉 CHAME A LÓGICA DE DELETE AQUI
+            if (clientDTO.getCategory() == ClientCategory.PERSONAL) {
+                personalPartnerRepository.findById(clientDTO.getId()).ifPresentOrElse(client -> {
+                    clientService.deletePersonalClient(client);
+                }, ClientNotFoundException::new);
+            } else {
+                companyPartnerRepository.findById(clientDTO.getId()).ifPresentOrElse(client -> {
+                    clientService.deleteCompanyClient(client);
+                }, ClientNotFoundException::new);
+            }
+        }
+
+        // avisa o controller pai
+        if (onDataChanged != null) {
+            onDataChanged.run();
+        }
     }
 }

@@ -6,7 +6,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/21"
     xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="br.com.midnightsyslabs.flow_control.ui.controller.form.ClientFormController"
+    fx:controller="br.com.midnightsyslabs.flow_control.ui.controller.form.ProductFormController"
     stylesheets="@../../css/form.css"
     styleClass="form-root">
 
@@ -21,7 +21,7 @@
             </padding>
             <VBox spacing="4">
                 <Label
-                    text="Novo Cliente"
+                    text="Novo Produto"
                     styleClass="form-title" />
             </VBox>
         </HBox>
@@ -46,38 +46,43 @@
                         GridPane.rowIndex="0"
                         GridPane.columnIndex="0"
                         GridPane.columnSpan="2">
-                        <Label text="Nome Completo / Razão Social *" />
-                        <TextField fx:id="nameField" promptText="Nome / Razão Social do cliente" />
-                    </VBox>
-
-                    <VBox spacing="4" GridPane.rowIndex="1" GridPane.columnIndex="0">
-                        <Label text="Categoria" />
-                        <ComboBox fx:id="partnerCategoryComboBox"
-                            maxWidth="Infinity"
-                            promptText="Selecione o tipo..." />
-                    </VBox>
-
-                    <VBox spacing="4" GridPane.rowIndex="1" GridPane.columnIndex="1">
-                        <Label fx:id="documentLabel" text="CPF" />
-                        <TextField fx:id="documentField" promptText="999.999.999-99" />
-                    </VBox>
-
-                    <VBox spacing="4" GridPane.rowIndex="2" GridPane.columnIndex="0">
-                        <Label text="Telefone" />
-                        <TextField fx:id="phoneField" promptText="(99) 99999-9999" />
+                        <Label text="Nome do produto *" />
+                        <TextField fx:id="nameField" promptText="Nome" />
                     </VBox>
 
 
-                    <VBox spacing="4" GridPane.rowIndex="2" GridPane.columnIndex="1">
-                        <Label text="Email" />
-                        <TextField fx:id="emailField" promptText="email@exemplo.com" />
-                    </VBox>
-
-                    <VBox spacing="4" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                    <VBox spacing="4"
+                        GridPane.rowIndex="1"
+                        GridPane.columnIndex="0"
                         GridPane.columnSpan="2">
-                        <Label text="Cidade" />
-                        <TextField fx:id="cityField" promptText="Digite a cidade" />
+                        <Label text="Descrição do produto *" />
+                        <TextField fx:id="descriptionField" promptText="Descrição" />
                     </VBox>
+
+
+                    <VBox spacing="4" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                        <Label text="Preço de Venda (R$) *" />
+                        <TextField
+                            fx:id="priceField"
+                            promptText="0,0" />
+                    </VBox>
+
+                    
+                    <VBox spacing="4" GridPane.rowIndex="3" GridPane.columnIndex="0">
+                        <Label fx:id="lblQuantity" />
+                        <TextField
+                            fx:id="quantityField"
+                            promptText="0" />
+                    </VBox>
+
+                    <VBox spacing="4" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                        <Label text="Categoria *" />
+                        <ComboBox fx:id="measurementUnitComboBox"
+                            maxWidth="Infinity"
+                            promptText="Selecione a unidade..." />
+                    </VBox>
+
+
 
                 </children>
             </GridPane>
@@ -87,7 +92,7 @@
     <!-- FOOTER -->
     <bottom>
         <HBox spacing="10"
-            alignment="CENTER_RIGHT"
+            alignment="CENTER"
             styleClass="form-footer">
 
             <padding>

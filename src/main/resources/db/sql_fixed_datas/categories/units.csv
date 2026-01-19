@@ -1,7 +1,5 @@
-Miligramas,mg
-Gramas,g
-Quilogramas,Kg
-Toneladas,t
-Mililitros,mL
-Litros,L
-UNIDADES,UN
+Quilogramas,Kg,Peso
+Litros,L,Volume
+Metro estéreo,st,Volume
+Metros cúbicos,m3,Volume
+UNIDADES,UN,UNIDADE

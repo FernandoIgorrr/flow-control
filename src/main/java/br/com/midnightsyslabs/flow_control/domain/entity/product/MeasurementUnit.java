@@ -1,21 +1,28 @@
-package br.com.midnightsyslabs.flow_control.domain.entity;
+package br.com.midnightsyslabs.flow_control.domain.entity.product;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class MeasurementUnit {
 
     @Id
     private Short id;
 
     @NotNull
+    private String name;
+
+    @NotNull
     private String symbol;
 
     @NotNull
-    private String name;
+    private String unit;
 
 }

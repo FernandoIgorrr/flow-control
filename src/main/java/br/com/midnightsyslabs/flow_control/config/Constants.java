@@ -4,11 +4,8 @@ public interface Constants {
     Short PARTNER_ROLE_CLIENT = 1;
     Short PARTNER_ROLE_SUPPLIER = 2;
 
-    Short ORDER_CATEGORY_PERSONAL = 1;
-    Short ORDER_CATEGORY_COMPANIE = 2;
+    String PERSONAL = "Pessoa Física";
+    String COMPANY= "Compania";
 
-    String PESSOA_FISICA = "Pessoa Física";
-    String COMPANIA = "Compania";
-
-    String[] PARTNER_ROLES = {PESSOA_FISICA, COMPANIA};
+    String[] PARTNER_CATEGORY = {PERSONAL, COMPANY};
 }
