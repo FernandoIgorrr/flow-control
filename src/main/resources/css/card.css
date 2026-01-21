@@ -124,3 +124,9 @@
     -fx-font-weight: bold;
     -fx-text-fill: #15803D;
 }
+
+.total-price-info{
+    -fx-font-size: 26;
+    -fx-font-weight: bold;
+    -fx-text-fill: #15803D;
+}

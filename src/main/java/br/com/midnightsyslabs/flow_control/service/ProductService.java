@@ -1,8 +1,12 @@
 package br.com.midnightsyslabs.flow_control.service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Comparator;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 
 import jakarta.transaction.Transactional;
@@ -10,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.product.Product;
+import br.com.midnightsyslabs.flow_control.domain.entity.product.ProductCategory;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.ProductPrice;
 import br.com.midnightsyslabs.flow_control.repository.product.ProductRepository;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
@@ -28,10 +33,11 @@ public class ProductService {
     public Product saveProduct(
             String name,
             String description,
+            ProductCategory category,
             String price,
             String quantity,
             MeasurementUnit measurementUnit) {
-        
+
         price = solveComma(price);
         quantity = solveComma(quantity);
 
@@ -40,14 +46,14 @@ public class ProductService {
 
         product.setName(name);
         product.setDescription(description);
-       
+        product.setCategory(category);
         product.setMeasurementUnit(measurementUnit);
         product.setCreatedAt(OffsetDateTime.now());
         try {
             product.setQuantity(new BigDecimal(quantity));
             productPrice.setPrice(new BigDecimal(price));
         } catch (NumberFormatException e) {
-            throw new NumberFormatException("Tem algo errado com formato do preço!");
+            throw new NumberFormatException("Tem algo errado com formato do preço ou da quantidade!");
         }
         productPrice.setPriceChangeDate(OffsetDateTime.now());
         productPrice.setProduct(product);
@@ -65,27 +71,36 @@ public class ProductService {
             String description,
             String price) {
 
+        price = solveComma(price);
+
         product.setName(name);
         product.setDescription(description);
+        try {
 
-        var newPrice = new BigDecimal(price);
-        var currentPrice = product.getProductPriceHistory()
-                .stream()
-                .max(Comparator.comparing(ProductPrice::getPriceChangeDate))
-                .map(ProductPrice::getPrice)
-                .orElse(null);
+            var newPrice = new BigDecimal(price);
 
-        if (currentPrice == null || currentPrice.compareTo(newPrice) != 0) {
-            ProductPrice newPriceEntry = new ProductPrice();
-            newPriceEntry.setProduct(product);
-            newPriceEntry.setPrice(newPrice);
-            newPriceEntry.setPriceChangeDate(OffsetDateTime.now());
+            var currentPrice = product.getProductPriceHistory()
+                    .stream()
+                    .max(Comparator.comparing(ProductPrice::getPriceChangeDate))
+                    .map(ProductPrice::getPrice)
+                    .orElse(null);
 
-            product.getProductPriceHistory().add(newPriceEntry);
+            if (currentPrice == null || currentPrice.compareTo(newPrice) != 0) {
+                ProductPrice newPriceEntry = new ProductPrice();
+                newPriceEntry.setProduct(product);
+                newPriceEntry.setPrice(newPrice);
+                newPriceEntry.setPriceChangeDate(OffsetDateTime.now());
+
+                product.getProductPriceHistory().add(newPriceEntry);
+            }
+
+            productRepository.save(product);
+
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Tem algo errado com formato do preço!");
+        } catch (Exception e) {
+            throw e;
         }
-
-        productRepository.save(product);
-
     }
 
     @Transactional
@@ -94,9 +109,25 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    // Como nós brasileiros usamos a virgula (,) para separar a parte decimal dos número
+    // Como nós brasileiros usamos a virgula (,) para separar a parte decimal dos
+    // número
     // e aqui no Java o BigDecimal o ponto (.) esse method resolve isso!
-    String solveComma(String bigDecimanStr){
+    String solveComma(String bigDecimanStr) {
         return bigDecimanStr.replace(",", ".");
+    }
+
+    public static String formatPrice(BigDecimal price) {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
+        return formatter.format(price);
+    }
+
+    public static String formatQuantity(BigDecimal quantity) {
+        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.of("pt", "BR"));
+
+        DecimalFormat format = new DecimalFormat("#,##0.###", symbols);
+        format.setMaximumFractionDigits(3);
+        format.setMinimumFractionDigits(0);
+
+        return format.format(quantity);
     }
 }

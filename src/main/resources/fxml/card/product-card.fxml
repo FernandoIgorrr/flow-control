@@ -24,13 +24,13 @@
         <!-- HEADER COM BOTÕES À DIREITA -->
         <HBox spacing="12" alignment="CENTER_LEFT">
             <!-- ICON CONTAINER -->
-            <StackPane fx:id="iconContainer"
+              <StackPane fx:id="iconContainer"
                 prefWidth="42"
                 prefHeight="42"
                 styleClass="icon-container">
                 <ImageView fx:id="imgType"
-                    fitHeight="22"
-                    fitWidth="22"
+                    fitHeight="42"
+                    fitWidth="42"
                     preserveRatio="true" />
             </StackPane>
 

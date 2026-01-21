@@ -9,9 +9,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import br.com.midnightsyslabs.flow_control.service.ProductService;
 import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
+import br.com.midnightsyslabs.flow_control.domain.entity.product.ProductCategory;
 import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentException;
 import br.com.midnightsyslabs.flow_control.repository.product.MeasurementUnitRepository;
-
+import br.com.midnightsyslabs.flow_control.repository.product.ProductCategoryRepository;
+import br.com.midnightsyslabs.flow_control.repository.product.ProductRepository;
 import javafx.fxml.FXML;
 
 import javafx.stage.Stage;
@@ -26,10 +28,15 @@ import javafx.scene.control.TextFormatter;
 public class ProductFormController {
 
     private final ProductService productService;
+
+    private final ProductCategoryRepository productCategoryRepository;
+
     private final MeasurementUnitRepository measurementUnitRepository;
 
     // private final ContextMenu citySuggestions;
     private MeasurementUnit selectedMeasurementUnit;
+
+    private Runnable onDataChanged;
 
     @FXML
     private TextField nameField;
@@ -47,13 +54,17 @@ public class ProductFormController {
     private TextField quantityField;
 
     @FXML
-    private ComboBox<MeasurementUnit> measurementUnitComboBox;
+    private ComboBox<ProductCategory> productCategoryComboBox;
 
+    @FXML
+    private ComboBox<MeasurementUnit> measurementUnitComboBox;
 
     public ProductFormController(
             ProductService productService,
+            ProductCategoryRepository productCategoryRepository,
             MeasurementUnitRepository measurementUnitRepository) {
         this.productService = productService;
+        this.productCategoryRepository = productCategoryRepository;
         this.measurementUnitRepository = measurementUnitRepository;
 
     }
@@ -61,9 +72,34 @@ public class ProductFormController {
     @FXML
     public void initialize() {
 
+        configureProductCategoryComboBox();
         configureMeasurementUnitComboBox();
-          configurePriceField();
+        configurePriceField();
         configureQuantityField();
+    }
+
+    private void configureProductCategoryComboBox() {
+        var productCategories = productCategoryRepository.findAll();
+
+        productCategoryComboBox.getItems().setAll(productCategories);
+
+        productCategoryComboBox.setConverter(new StringConverter<ProductCategory>() {
+            @Override
+            public String toString(ProductCategory category) {
+                return category == null
+                        ? ""
+                        : category.getName();
+            }
+
+            @Override
+            public ProductCategory fromString(String string) {
+                return null;
+            }
+        });
+
+        if (!productCategories.isEmpty()) {
+            productCategoryComboBox.getSelectionModel().selectFirst();
+        }
     }
 
     private void configureMeasurementUnitComboBox() {
@@ -89,7 +125,7 @@ public class ProductFormController {
         measurementUnitComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 selectedMeasurementUnit = newValue;
-                lblQuantity.setText(newValue.getUnit());
+                lblQuantity.setText(newValue.getUnit() + " *");
             }
         });
 
@@ -98,7 +134,7 @@ public class ProductFormController {
         }
     }
 
-     private void configurePriceField() {
+    private void configurePriceField() {
         UnaryOperator<TextFormatter.Change> priceFilter = change -> {
             String text = change.getControlNewText();
             if (text.matches("\\d*(,\\d{0,2})?")) {
@@ -136,9 +172,14 @@ public class ProductFormController {
             productService.saveProduct(
                     nameField.getText(),
                     descriptionField.getText(),
+                    productCategoryComboBox.getValue(),
                     priceField.getText(),
                     quantityField.getText(),
                     measurementUnitComboBox.getValue());
+
+            if (onDataChanged != null) {
+                onDataChanged.run();
+            }
 
         } catch (IllegalEmailArgumentException e) {
             showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
@@ -152,17 +193,9 @@ public class ProductFormController {
 
         catch (DataIntegrityViolationException e) {
             showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
-                    "O CPF, CNPJ, Telefone ou E-mail já existe no banco de dados!");
+                    "");
             return;
-        }
-
-        catch (ClientNotFoundException e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Cliente não encontrado",
-                    e.getMessage());
-            return;
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar produto",
                     "Ocorreu um erro ao tentar cadastrar o produto: " + e.getMessage());
             System.err.println(e.getMessage());
@@ -175,6 +208,10 @@ public class ProductFormController {
     @FXML
     private void onCancel() {
         close();
+    }
+
+    public void setOnDataChanged(Runnable onDataChanged) {
+        this.onDataChanged = onDataChanged;
     }
 
     private void close() {

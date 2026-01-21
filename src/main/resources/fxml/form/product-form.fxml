@@ -60,7 +60,7 @@
                     </VBox>
 
 
-                    <VBox spacing="4" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                    <VBox spacing="4" GridPane.rowIndex="2" GridPane.columnIndex="0">
                         <Label text="Preço de Venda (R$) *" />
                         <TextField
                             fx:id="priceField"
@@ -68,6 +68,13 @@
                     </VBox>
 
                     
+                    <VBox spacing="4" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                        <Label text="Categoria *" />
+                        <ComboBox fx:id="productCategoryComboBox"
+                            maxWidth="Infinity"
+                            promptText="Selecione a categoria..." />
+                    </VBox>
+
                     <VBox spacing="4" GridPane.rowIndex="3" GridPane.columnIndex="0">
                         <Label fx:id="lblQuantity" />
                         <TextField
@@ -76,12 +83,11 @@
                     </VBox>
 
                     <VBox spacing="4" GridPane.rowIndex="3" GridPane.columnIndex="1">
-                        <Label text="Categoria *" />
+                        <Label text="Unidade *" />
                         <ComboBox fx:id="measurementUnitComboBox"
                             maxWidth="Infinity"
                             promptText="Selecione a unidade..." />
                     </VBox>
-
 
 
                 </children>

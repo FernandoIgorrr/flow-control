@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import br.com.midnightsyslabs.flow_control.dto.ClientDTO;
 import br.com.midnightsyslabs.flow_control.repository.view.ClientRepository;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.ClientCardController;
-
+import br.com.midnightsyslabs.flow_control.ui.controller.form.ClientFormController;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -56,8 +56,6 @@ public class ClientsController {
         });
     }
 
-
-
     private void filterCards(String search) {
 
         if (search == null || search.isBlank()) {
@@ -92,7 +90,7 @@ public class ClientsController {
                 ClientCardController controller = loader.getController();
                 controller.setClientDTO(client);
 
-                //  CALLBACK
+                // CALLBACK
                 controller.setOnDataChanged(this::reloadClients);
 
                 cardsPane.getChildren().add(card);
@@ -108,9 +106,9 @@ public class ClientsController {
     }
 
     private void reloadClients() {
-    this.clients = clientRepository.findAll();
-    filterCards(txtSearch.getText());
-}
+        this.clients = clientRepository.findAll();
+        filterCards(txtSearch.getText());
+    }
 
     @FXML
     private void onAddClient() {
@@ -126,6 +124,10 @@ public class ClientsController {
             Stage dialog = new Stage();
             dialog.setTitle("Cadastrar Cliente");
             dialog.setScene(new Scene(loader.load(), width, height));
+
+            ClientFormController controller = loader.getController();
+            // CALLBACK
+            controller.setOnDataChanged(this::reloadClients);
 
             Stage mainStage = (Stage) btnAddClient.getScene().getWindow();
 

@@ -40,6 +40,11 @@ public class Product {
     private String description;
 
     @NotNull
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private ProductCategory category;
+
+    @NotNull
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductPrice> productPriceHistory;
 

@@ -1,13 +1,13 @@
 package br.com.midnightsyslabs.flow_control.dto;
 
-public enum ClientCategory {
+public enum PartnerCategory {
     PERSONAL('p'),
     COMPANY('c'),
     UNDEFINED('u');
 
     private final char code;
 
-    ClientCategory(char code) {
+    PartnerCategory(char code) {
         this.code = code;
     }
 
@@ -15,8 +15,8 @@ public enum ClientCategory {
         return code;
     }
 
-    public static ClientCategory fromCode(char code) {
-        for (ClientCategory category : ClientCategory.values()) {
+    public static PartnerCategory fromCode(char code) {
+        for (PartnerCategory category : PartnerCategory.values()) {
             if (category.getCode() == code) {
                 return category;
             }

@@ -2,6 +2,7 @@ package br.com.midnightsyslabs.flow_control.ui.controller;
 
 import java.util.List;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.context.ApplicationContext;
@@ -9,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.midnightsyslabs.flow_control.dto.ProductDTO;
 import br.com.midnightsyslabs.flow_control.repository.view.ProductFullRepository;
+import br.com.midnightsyslabs.flow_control.service.ProductService;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.ProductCardController;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.ClientFormController;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.ProductFormController;
 
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -29,6 +33,9 @@ public class ProductsController {
 
     @Autowired
     private ProductFullRepository productFullRepository;
+
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private ApplicationContext context;
@@ -68,9 +75,11 @@ public class ProductsController {
         String query = search.toLowerCase();
 
         List<ProductDTO> filtered = products.stream()
-                .filter(c -> safe(c.getName()).contains(query) ||
-                        safe(c.getDescription()).contains(query) ||
-                        safe(c.getMeasurementUnitName()).contains(query))
+                .filter(p -> safe(p.getName()).contains(query) ||
+                        safe(p.getDescription()).contains(query) ||
+                        safe(productService.formatPrice(p.getCurrentPrice())).contains(query) ||
+                        safe(productService.formatQuantity(p.getQuantity())).contains(query) ||
+                        safe(p.getMeasurementUnitName()).contains(query))
                 .toList();
 
         renderCards(filtered);
@@ -91,7 +100,8 @@ public class ProductsController {
 
                 ProductCardController controller = loader.getController();
                 controller.setProductDTO(product);
-
+                controller.setOnDataChanged(this::reloadProducts);
+                
                 cardsPane.getChildren().add(card);
 
             } catch (IOException e) {
@@ -104,6 +114,12 @@ public class ProductsController {
         return value == null ? "" : value.toLowerCase();
     }
 
+    
+    private void reloadProducts() {
+        this.products = productFullRepository.findAll();
+        filterCards(txtSearch.getText());
+    }
+
     @FXML
     private void onAddProduct() {
         try {
@@ -112,12 +128,16 @@ public class ProductsController {
             loader.setControllerFactory(context::getBean);
 
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            double width = screenBounds.getWidth() * 0.25;
+            double width = screenBounds.getWidth() * 0.3;
             double height = screenBounds.getHeight() * 0.5;
 
             Stage dialog = new Stage();
             dialog.setTitle("Cadastrar Produto");
             dialog.setScene(new Scene(loader.load(), width, height));
+
+            ProductFormController controller = loader.getController();
+            //  CALLBACK
+            controller.setOnDataChanged(this::reloadProducts);
 
             Stage mainStage = (Stage) btnAddProduct.getScene().getWindow();
 

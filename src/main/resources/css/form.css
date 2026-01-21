@@ -38,6 +38,12 @@
     -fx-text-fill: #374151;
 }
 
+.Text {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #374151;
+}
+
 /* =========================
    INPUTS (TextField / ComboBox)
 ========================= */

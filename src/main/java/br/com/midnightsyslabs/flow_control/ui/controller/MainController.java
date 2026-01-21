@@ -18,20 +18,32 @@ public class MainController {
     private VBox sidebar;
 
     @FXML
+    private VBox sidebarButtons;
+
+    @FXML
     private Button dashboardButton;
 
     @FXML
     private Button productsButton;
 
     @FXML
+    private Button rawMaterialsButton;
+
+    @FXML
     private Button clientsButton;
+
+    @FXML
+    private Button suppliersButton;
 
     @FXML
     private Button ordersButton;
 
     @FXML
+    private Button purchasesButton;
+
+    @FXML
     private Button expensesButton;
-    
+
     @FXML
     private Button statementFinanceButton;
 
@@ -45,12 +57,12 @@ public class MainController {
     public void initialize() {
         navService.setMainContainer(conteudoPrincipal);
         // Carrega uma tela inicial opcional
-        navService.navigateTo("/fxml/products.fxml");
-        setActive(productsButton);
+        navService.navigateTo("/fxml/purchases.fxml");
+        setActive(purchasesButton);
     }
 
     private void setActive(Button activeButton) {
-        sidebar.getChildren().forEach(node -> {
+        sidebarButtons.getChildren().forEach(node -> {
             if (node instanceof Button btn) {
                 btn.getStyleClass().remove("selected");
             }
@@ -72,26 +84,44 @@ public class MainController {
     }
 
     @FXML
+    public void goToRawMaterials() {
+        navService.navigateTo("/fxml/raw-materials.fxml");
+        setActive(rawMaterialsButton);
+    }
+
+    @FXML
     public void goToClients() {
         navService.navigateTo("/fxml/clients.fxml");
-         setActive(clientsButton);
+        setActive(clientsButton);
+    }
+
+    @FXML
+    public void goToSuppliers() {
+        navService.navigateTo("/fxml/suppliers.fxml");
+        setActive(suppliersButton);
     }
 
     @FXML
     public void goToOrders() {
         navService.navigateTo("/fxml/orders.fxml");
-         setActive(ordersButton);
+        setActive(ordersButton);
+    }
+
+    @FXML
+    public void goToPurchases(){
+        navService.navigateTo("/fxml/purchases.fxml");
+        setActive(purchasesButton);
     }
 
     @FXML
     public void goToExpenses() {
         navService.navigateTo("/fxml/expenses.fxml");
-         setActive(expensesButton);
+        setActive(expensesButton);
     }
 
     @FXML
     public void goToStatementFinance() {
         navService.navigateTo("/fxml/statement-finance.fxml");
-         setActive(statementFinanceButton);
+        setActive(statementFinanceButton);
     }
 }

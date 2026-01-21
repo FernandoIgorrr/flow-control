@@ -67,7 +67,7 @@
             <!-- SEARCH BAR -->
             <TextField
                 fx:id="txtSearch"
-                promptText="Buscar por nome, cidade, CPF ou CNPJ..."
+                promptText="Buscar por nome, descrição, peso/volume ou preço..."
                 styleClass="search-field" />
 
             <!-- CARDS -->
@@ -77,8 +77,8 @@
                     <TilePane
                         fx:id="cardsPane"
                         prefColumns="3"
-                        vgap="30"
-                        hgap="30"
+                        vgap="20"
+                        hgap="20"
                         alignment="TOP_CENTER"
                         tileAlignment="CENTER">
 

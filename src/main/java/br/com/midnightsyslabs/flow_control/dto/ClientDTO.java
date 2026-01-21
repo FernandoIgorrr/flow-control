@@ -2,7 +2,7 @@ package br.com.midnightsyslabs.flow_control.dto;
 
 import java.util.UUID;
 
-import br.com.midnightsyslabs.flow_control.converter.ClientCategoryConverter;
+import br.com.midnightsyslabs.flow_control.converter.PartnerCategoryConverter;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -26,8 +26,8 @@ public class ClientDTO {
     private String email;
     private String city;
 
-    @Convert(converter = ClientCategoryConverter.class)
-    private ClientCategory category;
+    @Convert(converter = PartnerCategoryConverter.class)
+    private PartnerCategory category;
 
     public String getDocument() {
         if (cpf != null && !cpf.isBlank()) {

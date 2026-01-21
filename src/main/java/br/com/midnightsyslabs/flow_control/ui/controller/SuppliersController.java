@@ -1,0 +1,153 @@
+package br.com.midnightsyslabs.flow_control.ui.controller;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Controller;
+
+import br.com.midnightsyslabs.flow_control.dto.SupplierDTO;
+import br.com.midnightsyslabs.flow_control.repository.view.SupplierRepository;
+import br.com.midnightsyslabs.flow_control.service.SupplierService;
+import br.com.midnightsyslabs.flow_control.ui.controller.card.SupplierCardController;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.SupplierFormController;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.layout.TilePane;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+
+@Controller
+public class SuppliersController {
+
+    @Autowired
+    private SupplierService supplierService; 
+
+    @Autowired
+    private ApplicationContext context;
+
+    private List<SupplierDTO> suppliers;
+
+    @FXML
+    private Button btnAddSupplier;
+
+    @FXML
+    private TextField txtSearch;
+
+    @FXML
+    private TilePane cardsPane;
+
+    @FXML
+    public void initialize() {
+
+        suppliers = supplierService.getSuppliers();
+
+        renderCards(suppliers);
+
+        txtSearch.textProperty().addListener((obs, oldValue, newValue) -> {
+            filterCards(newValue);
+        });
+    }
+
+    private void filterCards(String search) {
+
+        if (search == null || search.isBlank()) {
+            renderCards(suppliers);
+            return;
+        }
+
+        String query = search.toLowerCase();
+
+        List<SupplierDTO> filtered = suppliers.stream()
+                .filter(s -> safe(s.getName()).contains(query) ||
+                        safe(s.getCity()).contains(query) ||
+                        safe(s.getDocument()).contains(query))
+                .toList();
+
+        renderCards(filtered);
+    }
+
+    private void renderCards(List<SupplierDTO> suppliers) {
+
+        cardsPane.getChildren().clear();
+
+        for (SupplierDTO supplier : suppliers) {
+            try {
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/fxml/card/supplier-card.fxml"));
+
+                loader.setControllerFactory(context::getBean);
+
+                Parent card = loader.load();
+
+                SupplierCardController controller = loader.getController();
+                controller.setSupplierDTO(supplier);
+
+                // CALLBACK
+                controller.setOnDataChanged(this::reloadSuppliers);
+
+                cardsPane.getChildren().add(card);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value.toLowerCase();
+    }
+
+    private void reloadSuppliers() {
+        this.suppliers = supplierService.getSuppliers();
+        filterCards(txtSearch.getText());
+    }
+
+    @FXML
+    private void onAddSupplier() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/supplier-form.fxml"));
+
+            loader.setControllerFactory(context::getBean);
+
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            double width = screenBounds.getWidth() * 0.5;
+            double height = screenBounds.getHeight() * 0.5;
+
+            Stage dialog = new Stage();
+            dialog.setTitle("Cadastrar Fornecedor");
+            dialog.setScene(new Scene(loader.load(), width, height));
+
+            SupplierFormController controller = loader.getController();
+            // CALLBACK
+            controller.setOnDataChanged(this::reloadSuppliers);
+
+            Stage mainStage = (Stage) btnAddSupplier.getScene().getWindow();
+
+            dialog.initOwner(mainStage);
+            dialog.initModality(Modality.WINDOW_MODAL);
+
+            dialog.setResizable(false);
+            // stage.showAndWait();
+
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.8);
+            mainStage.getScene().getRoot().setEffect(darken);
+
+            dialog.setOnHidden(e -> mainStage.getScene().getRoot().setEffect(null));
+
+            dialog.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

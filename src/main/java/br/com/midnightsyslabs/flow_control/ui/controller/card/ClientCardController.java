@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import br.com.midnightsyslabs.flow_control.dto.ClientDTO;
 import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
 import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
-import br.com.midnightsyslabs.flow_control.dto.ClientCategory;
+import br.com.midnightsyslabs.flow_control.dto.PartnerCategory;
 import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.repository.CityRepository;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.ClientEditFormController;
@@ -87,7 +87,7 @@ public class ClientCardController {
 
         lblName.setText(client.getName());
 
-        String document = client.getCategory() == ClientCategory.PERSONAL
+        String document = client.getCategory() == PartnerCategory.PERSONAL
                 ? "CPF: " + MaskUtils.applyMask(client.getDocument(), "###.###.###-##")
                 : "CNPJ: " + MaskUtils.applyMask(client.getDocument(), "##.###.###/####-##");
 
@@ -96,7 +96,7 @@ public class ClientCardController {
         lblEmail.setText("Email: " + client.getEmail());
         lblCity.setText("Cidade: " + client.getCity());
 
-        if (client.getCategory() == ClientCategory.COMPANY) {
+        if (client.getCategory() == PartnerCategory.COMPANY) {
             lblSubtitle.setText("Companhia");
             lblSubtitle.getStyleClass().add("client-category-company");
             imgType.setImage(new Image(
@@ -216,7 +216,7 @@ public class ClientCardController {
 
         if (result.isPresent() && result.get() == deleteButton) {
             // 👉 CHAME A LÓGICA DE DELETE AQUI
-            if (clientDTO.getCategory() == ClientCategory.PERSONAL) {
+            if (clientDTO.getCategory() == PartnerCategory.PERSONAL) {
                 personalPartnerRepository.findById(clientDTO.getId()).ifPresentOrElse(client -> {
                     clientService.deletePersonalClient(client);
                 }, ClientNotFoundException::new);

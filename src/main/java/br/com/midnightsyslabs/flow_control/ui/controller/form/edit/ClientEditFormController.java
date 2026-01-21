@@ -9,7 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import br.com.midnightsyslabs.flow_control.dto.ClientDTO;
 import br.com.midnightsyslabs.flow_control.config.Constants;
 import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
-import br.com.midnightsyslabs.flow_control.dto.ClientCategory;
+import br.com.midnightsyslabs.flow_control.dto.PartnerCategory;
 import br.com.midnightsyslabs.flow_control.ui.utils.EmailUtils;
 import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.repository.CityRepository;
@@ -18,7 +18,6 @@ import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
 import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentException;
 import br.com.midnightsyslabs.flow_control.repository.partner.CompanyPartnerRepository;
 import br.com.midnightsyslabs.flow_control.repository.partner.PersonalPartnerRepository;
-
 
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
@@ -41,17 +40,6 @@ public class ClientEditFormController {
     private final CityRepository cityRepository;
 
     private final ClientService clientService;
-
-    public ClientEditFormController(
-            CompanyPartnerRepository companyPartnerRepository,
-            PersonalPartnerRepository personalPartnerRepository,
-            ClientService clientService,
-            CityRepository cityRepository) {
-        this.companyPartnerRepository = companyPartnerRepository;
-        this.personalPartnerRepository = personalPartnerRepository;
-        this.clientService = clientService;
-        this.cityRepository = cityRepository;
-    }
 
     private boolean loadingData = false;
 
@@ -81,6 +69,17 @@ public class ClientEditFormController {
     @FXML
     private TextField cityField;
 
+    public ClientEditFormController(
+            CompanyPartnerRepository companyPartnerRepository,
+            PersonalPartnerRepository personalPartnerRepository,
+            ClientService clientService,
+            CityRepository cityRepository) {
+        this.companyPartnerRepository = companyPartnerRepository;
+        this.personalPartnerRepository = personalPartnerRepository;
+        this.clientService = clientService;
+        this.cityRepository = cityRepository;
+    }
+
     @FXML
     public void initialize() {
 
@@ -109,7 +108,7 @@ public class ClientEditFormController {
 
         loadingData = true;
 
-        if (clientDTO.getCategory() == ClientCategory.PERSONAL) {
+        if (clientDTO.getCategory() == PartnerCategory.PERSONAL) {
             personalPartnerRepository.findById(clientDTO.getId()).ifPresentOrElse(client -> {
 
                 partnerCategoryText.setText(Constants.PERSONAL);
@@ -210,11 +209,15 @@ public class ClientEditFormController {
                 documentField.setTextFormatter(MaskUtils.cnpjMask());
             }
 
-            // 🚫 só limpa se NÃO estiver carregando dados
+            // só limpa se NÃO estiver carregando dados
             if (!loadingData) {
                 documentField.clear();
             }
         });
+    }
+
+    public void editClientForm(ClientDTO clientDTO) {
+        this.clientDTO = clientDTO;
     }
 
     @FXML
@@ -235,7 +238,7 @@ public class ClientEditFormController {
 
                 // showLabelAlert(Alert.AlertType.WARNING, "CIDADE", selectedCity.getName());
 
-                if (clientDTO.getCategory() == ClientCategory.PERSONAL) {
+                if (clientDTO.getCategory() == PartnerCategory.PERSONAL) {
                     personalPartnerRepository.findById(clientDTO.getId()).ifPresentOrElse(client -> {
 
                         clientService.updatePersonalClient(
@@ -270,9 +273,9 @@ public class ClientEditFormController {
         }
 
         catch (DataIntegrityViolationException e) {
-           // showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
-              //      "O CPF, CNPJ, Telefone ou E-mail já existe no banco de dados!");
-               showLabelAlert(Alert.AlertType.ERROR, "DataIntegrityViolation",
+            // showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
+            // "O CPF, CNPJ, Telefone ou E-mail já existe no banco de dados!");
+            showLabelAlert(Alert.AlertType.ERROR, "DataIntegrityViolation",
                     e.getMessage());
             return;
         }
@@ -291,10 +294,6 @@ public class ClientEditFormController {
         }
 
         close();
-    }
-
-    public void editClientForm(ClientDTO clientDTO) {
-        this.clientDTO = clientDTO;
     }
 
     @FXML

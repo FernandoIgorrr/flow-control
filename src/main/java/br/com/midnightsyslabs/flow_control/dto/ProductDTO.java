@@ -1,10 +1,6 @@
 package br.com.midnightsyslabs.flow_control.dto;
 
 import java.math.BigDecimal;
-import java.util.UUID;
-
-import br.com.midnightsyslabs.flow_control.converter.ClientCategoryConverter;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -22,6 +18,7 @@ public class ProductDTO {
     private Short id;
     private String name;
     private String description;
+    private String category;
     private BigDecimal currentPrice;
     private BigDecimal quantity;
     private String measurementUnitUnit;
