@@ -7,10 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.context.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.com.midnightsyslabs.flow_control.dto.ClientDTO;
 import br.com.midnightsyslabs.flow_control.repository.view.ClientRepository;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.ClientCardController;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.ClientFormController;
+import br.com.midnightsyslabs.flow_control.view.ClientView;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -33,7 +33,7 @@ public class ClientsController {
     @Autowired
     private ApplicationContext context;
 
-    private List<ClientDTO> clients;
+    private List<ClientView> clients;
 
     @FXML
     private Button btnAddClient;
@@ -65,7 +65,7 @@ public class ClientsController {
 
         String query = search.toLowerCase();
 
-        List<ClientDTO> filtered = clients.stream()
+        List<ClientView> filtered = clients.stream()
                 .filter(c -> safe(c.getName()).contains(query) ||
                         safe(c.getCity()).contains(query) ||
                         safe(c.getDocument()).contains(query))
@@ -74,11 +74,11 @@ public class ClientsController {
         renderCards(filtered);
     }
 
-    private void renderCards(List<ClientDTO> clients) {
+    private void renderCards(List<ClientView> clients) {
 
         cardsPane.getChildren().clear();
 
-        for (ClientDTO client : clients) {
+        for (ClientView client : clients) {
             try {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/fxml/card/client-card.fxml"));

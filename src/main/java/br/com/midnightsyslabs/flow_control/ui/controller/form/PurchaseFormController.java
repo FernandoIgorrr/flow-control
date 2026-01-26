@@ -6,10 +6,8 @@ import java.util.function.UnaryOperator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 
-import br.com.midnightsyslabs.flow_control.domain.entity.partner.Partner;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
 import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
-import br.com.midnightsyslabs.flow_control.dto.SupplierDTO;
 import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentException;
 import br.com.midnightsyslabs.flow_control.exception.SupplierNotFoundException;
 import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRepository;
@@ -17,6 +15,7 @@ import br.com.midnightsyslabs.flow_control.repository.product.MeasurementUnitRep
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
 import br.com.midnightsyslabs.flow_control.service.SupplierService;
+import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
@@ -47,7 +46,7 @@ public class PurchaseFormController {
     private Runnable onDataChanged;
 
     @FXML
-    private ComboBox<SupplierDTO> supplierComboBox;
+    private ComboBox<SupplierView> supplierComboBox;
 
     @FXML
     private ComboBox<RawMaterial> rawMaterialComboBox;
@@ -112,17 +111,17 @@ public class PurchaseFormController {
 
         supplierComboBox.getItems().setAll(suppliers);
 
-        supplierComboBox.setConverter(new StringConverter<SupplierDTO>() {
+        supplierComboBox.setConverter(new StringConverter<SupplierView>() {
 
             @Override
-            public String toString(SupplierDTO supplierDTO) {
+            public String toString(SupplierView supplierDTO) {
                 return supplierDTO == null
                         ? ""
                         : supplierDTO.getName();
             }
 
             @Override
-            public SupplierDTO fromString(String string) {
+            public SupplierView fromString(String string) {
                 return null;
             }
         });
@@ -240,6 +239,7 @@ public class PurchaseFormController {
                 onDataChanged.run();
             }
 
+
         } catch (IllegalEmailArgumentException e) {
             showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
             return;
@@ -257,11 +257,14 @@ public class PurchaseFormController {
         } catch (Exception e) {
             showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar produto",
                     "Ocorreu um erro ao tentar cadastrar o produto: " + e.getMessage());
-            System.err.println(e.getMessage());
             return;
         }
 
         close();
+
+        
+             showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+                    "Compra cadastrada com sucesso!");
     }
 
     @FXML

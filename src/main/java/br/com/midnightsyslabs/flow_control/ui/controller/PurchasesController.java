@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 
-import br.com.midnightsyslabs.flow_control.dto.PurchaseDTO;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.PurchaseCardController;
+import br.com.midnightsyslabs.flow_control.ui.controller.card.RecentPurchasesPriceCardController;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.PurchaseFormController;
-
+import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -20,7 +20,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.ColorAdjust;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -28,32 +27,30 @@ import javafx.stage.Stage;
 
 @Controller
 public class PurchasesController {
+
     @Autowired
     private PurchaseService purchaseService;
 
     @Autowired
     private ApplicationContext context;
 
-    private List<PurchaseDTO> purchaseDTOs;
+    private List<PurchaseView> purchaseDTOs;
 
     @FXML
     private Button btnAddPurchase;
 
     @FXML
-    private TextField txtSearch;
-
-    @FXML
     private VBox cardsPane;
 
     @FXML
+    private VBox recentPurchasesPricecardPane;
+
+    @FXML
     public void initialize() {
-        this.purchaseDTOs = purchaseService.getPurchaseDTOs();
 
+        reloadPurchases();
+        renderRecentPurchasesPriceCard();
         renderCards(this.purchaseDTOs);
-
-        txtSearch.textProperty().addListener((obs, oldValue, newValue) -> {
-            filterCards(newValue);
-        });
 
     }
 
@@ -106,7 +103,7 @@ public class PurchasesController {
 
         String query = search.toLowerCase();
 
-        List<PurchaseDTO> filtered = this.purchaseDTOs.stream()
+        List<PurchaseView> filtered = this.purchaseDTOs.stream()
                 .filter(p -> safe(p.getRawMaterialName()).contains(query) ||
                         safe(p.getRawMaterialDescription()).contains(query))
                 .toList();
@@ -114,11 +111,11 @@ public class PurchasesController {
         renderCards(filtered);
     }
 
-    private void renderCards(List<PurchaseDTO> purchaseDTOs) {
+    private void renderCards(List<PurchaseView> purchaseDTOs) {
 
         cardsPane.getChildren().clear();
 
-        for (PurchaseDTO purchaseDTO : purchaseDTOs) {
+        for (PurchaseView purchaseDTO : purchaseDTOs) {
             try {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/fxml/card/purchase-card.fxml"));
@@ -139,12 +136,30 @@ public class PurchasesController {
         }
     }
 
+    private void renderRecentPurchasesPriceCard() {
+        recentPurchasesPricecardPane.getChildren().clear();
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/card/recent-purchases-price-card.fxml"));
+            loader.setControllerFactory(context::getBean);
+
+            Parent card = loader.load();
+
+           recentPurchasesPricecardPane.getChildren().add(card);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private String safe(String value) {
         return value == null ? "" : value.toLowerCase();
     }
 
     private void reloadPurchases() {
-        this.purchaseDTOs = purchaseService.getPurchaseDTOs();
+        this.purchaseDTOs = purchaseService.getPurchaseDTOsDateOrdenedReverse();
+        renderCards(this.purchaseDTOs);
+         renderRecentPurchasesPriceCard();
         // filterCards(txtSearch.getText());
     }
 }

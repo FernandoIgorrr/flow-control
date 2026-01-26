@@ -2,19 +2,17 @@ package br.com.midnightsyslabs.flow_control.ui.controller;
 
 import java.util.List;
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.context.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.com.midnightsyslabs.flow_control.dto.ProductDTO;
 import br.com.midnightsyslabs.flow_control.repository.view.ProductFullRepository;
 import br.com.midnightsyslabs.flow_control.service.ProductService;
+import br.com.midnightsyslabs.flow_control.service.UtilsService;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.ProductCardController;
-import br.com.midnightsyslabs.flow_control.ui.controller.form.ClientFormController;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.ProductFormController;
-
+import br.com.midnightsyslabs.flow_control.view.ProductView;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -35,12 +33,9 @@ public class ProductsController {
     private ProductFullRepository productFullRepository;
 
     @Autowired
-    private ProductService productService;
-
-    @Autowired
     private ApplicationContext context;
 
-    private List<ProductDTO> products;
+    private List<ProductView> products;
 
     @FXML
     private Button btnAddProduct;
@@ -74,22 +69,22 @@ public class ProductsController {
 
         String query = search.toLowerCase();
 
-        List<ProductDTO> filtered = products.stream()
+        List<ProductView> filtered = products.stream()
                 .filter(p -> safe(p.getName()).contains(query) ||
                         safe(p.getDescription()).contains(query) ||
-                        safe(productService.formatPrice(p.getCurrentPrice())).contains(query) ||
-                        safe(productService.formatQuantity(p.getQuantity())).contains(query) ||
+                        safe(UtilsService.formatPrice(p.getCurrentPrice())).contains(query) ||
+                        safe(UtilsService.formatQuantity(p.getQuantity())).contains(query) ||
                         safe(p.getMeasurementUnitName()).contains(query))
                 .toList();
 
         renderCards(filtered);
     }
 
-    private void renderCards(List<ProductDTO> products) {
+    private void renderCards(List<ProductView> products) {
 
         cardsPane.getChildren().clear();
 
-        for (ProductDTO product : products) {
+        for (ProductView product : products) {
             try {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/fxml/card/product-card.fxml"));

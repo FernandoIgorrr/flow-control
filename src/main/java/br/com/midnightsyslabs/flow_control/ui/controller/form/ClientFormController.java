@@ -57,8 +57,7 @@ public class ClientFormController {
     @FXML
     private TextField cityField;
 
-    
-    private Runnable onDataChanged; 
+    private Runnable onDataChanged;
 
     public ClientFormController(
             ClientService clientService,
@@ -155,9 +154,8 @@ public class ClientFormController {
                 return;
             }
 
-              String  document = documentField.getText().replaceAll("\\D", "");
-            String  phone = phoneField.getText().replaceAll("\\D", "");
-
+            String document = documentField.getText().replaceAll("\\D", "");
+            String phone = phoneField.getText().replaceAll("\\D", "");
 
             clientService.saveClient(
                     nameField.getText(),
@@ -166,10 +164,10 @@ public class ClientFormController {
                     emailField.getText(),
                     selectedCity,
                     partnerCategoryComboBox.getValue());
-            
-                if(onDataChanged != null){
-                    onDataChanged.run();
-                }
+
+            if (onDataChanged != null) {
+                onDataChanged.run();
+            }
 
         } catch (IllegalEmailArgumentException e) {
             showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
@@ -201,6 +199,9 @@ public class ClientFormController {
         }
 
         close();
+
+        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+                "Cliente cadastrado com sucesso!");
     }
 
     @FXML
@@ -208,7 +209,6 @@ public class ClientFormController {
         close();
     }
 
-    
     public void setOnDataChanged(Runnable onDataChanged) {
         this.onDataChanged = onDataChanged;
     }

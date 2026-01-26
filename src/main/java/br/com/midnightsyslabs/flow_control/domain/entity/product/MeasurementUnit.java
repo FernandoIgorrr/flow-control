@@ -20,6 +20,9 @@ public class MeasurementUnit {
     private String name;
 
     @NotNull
+    private String pluralName;
+
+    @NotNull
     private String symbol;
 
     @NotNull

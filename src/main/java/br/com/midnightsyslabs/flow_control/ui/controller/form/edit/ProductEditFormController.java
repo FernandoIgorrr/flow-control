@@ -6,8 +6,8 @@ import java.util.function.UnaryOperator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 
-import br.com.midnightsyslabs.flow_control.dto.ProductDTO;
 import br.com.midnightsyslabs.flow_control.service.ProductService;
+import br.com.midnightsyslabs.flow_control.view.ProductView;
 import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
 import br.com.midnightsyslabs.flow_control.exception.ProductNotFoundException;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.ProductPrice;
@@ -24,7 +24,7 @@ import javafx.scene.control.TextFormatter;
 
 @Controller
 public class ProductEditFormController {
-    private ProductDTO productDTO;
+    private ProductView productDTO;
 
     private final ProductService productService;
 
@@ -118,7 +118,7 @@ public class ProductEditFormController {
         priceField.setTextFormatter(new TextFormatter<>(priceFilter));
     }
 
- public void editProductForm(ProductDTO product) {
+ public void editProductForm(ProductView product) {
         this.productDTO = product;
     }
 

@@ -1,4 +1,4 @@
-package br.com.midnightsyslabs.flow_control.dto;
+package br.com.midnightsyslabs.flow_control.view;
 
 public enum PartnerCategory {
     PERSONAL('p'),

@@ -12,11 +12,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import br.com.midnightsyslabs.flow_control.dto.ProductDTO;
 import br.com.midnightsyslabs.flow_control.exception.ProductNotFoundException;
 import br.com.midnightsyslabs.flow_control.repository.product.ProductRepository;
 import br.com.midnightsyslabs.flow_control.service.ProductService;
+import br.com.midnightsyslabs.flow_control.service.UtilsService;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.ProductEditFormController;
+import br.com.midnightsyslabs.flow_control.view.ProductView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -72,18 +73,18 @@ public class ProductCardController {
     @FXML
     private Button btnDelete;
 
-    private ProductDTO productDTO;
+    private ProductView productDTO;
 
-    public void setProductDTO(ProductDTO productDTO) {
+    public void setProductDTO(ProductView productDTO) {
         this.productDTO = productDTO;
 
         lblName.setText(this.productDTO.getName());
         lblDescription.setText(this.productDTO.getDescription());
-        lblQuantity.setText( productService.formatQuantity(this.productDTO.getQuantity()));
+        lblQuantity.setText( UtilsService.formatQuantity(this.productDTO.getQuantity()));
         lblMeasurementUnitUnit.setText(this.productDTO.getMeasurementUnitUnit() + ": ");
         lblMeasurementUnitName.setText(this.productDTO.getMeasurementUnitName());
         lblMeasurementUnitSymbol.setText("(" + this.productDTO.getMeasurementUnitSymbol() + ")");
-        lblCurrentPrice.setText("(R$) " + productService.formatPrice(this.productDTO.getCurrentPrice()));
+        lblCurrentPrice.setText("(R$) " + UtilsService.formatPrice(this.productDTO.getCurrentPrice()));
 
         if(productDTO.getCategory().equals("Queijo")){
              imgType.setImage(new Image(

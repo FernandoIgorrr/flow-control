@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 
-import br.com.midnightsyslabs.flow_control.dto.SupplierDTO;
 import br.com.midnightsyslabs.flow_control.repository.view.SupplierRepository;
 import br.com.midnightsyslabs.flow_control.service.SupplierService;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.SupplierCardController;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.SupplierFormController;
+import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -34,7 +34,7 @@ public class SuppliersController {
     @Autowired
     private ApplicationContext context;
 
-    private List<SupplierDTO> suppliers;
+    private List<SupplierView> suppliers;
 
     @FXML
     private Button btnAddSupplier;
@@ -66,7 +66,7 @@ public class SuppliersController {
 
         String query = search.toLowerCase();
 
-        List<SupplierDTO> filtered = suppliers.stream()
+        List<SupplierView> filtered = suppliers.stream()
                 .filter(s -> safe(s.getName()).contains(query) ||
                         safe(s.getCity()).contains(query) ||
                         safe(s.getDocument()).contains(query))
@@ -75,11 +75,11 @@ public class SuppliersController {
         renderCards(filtered);
     }
 
-    private void renderCards(List<SupplierDTO> suppliers) {
+    private void renderCards(List<SupplierView> suppliers) {
 
         cardsPane.getChildren().clear();
 
-        for (SupplierDTO supplier : suppliers) {
+        for (SupplierView supplier : suppliers) {
             try {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/fxml/card/supplier-card.fxml"));

@@ -34,7 +34,10 @@ public class MainController {
 
     @FXML
     private Button suppliersButton;
-
+    
+    @FXML
+    private Button productionsButton;
+    
     @FXML
     private Button ordersButton;
 
@@ -99,6 +102,12 @@ public class MainController {
     public void goToSuppliers() {
         navService.navigateTo("/fxml/suppliers.fxml");
         setActive(suppliersButton);
+    }
+
+    @FXML
+    public void goToProductions(){
+        navService.navigateTo("/fxml/productions.fxml");
+        setActive(productionsButton);
     }
 
     @FXML

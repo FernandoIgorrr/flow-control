@@ -45,6 +45,8 @@ public class RawMaterialFormController {
                 onDataChanged.run();
             }
 
+           
+
         }
 
         catch (IllegalArgumentException e) {
@@ -64,6 +66,9 @@ public class RawMaterialFormController {
         }
 
         close();
+
+          showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+                    "Insumo cadastrado com sucesso!");
     }
 
     @FXML

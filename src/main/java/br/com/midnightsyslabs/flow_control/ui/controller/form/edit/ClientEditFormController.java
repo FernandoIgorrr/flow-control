@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Controller;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import br.com.midnightsyslabs.flow_control.dto.ClientDTO;
 import br.com.midnightsyslabs.flow_control.config.Constants;
 import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
-import br.com.midnightsyslabs.flow_control.dto.PartnerCategory;
+import br.com.midnightsyslabs.flow_control.view.ClientView;
+import br.com.midnightsyslabs.flow_control.view.PartnerCategory;
 import br.com.midnightsyslabs.flow_control.ui.utils.EmailUtils;
 import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.repository.CityRepository;
@@ -31,7 +31,7 @@ import javafx.scene.control.ContextMenu;
 @Controller
 public class ClientEditFormController {
 
-    private ClientDTO clientDTO;
+    private ClientView clientDTO;
 
     private final CompanyPartnerRepository companyPartnerRepository;
 
@@ -216,7 +216,7 @@ public class ClientEditFormController {
         });
     }
 
-    public void editClientForm(ClientDTO clientDTO) {
+    public void editClientForm(ClientView clientDTO) {
         this.clientDTO = clientDTO;
     }
 

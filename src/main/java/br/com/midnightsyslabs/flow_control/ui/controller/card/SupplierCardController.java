@@ -8,11 +8,11 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.com.midnightsyslabs.flow_control.dto.ClientDTO;
-import br.com.midnightsyslabs.flow_control.dto.SupplierDTO;
 import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
 import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
-import br.com.midnightsyslabs.flow_control.dto.PartnerCategory;
+import br.com.midnightsyslabs.flow_control.view.ClientView;
+import br.com.midnightsyslabs.flow_control.view.PartnerCategory;
+import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.service.SupplierService;
 import br.com.midnightsyslabs.flow_control.repository.CityRepository;
@@ -59,7 +59,7 @@ public class SupplierCardController {
     @Autowired
     private SupplierService supplierService;
 
-    private SupplierDTO supplierDTO;
+    private SupplierView supplierDTO;
 
     private Runnable onDataChanged; // callback
 
@@ -85,7 +85,7 @@ public class SupplierCardController {
     @FXML
     private StackPane iconContainer;
 
-    public void setSupplierDTO(SupplierDTO supplierDTO) {
+    public void setSupplierDTO(SupplierView supplierDTO) {
         this.supplierDTO = supplierDTO;
 
         lblName.setText(supplierDTO.getName());

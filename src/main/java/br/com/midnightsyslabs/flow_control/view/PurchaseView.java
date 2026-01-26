@@ -1,8 +1,11 @@
-package br.com.midnightsyslabs.flow_control.dto;
+package br.com.midnightsyslabs.flow_control.view;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.View;
 
 import br.com.midnightsyslabs.flow_control.converter.PartnerCategoryConverter;
 import jakarta.persistence.Convert;
@@ -15,10 +18,11 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Immutable
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "purchase_full")
-public class PurchaseDTO {
+public class PurchaseView {
     @Id
     private Integer id;
 
@@ -37,6 +41,8 @@ public class PurchaseDTO {
 
     private String measurementUnitName;
 
+    private String measurementUnitPluralName;
+
     private String measurementUnitSymbol;
 
     private BigDecimal totalPrice;
@@ -50,5 +56,4 @@ public class PurchaseDTO {
     private OffsetDateTime deletedAt;
 
     private boolean isClosed;
-
 }

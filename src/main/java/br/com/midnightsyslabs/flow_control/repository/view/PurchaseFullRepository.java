@@ -2,8 +2,8 @@ package br.com.midnightsyslabs.flow_control.repository.view;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import br.com.midnightsyslabs.flow_control.dto.PurchaseDTO;
+import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 
-public interface PurchaseFullRepository extends JpaRepository<PurchaseDTO,Integer>{
+public interface PurchaseFullRepository extends JpaRepository<PurchaseView,Integer>{
     
 }

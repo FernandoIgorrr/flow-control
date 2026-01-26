@@ -68,6 +68,8 @@ public class Purchase implements Expense{
 
     private boolean isClosed;
 
+    private OffsetDateTime closedAt;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = OffsetDateTime.now();

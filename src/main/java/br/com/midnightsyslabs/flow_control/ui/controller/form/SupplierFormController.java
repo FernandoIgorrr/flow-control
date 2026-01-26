@@ -170,6 +170,8 @@ public class SupplierFormController {
                     onDataChanged.run();
                 }
 
+      
+
         } catch (IllegalEmailArgumentException e) {
             showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
             return;
@@ -200,6 +202,9 @@ public class SupplierFormController {
         }
 
         close();
+
+               showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+                    "Fornecedor cadastrado com sucesso!");
     }
 
     @FXML

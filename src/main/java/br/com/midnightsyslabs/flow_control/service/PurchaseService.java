@@ -1,9 +1,12 @@
 package br.com.midnightsyslabs.flow_control.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -11,9 +14,9 @@ import br.com.midnightsyslabs.flow_control.domain.entity.partner.Partner;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
 import br.com.midnightsyslabs.flow_control.domain.entity.purchase.Purchase;
 import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
-import br.com.midnightsyslabs.flow_control.dto.PurchaseDTO;
 import br.com.midnightsyslabs.flow_control.repository.PurchaseRepository;
 import br.com.midnightsyslabs.flow_control.repository.view.PurchaseFullRepository;
+import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -65,9 +68,38 @@ public class PurchaseService {
         return purchaseRepository.findAll();
     }
 
-    public List<PurchaseDTO> getPurchaseDTOs() {
+    public List<PurchaseView> getPurchaseDTOs() {
         return purchaseFullRepository.findAll();
     }
+    
+
+    // Mais antigo primeiro
+    public List<PurchaseView> getPurchaseDTOsDateOrdened() {
+        return getPurchaseDTOs()
+        .stream()
+        .sorted(Comparator.comparing(PurchaseView::getDate))
+        .toList();
+
+    }
+
+     // Mais recente primeiro
+    public List<PurchaseView> getPurchaseDTOsDateOrdenedReverse() {
+    return getPurchaseDTOs()
+        .stream()
+        .sorted(
+            Comparator
+                .comparing(PurchaseView::getDate).reversed()
+                .thenComparing(PurchaseView::getId, Comparator.reverseOrder())
+
+        )
+        .toList();
+}
+
+
+    public Optional<Purchase> getById(Integer id){
+        return purchaseRepository.findById(id);
+    }
+    
 
     // Como nós brasileiros usamos a virgula (,) para separar a parte decimal dos
     // número
@@ -75,4 +107,22 @@ public class PurchaseService {
     String solveComma(String bigDecimanStr) {
         return bigDecimanStr.replace(",", ".");
     }
+
+    public static BigDecimal calculateUnitPrice(PurchaseView purchaseDTO) {
+        return purchaseDTO.getTotalPrice().divide(purchaseDTO.getQuantity(), 2,                  // escala (casas decimais)
+    RoundingMode.HALF_UP);
+    }
+
+    public  BigDecimal calculateTotalSpentInTime(LocalDate startDate,LocalDate endDate){
+        return getPurchasesFromDate(startDate, endDate).stream()
+                .map(PurchaseView::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private List<PurchaseView> getPurchasesFromDate(LocalDate startDate, LocalDate endDate) {
+        return purchaseFullRepository.findAll().stream().filter(p -> !p.getDate().isBefore(startDate)
+                && !p.getDate().isAfter(endDate)).toList();
+    }
+
+
 }

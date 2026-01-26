@@ -85,7 +85,7 @@
 
 
                     <VBox spacing="4" GridPane.rowIndex="3" GridPane.columnIndex="1">
-                        <Label text="Categoria" />
+                        <Label text="Unidade" />
                         <TextField fx:id="measurementUnitField"
                             disable="true" />
                     </VBox>

@@ -1,25 +1,26 @@
-package br.com.midnightsyslabs.flow_control.dto;
+package br.com.midnightsyslabs.flow_control.view;
 
 import java.util.UUID;
 
-import br.com.midnightsyslabs.flow_control.converter.PartnerCategoryConverter;
+import org.hibernate.annotations.Immutable;
 
+import br.com.midnightsyslabs.flow_control.converter.PartnerCategoryConverter;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Convert;
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Entity
 @Getter
+@Immutable
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "supplier_full")
-public class SupplierDTO {
-      @Id
+@Table(name = "client_full")
+public class ClientView {
+    @Id
     private UUID id;
     private String name;
     private String cpf;

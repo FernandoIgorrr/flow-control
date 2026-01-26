@@ -13,62 +13,81 @@
     styleClass="content-root">
 
     <!-- HEADER -->
-    <top>
-        <HBox spacing="20"
-            alignment="CENTER_LEFT"
-            styleClass="page-header"
-            BorderPane.alignment="CENTER">
+   <top>
+    <VBox>
 
-            <padding>
-                <Insets top="0" right="10" bottom="0" left="10" />
-            </padding>
+        <!-- HEADER -->
+        <HBox 
+              alignment="CENTER_LEFT"
+              styleClass="page-header">
 
-            <!-- LEFT: TITLE + SUBTITLE -->
+
+            <!-- LEFT -->
             <VBox spacing="4">
-                <Label text="Compras"
-                    styleClass="page-title" />
-
-                <Label text="Gerencie suas Compras"
-                    styleClass="page-subtitle" />
+                <Label text="Compras de Matérias-Primas" styleClass="page-title"/>
+                <Label text="Gerencie suas Compras" styleClass="page-subtitle"/>
             </VBox>
 
             <!-- SPACER -->
-            <Region HBox.hgrow="ALWAYS" />
+            <Region HBox.hgrow="ALWAYS"/>
 
-            <!-- RIGHT: BUTTON -->
+            <!-- RIGHT -->
             <Button
                 fx:id="btnAddPurchase"
                 text="Nova compra"
                 onAction="#onAddPurchase"
                 styleClass="btn-primary">
                 <graphic>
-                    <StackPane prefWidth="22" prefHeight="22" maxWidth="22" maxHeight="22">
-                        <children>
-                            <ImageView fitHeight="22.0" fitWidth="22.0" preserveRatio="true"
-                                styleClass="btn-primary-icon">
-                                <image>
-                                    <Image url="@/images/ic--baseline-plus.png" />
-                                </image>
-                            </ImageView>
-                        </children>
+                    <StackPane prefWidth="22" prefHeight="22">
+                        <ImageView fitHeight="22" fitWidth="22"
+                                   preserveRatio="true"
+                                   styleClass="btn-primary-icon">
+                            <image>
+                                <Image url="@/images/ic--baseline-plus.png"/>
+                            </image>
+                        </ImageView>
                     </StackPane>
                 </graphic>
             </Button>
         </HBox>
-    </top>
+
+        <!-- PRICE CARDS -->
+        <HBox>
+            <VBox
+                fx:id="recentPurchasesPricecardPane"
+                spacing="20"
+                maxWidth="Infinity"/>
+        </HBox>
+
+         <HBox>
+            <VBox
+                fx:id="recentPurchasesPricecardPane"
+                spacing="20"
+                maxWidth="Infinity"/>
+        </HBox>
+
+         <HBox>
+            <VBox
+                fx:id="recentPurchasesPricecardPane"
+                spacing="20"
+                maxWidth="Infinity"/>
+        </HBox>
+
+    </VBox>
+</top>
 
     <!-- CONTENT -->
     <center>
         <VBox spacing="12">
             <padding>
-                <Insets top="15" right="15" bottom="15" left="15" />
+                <Insets top="15" right="0" bottom="0" left="0" />
             </padding>
 
             <!-- SEARCH BAR -->
-            <TextField
+           <!-- <TextField
                 fx:id="txtSearch"
                 promptText="Buscar por data, tipo, peso/volume ou preço..."
-                styleClass="search-field" />
+                styleClass="search-field" />-->
 
             <!-- CARDS -->
             <ScrollPane

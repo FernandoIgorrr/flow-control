@@ -11,7 +11,6 @@ import br.com.midnightsyslabs.flow_control.domain.entity.partner.City;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.CompanyPartner;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.PartnerRole;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.PersonalPartner;
-import br.com.midnightsyslabs.flow_control.dto.SupplierDTO;
 import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentException;
 import br.com.midnightsyslabs.flow_control.exception.InvalidCNPJException;
 import br.com.midnightsyslabs.flow_control.exception.InvalidCPFException;
@@ -20,6 +19,7 @@ import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRoleReposit
 import br.com.midnightsyslabs.flow_control.repository.partner.PersonalPartnerRepository;
 import br.com.midnightsyslabs.flow_control.repository.view.ProductFullRepository;
 import br.com.midnightsyslabs.flow_control.repository.view.SupplierRepository;
+import br.com.midnightsyslabs.flow_control.view.SupplierView;
 
 @Service
 public class SupplierService {
@@ -100,7 +100,7 @@ public class SupplierService {
 
     }
 
-    public List<SupplierDTO> getSuppliers() {
+    public List<SupplierView> getSuppliers() {
         return supplierRepository.findAll();
     }
 

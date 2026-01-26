@@ -2,7 +2,7 @@ package br.com.midnightsyslabs.flow_control.converter;
 
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties.Web.Client;
 
-import br.com.midnightsyslabs.flow_control.dto.PartnerCategory;
+import br.com.midnightsyslabs.flow_control.view.PartnerCategory;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

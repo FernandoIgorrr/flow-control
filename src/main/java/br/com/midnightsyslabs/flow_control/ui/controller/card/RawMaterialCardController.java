@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
-import br.com.midnightsyslabs.flow_control.dto.ProductDTO;
 import br.com.midnightsyslabs.flow_control.exception.ProductNotFoundException;
 import br.com.midnightsyslabs.flow_control.repository.RawMaterialRepository;
 import br.com.midnightsyslabs.flow_control.repository.product.ProductRepository;
@@ -16,6 +15,7 @@ import br.com.midnightsyslabs.flow_control.service.ProductService;
 import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.ProductEditFormController;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.RawMaterialEditFormController;
+import br.com.midnightsyslabs.flow_control.view.ProductView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -84,7 +84,7 @@ public class RawMaterialCardController {
 
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
             double width = screenBounds.getWidth() * 0.2;
-            double height = screenBounds.getHeight() * 0.3;
+            double height = screenBounds.getHeight() * 0.4;
 
             Stage dialog = new Stage();
 

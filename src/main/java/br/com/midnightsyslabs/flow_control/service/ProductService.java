@@ -38,8 +38,8 @@ public class ProductService {
             String quantity,
             MeasurementUnit measurementUnit) {
 
-        price = solveComma(price);
-        quantity = solveComma(quantity);
+        price = UtilsService.solveComma(price);
+        quantity = UtilsService.solveComma(quantity);
 
         var product = new Product();
         var productPrice = new ProductPrice();
@@ -71,7 +71,7 @@ public class ProductService {
             String description,
             String price) {
 
-        price = solveComma(price);
+        price = UtilsService.solveComma(price);
 
         product.setName(name);
         product.setDescription(description);
@@ -109,25 +109,8 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    // Como nós brasileiros usamos a virgula (,) para separar a parte decimal dos
-    // número
-    // e aqui no Java o BigDecimal o ponto (.) esse method resolve isso!
-    String solveComma(String bigDecimanStr) {
-        return bigDecimanStr.replace(",", ".");
+    public List<Product> getProducts(){
+        return productRepository.findAll();
     }
-
-    public static String formatPrice(BigDecimal price) {
-        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
-        return formatter.format(price);
-    }
-
-    public static String formatQuantity(BigDecimal quantity) {
-        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.of("pt", "BR"));
-
-        DecimalFormat format = new DecimalFormat("#,##0.###", symbols);
-        format.setMaximumFractionDigits(3);
-        format.setMinimumFractionDigits(0);
-
-        return format.format(quantity);
-    }
+    
 }

@@ -7,6 +7,7 @@ import java.util.function.UnaryOperator;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import br.com.midnightsyslabs.flow_control.service.ProductService;
+import jakarta.validation.ConstraintViolationException;
 import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.ProductCategory;
@@ -195,7 +196,13 @@ public class ProductFormController {
             showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
                     "");
             return;
-        } catch (Exception e) {
+        } 
+        catch (ConstraintViolationException e) {
+            showLabelAlert(Alert.AlertType.ERROR, "Dados Inválidos",
+                    "O dados númericos tem que ser maior que zero!");
+            return;
+        } 
+        catch (Exception e) {
             showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar produto",
                     "Ocorreu um erro ao tentar cadastrar o produto: " + e.getMessage());
             System.err.println(e.getMessage());
@@ -203,6 +210,10 @@ public class ProductFormController {
         }
 
         close();
+
+        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+                "Produto cadastrado com sucesso!");
+
     }
 
     @FXML

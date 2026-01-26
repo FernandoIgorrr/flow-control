@@ -9,3 +9,4 @@ public interface Constants {
 
     String[] PARTNER_CATEGORY = {PERSONAL, COMPANY};
 }
+

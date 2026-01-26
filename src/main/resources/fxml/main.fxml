@@ -83,7 +83,7 @@
                         </Button>
 
 
-                             <Button
+                        <Button
                             fx:id="rawMaterialsButton"
                             text="Matérias-primas"
                             onAction="#goToRawMaterials"
@@ -147,6 +147,27 @@
                         </Button>
 
                         <Button
+                            fx:id="productionsButton"
+                            text="Produções"
+                            onAction="#goToProductions"
+                            styleClass="sidebar-button">
+                            <graphic>
+                                <StackPane prefWidth="32" prefHeight="32" maxWidth="32"
+                                    maxHeight="32">
+                                    <children>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0"
+                                            preserveRatio="true"
+                                            styleClass="sidebar-icon">
+                                            <image>
+                                                <Image url="@/images/hugeicons--factory.png" />
+                                            </image>
+                                        </ImageView>
+                                    </children>
+                                </StackPane>
+                            </graphic>
+                        </Button>
+
+                        <Button
                             fx:id="ordersButton"
                             text="Vendas"
                             onAction="#goToOrders"
@@ -159,7 +180,8 @@
                                             preserveRatio="true"
                                             styleClass="sidebar-icon">
                                             <image>
-                                                <Image url="@/images/streamline-cyber--cash-bag-give.png" />
+                                                <Image
+                                                    url="@/images/streamline-cyber--cash-bag-give.png" />
                                             </image>
                                         </ImageView>
                                     </children>
@@ -167,7 +189,7 @@
                             </graphic>
                         </Button>
 
-                    <Button
+                        <Button
                             fx:id="purchasesButton"
                             text="Compras"
                             onAction="#goToPurchases"

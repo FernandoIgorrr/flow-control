@@ -59,7 +59,7 @@
     -fx-border-color: #d1d5db;
     -fx-border-radius: 4px;
 
-    -fx-padding: 0 12px;
+    -fx-padding: 0 4px;
 }
 
 .text-field:focused,

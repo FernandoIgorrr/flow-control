@@ -8,10 +8,10 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.com.midnightsyslabs.flow_control.dto.ClientDTO;
 import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
 import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
-import br.com.midnightsyslabs.flow_control.dto.PartnerCategory;
+import br.com.midnightsyslabs.flow_control.view.ClientView;
+import br.com.midnightsyslabs.flow_control.view.PartnerCategory;
 import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.repository.CityRepository;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.ClientEditFormController;
@@ -56,7 +56,7 @@ public class ClientCardController {
     @Autowired
     private ClientService clientService;
 
-    private ClientDTO clientDTO;
+    private ClientView clientDTO;
 
     private Runnable onDataChanged; // callback
 
@@ -82,7 +82,7 @@ public class ClientCardController {
     @FXML
     private StackPane iconContainer;
 
-    public void setClientDTO(ClientDTO client) {
+    public void setClientDTO(ClientView client) {
         this.clientDTO = client;
 
         lblName.setText(client.getName());
