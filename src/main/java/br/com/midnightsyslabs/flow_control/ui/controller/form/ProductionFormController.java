@@ -16,6 +16,7 @@ import br.com.midnightsyslabs.flow_control.service.ProductionService;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.UtilsService;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
+import jakarta.validation.ConstraintViolationException;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.MenuItem;
@@ -38,7 +39,7 @@ import javafx.scene.control.Label;
 public class ProductionFormController {
 
     @Autowired
-    private  MeasurementUnitRepository measurementUnitRepository;
+    private MeasurementUnitRepository measurementUnitRepository;
 
     @Autowired
     private PurchaseService purchaseService;
@@ -72,7 +73,7 @@ public class ProductionFormController {
     @FXML
     private TextField grossQuantityProducedField;
 
-     @FXML
+    @FXML
     private ComboBox<MeasurementUnit> gqpMeasurementUnitComboBox;
 
     @FXML
@@ -90,12 +91,12 @@ public class ProductionFormController {
         configureQuantityField(this.grossQuantityProducedField);
         configureMeasurementUnitComboBox();
         configureQuantityField(this.quantityProducedField);
-        
+
         datePicker.setValue(LocalDate.now());
         datePicker.setEditable(false);
     }
 
-      private void configureMeasurementUnitComboBox() {
+    private void configureMeasurementUnitComboBox() {
 
         var measurementUnits = measurementUnitRepository.findAll();
 
@@ -118,7 +119,7 @@ public class ProductionFormController {
         gqpMeasurementUnitComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 this.selectedMeasurementUnit = newValue;
-                this.lblGrossQuantityProduced.setText("Quantidade do produto bruto em " + newValue.getPluralName() + "("  + newValue.getSymbol() + ")" + " prooduzido *");
+                this.lblGrossQuantityProduced.setText("Bruto em (" + newValue.getSymbol() + ")" + " produzido *");
             }
         });
 
@@ -190,7 +191,7 @@ public class ProductionFormController {
             TextField purchaseField,
             TextField quantityUsedField,
             ContextMenu purchasesSuggestions) {
-        var purchasesDTO = purchaseService.getPurchaseDTOs();
+        var purchasesView = purchaseService.getPurchasesView();
 
         purchaseField.textProperty().addListener((obs, oldText, newText) -> {
 
@@ -199,23 +200,23 @@ public class ProductionFormController {
                 return;
             }
 
-            List<MenuItem> suggestions = purchasesDTO.stream()
+            List<MenuItem> suggestions = purchasesView.stream()
                     .filter(p -> p.getId().toString().contains(newText))
                     .limit(10)
-                    .map(purchaseDTO -> {
+                    .map(purchaseView -> {
 
                         MenuItem item = new MenuItem(
-                                "#" + purchaseDTO.getId() +
-                                        " | " + UtilsService.formatQuantity(purchaseDTO.getQuantity()) +
-                                        " " + purchaseDTO.getMeasurementUnitPluralName() +
-                                        " de " + purchaseDTO.getRawMaterialName() +
-                                        " ( " + UtilsService.formatPrice(purchaseDTO.getTotalPrice()) + ")" +
-                                        " ~ " + purchaseDTO.getPartnerName());
+                                "#" + purchaseView.getId() +
+                                        " | " + UtilsService.formatQuantity(purchaseView.getQuantity()) +
+                                        " " + purchaseView.getMeasurementUnitPluralName() +
+                                        " de " + purchaseView.getRawMaterialName() +
+                                        " ( " + UtilsService.formatPrice( purchaseService.calculateTotalPrice(purchaseView)) + ")" +
+                                        " ~ " + purchaseView.getPartnerName());
 
                         item.setOnAction(e -> {
                             purchaseField.setText(item.getText());
                             purchasesSuggestions.hide();
-                            purchaseRows.add(new PurchaseRow(purchaseDTO, quantityUsedField));
+                            purchaseRows.add(new PurchaseRow(purchaseView, quantityUsedField));
 
                             // aqui eu crio o novo campo automaticamente
                             addPurchaseField();
@@ -244,6 +245,7 @@ public class ProductionFormController {
         };
 
         quantityField.setTextFormatter(new TextFormatter<>(quantityFilter));
+        quantityField.setPromptText("0,0");
 
     }
 
@@ -257,7 +259,9 @@ public class ProductionFormController {
             @Override
             public String toString(Product product) {
 
-                return product == null ? "" : product.getName();
+                return product == null ? ""
+                        : product.getName() + " [ " + product.getQuantity().toString().replace(".", ",") + " ("
+                                + product.getMeasurementUnit().getSymbol() + ") ]";
             }
 
             @Override
@@ -265,14 +269,6 @@ public class ProductionFormController {
                 return null;
             }
 
-        });
-
-        productComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-
-                lblGrossQuantityProduced.setText("Quantidade (do produto bruto) produzida em " + newValue.getMeasurementUnit().getPluralName()
-                        + " (" + newValue.getMeasurementUnit().getSymbol() + ") *");
-            }
         });
 
         if (!products.isEmpty()) {
@@ -301,7 +297,8 @@ public class ProductionFormController {
 
             }
 
-            if (this.grossQuantityProducedField.getText().isBlank() || this.quantityProducedField.getText().isBlank() || this.productComboBox.getValue() == null
+            if (this.grossQuantityProducedField.getText().isBlank() || this.quantityProducedField.getText().isBlank()
+                    || this.productComboBox.getValue() == null
                     || this.datePicker == null) {
                 showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
                         "Por favor  preencha o campo de quantidade produzida do produto bruto e do refinado!");
@@ -321,7 +318,12 @@ public class ProductionFormController {
             if (onDataChanged != null) {
                 onDataChanged.run();
             }
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e){
+             showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algum campo viola as regras de valores!");
+            return;
+        } 
+        
+        catch (Exception e) {
             showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algo deu errado!" + e.getCause());
             return;
         }

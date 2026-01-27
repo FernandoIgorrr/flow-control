@@ -58,6 +58,12 @@
     -fx-padding: 4 8 4 8;
 }
 
+.label-grey-13-bold{
+    -fx-font-size:13;
+    -fx-font-weight:bold;
+    -fx-text-fill: #5C6572;
+}
+
 /* INFO */
 .client-info {
     -fx-font-size: 13;
@@ -81,9 +87,15 @@
     -fx-text-fill: black;
 }
 
+.production-info-date {
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}
+
 .text-field-copy {
     -fx-background-color: transparent;
-    -fx-border-color: transparent; 
+    -fx-border-color: transparent;
 }
 
 
@@ -98,6 +110,28 @@
     -fx-font-weight: bold;
     -fx-text-fill: #166534;
     ;
+}
+
+/*    BLUE BOX   */
+
+.blue-box{
+    -fx-background-color: #EFF6FF;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #C6DFFE;
+}
+
+.green-box{
+    -fx-background-color: #F0FDF4;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #D2F9DF;
+}
+
+.blue-expense{
+     -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1D4ED8;
 }
 
 
@@ -129,6 +163,11 @@
 
 .green-icon {
     -fx-effect: innershadow(gaussian, #166534, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+}
+
+.grey-icon {
+    -fx-effect: innershadow(gaussian, #5C6572, 10, 0.5, 0, 0);
     -fx-opacity: 1;
 }
 
@@ -201,4 +240,10 @@
     -fx-font-size: 26;
     -fx-font-weight: bold;
     -fx-text-fill: #15803D;
+}
+
+.total-price-info-blue {
+    -fx-font-size: 26;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1D4ED8;
 }

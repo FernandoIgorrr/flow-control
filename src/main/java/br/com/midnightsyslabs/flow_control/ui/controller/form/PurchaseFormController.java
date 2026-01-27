@@ -64,6 +64,9 @@ public class PurchaseFormController {
     private TextFlow textFlowPrice;
 
     @FXML
+    private Text txtPriceTitle;
+
+    @FXML
     private TextField priceField;
 
     @FXML
@@ -91,15 +94,7 @@ public class PurchaseFormController {
         configureSupplierComboBox();
         configureRawMaterialComboBox();
         configureMeasurementUnitComboBox();
-        Text startText = new Text("Preço ");
-        Text totalText = new Text("TOTAL");
-        totalText.setFont(
-                Font.font(
-                        totalText.getFont().getFamily(),
-                        FontWeight.BOLD,
-                        totalText.getFont().getSize()));
-        Text endText = new Text(" da Compra (R$) *");
-        textFlowPrice = new TextFlow(startText, totalText, endText);
+       
         configurePriceField();
         configureQuantityField();
         datePicker.setValue(LocalDate.now());
@@ -179,6 +174,7 @@ public class PurchaseFormController {
         measurementUnitComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 lblQuantity.setText(newValue.getUnit() + " *");
+                txtPriceTitle.setText(newValue.getName());
             }
         });
 

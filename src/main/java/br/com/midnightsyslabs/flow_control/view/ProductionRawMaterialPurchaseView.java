@@ -30,6 +30,10 @@ public class ProductionRawMaterialPurchaseView {
     private String rawMaterialDescription;
 
     private BigDecimal purchaseTotalPrice;
+
+    private BigDecimal quantityTotal;
+
+    private String measurementSymbol;
    
     private BigDecimal quantityUsed;
 }

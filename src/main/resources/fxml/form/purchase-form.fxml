@@ -84,9 +84,8 @@
                         GridPane.rowIndex="3"
                         GridPane.columnIndex="0">
                         <TextFlow>
-                            <Text text="Preço " styleClass="label" />
-                            <Text text="TOTAL" style="-fx-font-size: 15px;-fx-font-weight: bold;" />
-                            <Text text=" da Compra (R$) *" styleClass="label" />
+                            <Text text="Preço por " styleClass="label" />
+                            <Text fx:id="txtPriceTitle" style="-fx-font-size: 15px;-fx-font-weight: bold;" />
                         </TextFlow>
                         <TextField
                             fx:id="priceField"
@@ -97,7 +96,8 @@
                         GridPane.rowIndex="3"
                         GridPane.columnIndex="1">
                         <Label text="Data da compra *" />
-                        <DatePicker fx:id="datePicker" />
+                        <DatePicker fx:id="datePicker"
+                        maxWidth="Infinity"/>
                     </VBox>
 
                     <VBox spacing="4"

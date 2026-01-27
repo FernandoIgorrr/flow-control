@@ -7,6 +7,6 @@ import br.com.midnightsyslabs.flow_control.domain.entity.production.ProductionRa
 import br.com.midnightsyslabs.flow_control.domain.entity.production.ProductionRawMaterialsPurchaseId;
 
 @Repository
-public interface ProductionRawMaterialsPurchaseRepository extends JpaRepository<ProductionRawMaterialPurchase,ProductionRawMaterialsPurchaseId>{
+public interface ProductionRawMaterialPurchaseRepository extends JpaRepository<ProductionRawMaterialPurchase,ProductionRawMaterialsPurchaseId>{
     
 }

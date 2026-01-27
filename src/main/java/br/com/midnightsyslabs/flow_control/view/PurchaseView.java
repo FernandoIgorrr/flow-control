@@ -45,7 +45,7 @@ public class PurchaseView {
 
     private String measurementUnitSymbol;
 
-    private BigDecimal totalPrice;
+    private BigDecimal pricePerUnit;
 
     private LocalDate date;
 

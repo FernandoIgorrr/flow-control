@@ -51,7 +51,7 @@ public class PurchaseService {
 
         try {
             purchase.setQuantity(new BigDecimal(quantity));
-            purchase.setTotalPrice(new BigDecimal(price));
+            purchase.setPricePerUnit(new BigDecimal(price));
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Tem algo errado com formato do preço ou com a quantidade!");
         }
@@ -68,14 +68,14 @@ public class PurchaseService {
         return purchaseRepository.findAll();
     }
 
-    public List<PurchaseView> getPurchaseDTOs() {
+    public List<PurchaseView> getPurchasesView() {
         return purchaseFullRepository.findAll();
     }
     
 
     // Mais antigo primeiro
-    public List<PurchaseView> getPurchaseDTOsDateOrdened() {
-        return getPurchaseDTOs()
+    public List<PurchaseView> getPurchasesViewDateOrdened() {
+        return getPurchasesView()
         .stream()
         .sorted(Comparator.comparing(PurchaseView::getDate))
         .toList();
@@ -83,8 +83,8 @@ public class PurchaseService {
     }
 
      // Mais recente primeiro
-    public List<PurchaseView> getPurchaseDTOsDateOrdenedReverse() {
-    return getPurchaseDTOs()
+    public List<PurchaseView> getPurchasesViewDateOrdenedReverse() {
+    return getPurchasesView()
         .stream()
         .sorted(
             Comparator
@@ -108,14 +108,13 @@ public class PurchaseService {
         return bigDecimanStr.replace(",", ".");
     }
 
-    public static BigDecimal calculateUnitPrice(PurchaseView purchaseDTO) {
-        return purchaseDTO.getTotalPrice().divide(purchaseDTO.getQuantity(), 2,                  // escala (casas decimais)
-    RoundingMode.HALF_UP);
+    public BigDecimal calculateTotalPrice(PurchaseView purchaseView) {
+        return purchaseView.getPricePerUnit().multiply(purchaseView.getQuantity());
     }
 
     public  BigDecimal calculateTotalSpentInTime(LocalDate startDate,LocalDate endDate){
         return getPurchasesFromDate(startDate, endDate).stream()
-                .map(PurchaseView::getTotalPrice)
+                .map(this::calculateTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 

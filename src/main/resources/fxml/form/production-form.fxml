@@ -57,46 +57,37 @@
 
                             <VBox spacing="4"
                                 GridPane.rowIndex="1"
-                                GridPane.columnIndex="0"
-                                GridPane.columnSpan="2">
+                                GridPane.columnIndex="0">
                                 <Label fx:id="lblGrossQuantityProduced" />
                                 <TextField fx:id="grossQuantityProducedField" />
                             </VBox>
 
                             <VBox spacing="4" 
-                                GridPane.rowIndex="2" 
-                                GridPane.columnIndex="0"
-                                GridPane.columnSpan="2">
+                                GridPane.rowIndex="1" 
+                                GridPane.columnIndex="1">
                                 <Label text="Unidade *" />
                                 <ComboBox fx:id="gqpMeasurementUnitComboBox"
                                     maxWidth="Infinity"
                                 />
                             </VBox>
 
-                            <VBox spacing="8"
-                                GridPane.rowIndex="3"
-                                GridPane.columnIndex="0"
-                                GridPane.columnSpan="2">
-                                <Label fx:id="lblQuantityProduced" />
-                                <TextField fx:id="quantityProducedField" />
-                            </VBox>
-
                             <VBox spacing="4"
-                                GridPane.rowIndex="4"
+                                GridPane.rowIndex="3"
                                 GridPane.columnIndex="0">
                                 <Label text="Produto *" />
                                 <ComboBox fx:id="productComboBox" maxWidth="Infinity" />
                             </VBox>
 
                             <VBox spacing="4"
-                                GridPane.rowIndex="2"
+                                GridPane.rowIndex="3"
                                 GridPane.columnIndex="1">
                                 <Label text="Data da produção *" />
-                                <DatePicker fx:id="datePicker" />
+                                <DatePicker fx:id="datePicker"
+                                maxWidth="Infinity" />
                             </VBox>
 
                             <VBox spacing="8"
-                                GridPane.rowIndex="3"
+                                GridPane.rowIndex="5"
                                 GridPane.columnIndex="0"
                                 GridPane.columnSpan="2">
                                 <Label text="Quantidade do produto refinado por UNIDADE *" />

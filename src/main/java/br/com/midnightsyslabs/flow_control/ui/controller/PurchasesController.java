@@ -34,7 +34,7 @@ public class PurchasesController {
     @Autowired
     private ApplicationContext context;
 
-    private List<PurchaseView> purchaseDTOs;
+    private List<PurchaseView> purchasesView;
 
     @FXML
     private Button btnAddPurchase;
@@ -50,7 +50,7 @@ public class PurchasesController {
 
         reloadPurchases();
         renderRecentPurchasesPriceCard();
-        renderCards(this.purchaseDTOs);
+        renderCards(this.purchasesView);
 
     }
 
@@ -97,13 +97,13 @@ public class PurchasesController {
     private void filterCards(String search) {
 
         if (search == null || search.isBlank()) {
-            renderCards(this.purchaseDTOs);
+            renderCards(this.purchasesView);
             return;
         }
 
         String query = search.toLowerCase();
 
-        List<PurchaseView> filtered = this.purchaseDTOs.stream()
+        List<PurchaseView> filtered = this.purchasesView.stream()
                 .filter(p -> safe(p.getRawMaterialName()).contains(query) ||
                         safe(p.getRawMaterialDescription()).contains(query))
                 .toList();
@@ -111,11 +111,11 @@ public class PurchasesController {
         renderCards(filtered);
     }
 
-    private void renderCards(List<PurchaseView> purchaseDTOs) {
+    private void renderCards(List<PurchaseView> purchasesView) {
 
         cardsPane.getChildren().clear();
 
-        for (PurchaseView purchaseDTO : purchaseDTOs) {
+        for (PurchaseView purchaseView : purchasesView) {
             try {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/fxml/card/purchase-card.fxml"));
@@ -125,7 +125,7 @@ public class PurchasesController {
                 Parent card = loader.load();
 
                 PurchaseCardController controller = loader.getController();
-                controller.setPurchaseDTO(purchaseDTO);
+                controller.setPurchaseView(purchaseView);
                 controller.setOnDataChanged(this::reloadPurchases);
 
                 cardsPane.getChildren().add(card);
@@ -157,8 +157,8 @@ public class PurchasesController {
     }
 
     private void reloadPurchases() {
-        this.purchaseDTOs = purchaseService.getPurchaseDTOsDateOrdenedReverse();
-        renderCards(this.purchaseDTOs);
+        this.purchasesView = purchaseService.getPurchasesViewDateOrdenedReverse();
+        renderCards(this.purchasesView);
          renderRecentPurchasesPriceCard();
         // filterCards(txtSearch.getText());
     }

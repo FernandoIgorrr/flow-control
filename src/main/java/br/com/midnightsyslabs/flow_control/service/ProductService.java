@@ -1,12 +1,8 @@
 package br.com.midnightsyslabs.flow_control.service;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Comparator;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 
 import jakarta.transaction.Transactional;

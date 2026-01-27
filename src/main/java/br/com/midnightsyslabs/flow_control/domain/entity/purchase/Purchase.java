@@ -54,7 +54,7 @@ public class Purchase implements Expense{
     private MeasurementUnit measurementUnit;
 
     @NotNull
-    private BigDecimal totalPrice;
+    private BigDecimal pricePerUnit;
 
     @NotNull
     @Column(columnDefinition = "date")
@@ -77,7 +77,7 @@ public class Purchase implements Expense{
 
     @Override
     public BigDecimal getExpense() {
-        return totalPrice;
+        return pricePerUnit;
     }
 
     @Override

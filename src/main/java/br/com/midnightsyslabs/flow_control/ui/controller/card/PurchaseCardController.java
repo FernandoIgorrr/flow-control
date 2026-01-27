@@ -2,6 +2,7 @@ package br.com.midnightsyslabs.flow_control.ui.controller.card;
 
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
@@ -16,7 +17,8 @@ import javafx.scene.image.ImageView;
 @Controller
 public class PurchaseCardController {
 
-    private PurchaseView purchaseDTO;
+    @Autowired
+    private PurchaseService purchaseService;
 
     private Runnable onDataChanged;
 
@@ -53,29 +55,29 @@ public class PurchaseCardController {
     @FXML
     private ImageView imgType;
 
-    public void setPurchaseDTO(PurchaseView purchaseDTO) {
-        this.purchaseDTO = purchaseDTO;
+    public void setPurchaseView(PurchaseView purchaseView) {
+
         imgType.setImage(new Image(
                 getClass().getResourceAsStream("/images/bx--purchase-tag.png")));
         imgType.getStyleClass().add("green-icon");
-        lblRawMaterialName.setText(this.purchaseDTO.getRawMaterialName());
+        lblRawMaterialName.setText(purchaseView.getRawMaterialName());
 
-        lblPurchaseId.setText("#"+this.purchaseDTO.getId().toString());
+        lblPurchaseId.setText("#" + purchaseView.getId().toString());
         lblPurchaseId.setEditable(false);
         lblPurchaseId.setFocusTraversable(false);
 
-        lblTotalPrice.setText(UtilsService.formatPrice(this.purchaseDTO.getTotalPrice()));
-        lblQuantityTitle.setText(this.purchaseDTO.getMeasurementUnitUnit());
-        lblSupplierName.setText(this.purchaseDTO.getPartnerName());
-        lblPricePerUnitTitle.setText("Preço por " + this.purchaseDTO.getMeasurementUnitName() + " ("
-                + this.purchaseDTO.getMeasurementUnitSymbol() + ")");
-        lblQuantity.setText(UtilsService.formatQuantity(this.purchaseDTO.getQuantity())
-                + " " + this.purchaseDTO.getMeasurementUnitPluralName() + " ("
-                + this.purchaseDTO.getMeasurementUnitSymbol() + ")");
-        lblUnitPrice.setText(UtilsService.formatPrice(PurchaseService.calculateUnitPrice(this.purchaseDTO)));
+        lblTotalPrice.setText(UtilsService.formatPrice( purchaseService.calculateTotalPrice(purchaseView)));
+        lblQuantityTitle.setText(purchaseView.getMeasurementUnitUnit());
+        lblSupplierName.setText(purchaseView.getPartnerName());
+        lblPricePerUnitTitle.setText("Preço por " + purchaseView.getMeasurementUnitName() + " ("
+                + purchaseView.getMeasurementUnitSymbol() + ")");
+        lblQuantity.setText(UtilsService.formatQuantity(purchaseView.getQuantity())
+                + " " + purchaseView.getMeasurementUnitPluralName() + " ("
+                + purchaseView.getMeasurementUnitSymbol() + ")");
+        lblUnitPrice.setText(UtilsService.formatPrice(purchaseView.getPricePerUnit()));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        lblDate.setText(this.purchaseDTO.getDate().format(formatter));
-        lblNote.setText(this.purchaseDTO.getNote().isBlank() ? "-" : this.purchaseDTO.getNote());
+        lblDate.setText(purchaseView.getDate().format(formatter));
+        lblNote.setText(purchaseView.getNote().isBlank() ? "-" : purchaseView.getNote());
     }
 
     public void setOnDataChanged(Runnable onDataChanged) {

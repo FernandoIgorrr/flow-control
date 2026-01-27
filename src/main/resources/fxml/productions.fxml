@@ -6,8 +6,10 @@
 <?import javafx.geometry.Insets?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="br.com.midnightsyslabs.flow_control.ui.controller.ProductionsController">
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="br.com.midnightsyslabs.flow_control.ui.controller.ProductionsController"
+    stylesheets="@../css/card.css"
+    styleClass="content-root">
 
     <!-- HEADER -->
     <top>
@@ -58,31 +60,34 @@
     <center>
         <VBox spacing="12">
             <padding>
-                <Insets top="15" right="15" bottom="15" left="15" />
+                <Insets top="15" right="0" bottom="0" left="0" />
             </padding>
 
             <!-- SEARCH BAR -->
-            <TextField
+            <!-- <TextField
                 fx:id="txtSearch"
-                promptText="Buscar por nome, descrição, peso/volume ou preço..."
-                styleClass="search-field" />
+                promptText="Buscar por data, tipo, peso/volume ou preço..."
+                styleClass="search-field" />-->
 
             <!-- CARDS -->
-            <ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+            <ScrollPane
+                fitToWidth="true"
+                hbarPolicy="NEVER"
+                vbarPolicy="AS_NEEDED"
                 style="-fx-background-color: transparent;">
+
                 <content>
-                    <TilePane
+                    <VBox
                         fx:id="cardsPane"
-                        prefColumns="3"
-                        vgap="20"
-                        hgap="20"
-                        alignment="TOP_CENTER"
-                        tileAlignment="CENTER">
+                        spacing="20"
+                        fillWidth="true"
+                        maxWidth="Infinity">
 
                         <padding>
                             <Insets top="0" right="0" bottom="30" left="0" />
                         </padding>
-                    </TilePane>
+
+                    </VBox>
                 </content>
             </ScrollPane>
         </VBox>

@@ -24,6 +24,18 @@ public class ProductionView {
     @Id
     private Integer id;
 
+    private String productName;
+
+    private String productDescription;
+
+    private BigDecimal productQuantity;
+
+    private String productQuantityMeasurementUnit;
+
+    private BigDecimal productCurrentPrice;
+
+    private BigDecimal quantityProduced;
+
     private BigDecimal grossQuantityProduced;
 
     private String grossQuantityMeasurementUnitUnit;
@@ -33,12 +45,6 @@ public class ProductionView {
     private String grossQuantityMeasurementUnitPluralName;
 
     private String grossQuantityMeasurementUnitSymbol;
-
-    private String productName;
-
-    private String productDescription;
-
-    private BigDecimal quantityProduced;
 
     private LocalDate date;
 
