@@ -1,29 +1,40 @@
 package br.com.midnightsyslabs.flow_control.ui.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 
+import br.com.midnightsyslabs.flow_control.config.TimeIntervalEnum;
+import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
+import br.com.midnightsyslabs.flow_control.service.DateService;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
+import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
+import br.com.midnightsyslabs.flow_control.service.SupplierService;
+import br.com.midnightsyslabs.flow_control.service.UtilsService;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.PurchaseCardController;
-import br.com.midnightsyslabs.flow_control.ui.controller.card.RecentPurchasesPriceCardController;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.PurchaseFormController;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
+import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 @Controller
 public class PurchasesController {
@@ -32,9 +43,16 @@ public class PurchasesController {
     private PurchaseService purchaseService;
 
     @Autowired
+    private RawMaterialService rawMaterialService;
+
+    @Autowired
+    private SupplierService supplierService;
+
+    @Autowired
     private ApplicationContext context;
 
-    private List<PurchaseView> purchasesView;
+    private List<PurchaseView> allPurchasesView; // lista completa
+    private List<PurchaseView> filteredPurchases; // resultado dos filtros
 
     @FXML
     private Button btnAddPurchase;
@@ -43,14 +61,37 @@ public class PurchasesController {
     private VBox cardsPane;
 
     @FXML
-    private VBox recentPurchasesPricecardPane;
+    private VBox recentPurchasesPriceCardPane;
+
+    @FXML
+    private ComboBox<TimeIntervalEnum> timeIntervalEnumComboBoxFilter;
+
+    @FXML
+    private ImageView imgType;
+
+    @FXML
+    private Label lblTotalPurchases;
+
+    @FXML
+    private Label lblTotalPrice;
+
+    @FXML
+    private ComboBox<RawMaterial> rawMaterialComboBoxFilter;
+
+    @FXML
+    private ComboBox<SupplierView> supplierComboBoxFilter;
 
     @FXML
     public void initialize() {
 
         reloadPurchases();
-        renderRecentPurchasesPriceCard();
-        renderCards(this.purchasesView);
+        configureTimeIntervalEnumComboBoxFilter();
+        configureRawMateialComboBoxFilter();
+        configureSupplierComboBoxFilter();
+
+          imgType.setImage(new Image(
+                getClass().getResourceAsStream("/images/game-icons--basket.png")));
+        imgType.getStyleClass().add("blue-icon");
 
     }
 
@@ -94,21 +135,110 @@ public class PurchasesController {
         }
     }
 
-    private void filterCards(String search) {
+    public void configureTimeIntervalEnumComboBoxFilter() {
+        this.timeIntervalEnumComboBoxFilter.getItems().setAll(TimeIntervalEnum.values());
 
-        if (search == null || search.isBlank()) {
-            renderCards(this.purchasesView);
-            return;
-        }
+        this.timeIntervalEnumComboBoxFilter.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(TimeIntervalEnum interval) {
+                return interval == null ? "" : interval.getLabel();
+            }
 
-        String query = search.toLowerCase();
+            @Override
+            public TimeIntervalEnum fromString(String string) {
+                return null;
+            }
+        });
 
-        List<PurchaseView> filtered = this.purchasesView.stream()
-                .filter(p -> safe(p.getRawMaterialName()).contains(query) ||
-                        safe(p.getRawMaterialDescription()).contains(query))
+        this.timeIntervalEnumComboBoxFilter.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue == null)
+                return;
+            applyFilters();
+        });
+
+        this.timeIntervalEnumComboBoxFilter.getSelectionModel().selectFirst();
+    }
+
+    private void configureRawMateialComboBoxFilter() {
+        rawMaterialComboBoxFilter.getItems().setAll(
+                rawMaterialService.getRawMaterials());
+
+        rawMaterialComboBoxFilter.getItems().add(new RawMaterial());
+        rawMaterialComboBoxFilter.setConverter(new StringConverter<RawMaterial>() {
+            @Override
+            public String toString(RawMaterial rm) {
+                return (rm == null || rm.getName() == null) ? "Todos" : rm.getName();
+            }
+
+            @Override
+            public RawMaterial fromString(String s) {
+                return null;
+            }
+        });
+
+        rawMaterialComboBoxFilter.valueProperty().addListener((obs, old, newVal) -> {
+
+            applyFilters();
+        });
+        rawMaterialComboBoxFilter.getSelectionModel().selectLast();
+    }
+
+    private void configureSupplierComboBoxFilter() {
+        supplierComboBoxFilter.getItems().setAll(
+                supplierService.getSuppliers());
+
+        supplierComboBoxFilter.getItems().add(new SupplierView());
+        supplierComboBoxFilter.setConverter(new StringConverter<SupplierView>() {
+            @Override
+            public String toString(SupplierView s) {
+                return (s == null || s.getName() == null) ? "Todos" : s.getName();
+            }
+
+            @Override
+            public SupplierView fromString(String s) {
+                return null;
+            }
+        });
+
+        supplierComboBoxFilter.getSelectionModel().selectLast();
+
+        supplierComboBoxFilter.valueProperty().addListener((obs, old, newVal) -> {
+
+            applyFilters();
+        });
+    }
+
+    private void applyFilters() {
+
+        filteredPurchases = allPurchasesView.stream()
+
+                // 🔹 filtro por matéria-prima
+                .filter(p -> rawMaterialComboBoxFilter.getValue() == null
+                        || rawMaterialComboBoxFilter.getValue().getName() == null ||
+                        p.getRawMaterialName().equals(rawMaterialComboBoxFilter.getValue().getName()))
+
+                // 🔹 filtro por fornecedor
+                .filter(p -> supplierComboBoxFilter.getValue() == null
+                        || supplierComboBoxFilter.getValue().getName() == null ||
+                        p.getPartnerName().equals(supplierComboBoxFilter.getValue().getName()))
+
+                // 🔹 filtro por intervalo de datas
+                .filter(p -> {
+                    if (timeIntervalEnumComboBoxFilter.getValue() == TimeIntervalEnum.ALL_TIME) {
+                        return true;
+                    }
+
+                    LocalDate from = DateService.timeIntervalEnumToDateFrom(timeIntervalEnumComboBoxFilter.getValue());
+                    LocalDate to = DateService.timeIntervalEnumToDateTo(timeIntervalEnumComboBoxFilter.getValue());
+
+                    return !p.getDate().isBefore(from) && !p.getDate().isAfter(to);
+                })
+
                 .toList();
 
-        renderCards(filtered);
+        renderCards(filteredPurchases);
+
+        renderRecentPurchasesPriceCard();
     }
 
     private void renderCards(List<PurchaseView> purchasesView) {
@@ -137,19 +267,8 @@ public class PurchasesController {
     }
 
     private void renderRecentPurchasesPriceCard() {
-        recentPurchasesPricecardPane.getChildren().clear();
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/fxml/card/recent-purchases-price-card.fxml"));
-            loader.setControllerFactory(context::getBean);
-
-            Parent card = loader.load();
-
-           recentPurchasesPricecardPane.getChildren().add(card);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        lblTotalPrice.setText(UtilsService.formatPrice(purchaseService.calculateTotalSpent(this.filteredPurchases)));
+        lblTotalPurchases.setText("" + this.filteredPurchases.size());
     }
 
     private String safe(String value) {
@@ -157,9 +276,12 @@ public class PurchasesController {
     }
 
     private void reloadPurchases() {
-        this.purchasesView = purchaseService.getPurchasesViewDateOrdenedReverse();
-        renderCards(this.purchasesView);
-         renderRecentPurchasesPriceCard();
-        // filterCards(txtSearch.getText());
+        this.allPurchasesView = purchaseService.getPurchasesViewDateOrdenedReverse();
+
+        this.filteredPurchases = this.allPurchasesView;
+
+        renderCards(this.filteredPurchases);
+        renderRecentPurchasesPriceCard();
     }
+
 }

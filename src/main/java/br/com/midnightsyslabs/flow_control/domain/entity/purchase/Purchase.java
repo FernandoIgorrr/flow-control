@@ -77,7 +77,7 @@ public class Purchase implements Expense{
 
     @Override
     public BigDecimal getExpense() {
-        return pricePerUnit;
+        return pricePerUnit.multiply(quantity);
     }
 
     @Override

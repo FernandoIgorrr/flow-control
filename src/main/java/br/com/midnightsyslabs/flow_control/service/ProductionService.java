@@ -1,6 +1,7 @@
 package br.com.midnightsyslabs.flow_control.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,19 +94,27 @@ public class ProductionService {
         return productionsDTO;
     }
 
-    public BigDecimal totalExpensePerProduction(ProductionDTO pDTO){
-        return pDTO.getRawMaterialsPurchaseView().stream().map(
-            rmpv ->
-                rmpv.getQuantityUsed().multiply(rmpv.getPurchaseTotalPrice().divide(rmpv.getQuantityTotal()))
-            ).reduce(BigDecimal::add).orElseThrow();
+    public BigDecimal productionTotalExpense(ProductionDTO pDTO) {
+        return pDTO.getRawMaterialsPurchaseView().stream()
+                .map(ProductionRawMaterialPurchaseView::getExpense)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public BigDecimal totalExpensePerUnit(ProductionDTO pDTO){
-        return totalExpensePerProduction(pDTO).divide(pDTO.getQuantityProduced());
+    public BigDecimal productionGrossIncome(ProductionDTO pDTO) {
+        return pDTO.getProductCurrentPrice().multiply(pDTO.getQuantityProduced());
     }
 
-      public BigDecimal gainsPerUnit(ProductionDTO pDTO){
-        return  pDTO.getProductCurrentPrice().subtract(totalExpensePerUnit(pDTO));
+    public BigDecimal productionNetIncome(ProductionDTO pDTO){
+        return productionGrossIncome(pDTO).subtract(productionTotalExpense(pDTO));
     }
+
+    public BigDecimal productionExpensePerProductUnit(ProductionDTO pDTO) {
+        return productionTotalExpense(pDTO).divide(pDTO.getQuantityProduced(),2, RoundingMode.HALF_UP);
+    }
+
+      public BigDecimal productionNetIncomePertUnit(ProductionDTO pDTO) {
+        return pDTO.getProductCurrentPrice().subtract(productionExpensePerProductUnit(pDTO));
+    }
+
 
 }

@@ -13,68 +13,92 @@
     styleClass="content-root">
 
     <!-- HEADER -->
-   <top>
-    <VBox>
+    <top>
+        <VBox>
 
-        <!-- HEADER -->
-        <HBox 
-              alignment="CENTER_LEFT"
-              styleClass="page-header">
+            <!-- HEADER -->
+            <HBox
+                alignment="CENTER_LEFT"
+                styleClass="page-header">
 
 
-            <!-- LEFT -->
-            <VBox spacing="4">
-                <Label text="Compras de Matérias-Primas" styleClass="page-title"/>
-                <Label text="Gerencie suas Compras" styleClass="page-subtitle"/>
-            </VBox>
+                <!-- LEFT -->
+                <VBox spacing="4">
+                    <Label text="Compras de Matérias-Primas" styleClass="page-title" />
+                    <Label text="Gerencie suas Compras" styleClass="page-subtitle" />
+                </VBox>
 
-            <!-- SPACER -->
-            <Region HBox.hgrow="ALWAYS"/>
+                <!-- SPACER -->
+                <Region HBox.hgrow="ALWAYS" />
 
-            <!-- RIGHT -->
-            <Button
-                fx:id="btnAddPurchase"
-                text="Nova compra"
-                onAction="#onAddPurchase"
-                styleClass="btn-primary">
-                <graphic>
-                    <StackPane prefWidth="22" prefHeight="22">
-                        <ImageView fitHeight="22" fitWidth="22"
-                                   preserveRatio="true"
-                                   styleClass="btn-primary-icon">
-                            <image>
-                                <Image url="@/images/ic--baseline-plus.png"/>
-                            </image>
-                        </ImageView>
-                    </StackPane>
-                </graphic>
-            </Button>
-        </HBox>
+                <!-- RIGHT -->
+                <Button
+                    fx:id="btnAddPurchase"
+                    text="Nova compra"
+                    onAction="#onAddPurchase"
+                    styleClass="btn-primary">
+                    <graphic>
+                        <StackPane prefWidth="22" prefHeight="22">
+                            <ImageView fitHeight="22" fitWidth="22"
+                                preserveRatio="true"
+                                styleClass="btn-primary-icon">
+                                <image>
+                                    <Image url="@/images/ic--baseline-plus.png" />
+                                </image>
+                            </ImageView>
+                        </StackPane>
+                    </graphic>
+                </Button>
+            </HBox>
 
-        <!-- PRICE CARDS -->
-        <HBox>
-            <VBox
-                fx:id="recentPurchasesPricecardPane"
-                spacing="20"
-                maxWidth="Infinity"/>
-        </HBox>
+            <!-- PRICE CARDS -->
+            <HBox spacing="16">
 
-         <HBox>
-            <VBox
-                fx:id="recentPurchasesPricecardPane"
-                spacing="20"
-                maxWidth="Infinity"/>
-        </HBox>
+                <VBox spacing="12" styleClass="card-generic" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets top="24" bottom="12" left="24" right="24" />
+                    </padding>
+                    <HBox spacing="12">
+                        <Label text="Total em compras" styleClass="client-name" />
+                        <ComboBox fx:id="timeIntervalEnumComboBoxFilter" />
+                    </HBox>
+                    <HBox spacing="12">
+                        <StackPane fx:id="iconContainer"
+                            prefWidth="28"
+                            prefHeight="28"
+                            styleClass="icon-container-on-card">
+                            <ImageView fx:id="imgType"
+                                fitHeight="28"
+                                fitWidth="28"
+                                preserveRatio="true" />
+                        </StackPane>
+                        <Label fx:id="lblTotalPurchases" styleClass="total-price-info-black" />
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblTotalPrice" styleClass="total-price-info-blue" />
+                    </HBox>
 
-         <HBox>
-            <VBox
-                fx:id="recentPurchasesPricecardPane"
-                spacing="20"
-                maxWidth="Infinity"/>
-        </HBox>
+                </VBox>
 
-    </VBox>
-</top>
+                <HBox spacing="12" styleClass="card-generic" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets top="24" bottom="12" left="24" right="24" />
+                    </padding>
+                    <Label text="Insumo" styleClass="client-name" />
+                    <ComboBox fx:id="rawMaterialComboBoxFilter" />
+                </HBox>
+
+                <HBox spacing="12" styleClass="card-generic" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets top="24" bottom="12" left="24" right="24" />
+                    </padding>
+                    <Label text="Fornecedor" styleClass="client-name" />
+                    <ComboBox fx:id="supplierComboBoxFilter" />
+                </HBox>
+
+            </HBox>
+        </VBox>
+
+    </top>
 
     <!-- CONTENT -->
     <center>
@@ -83,11 +107,8 @@
                 <Insets top="15" right="0" bottom="0" left="0" />
             </padding>
 
-            <!-- SEARCH BAR -->
-           <!-- <TextField
-                fx:id="txtSearch"
-                promptText="Buscar por data, tipo, peso/volume ou preço..."
-                styleClass="search-field" />-->
+            <!-- FILTERS AREA -->
+
 
             <!-- CARDS -->
             <ScrollPane

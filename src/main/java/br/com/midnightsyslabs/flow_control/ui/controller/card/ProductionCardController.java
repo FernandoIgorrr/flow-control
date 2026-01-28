@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.dto.ProductionDTO;
 import br.com.midnightsyslabs.flow_control.service.ProductionService;
+import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.UtilsService;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -67,7 +68,16 @@ public class ProductionCardController {
         private Label lblTotalExpense;
 
         @FXML
-        private Label lblGainsPerUnit;
+        private Label lblExpensePerUnit;
+
+        @FXML
+        private Label lblNetIncomePerUnit;
+
+        @FXML
+        private Label lblGrossIncome;
+
+        @FXML
+        private Label lblNetIncome;
 
         @FXML
         public void initialize() {
@@ -105,19 +115,14 @@ public class ProductionCardController {
                                         rmpv.getRawMaterialName() + " | " + rmpv.getRawMaterialDescription());
                         lblRawMaterialNameDesc.getStyleClass().add("purchase-info");
 
-                        BigDecimal unitPrice = rmpv.getPurchaseTotalPrice().divide(rmpv.getQuantityTotal(), 2,
-                                        RoundingMode.HALF_UP);
-
                         Label lblQuantityUsedPlusUnitPrice = new Label(
                                         UtilsService.formatQuantity(rmpv.getQuantityUsed()) + " ("
                                                         + rmpv.getMeasurementSymbol()
-                                                        + ") X " + UtilsService.formatPrice(unitPrice));
+                                                        + ") X "
+                                                        + UtilsService.formatPrice(rmpv.getRawMaterialPricePerUnit()));
                         lblQuantityUsedPlusUnitPrice.getStyleClass().add("purchase-info");
-                        BigDecimal totalPrice = unitPrice.multiply(rmpv.getQuantityUsed()).setScale(2,
-                                        RoundingMode.HALF_UP);
-                        ;
 
-                        Label lblTotalPrice = new Label(UtilsService.formatPrice(totalPrice));
+                        Label lblTotalPrice = new Label(UtilsService.formatPrice(rmpv.getExpense()));
                         lblTotalPrice.getStyleClass().add("blue-expense");
 
                         vContentInforItems.getChildren().add(lblRawMaterialNameDesc);
@@ -139,24 +144,39 @@ public class ProductionCardController {
 
                 lblProductNameDesc.setText(
                                 productionDTO.getProductName() + " - " + productionDTO.getProductDescription() + " "
-                                                +   UtilsService.formatQuantity(productionDTO.getProductQuantity()) + " " + productionDTO.getProductQuantityMeasurementUnit());
+                                                + UtilsService.formatQuantity(productionDTO.getProductQuantity())
+                                                + " - "
+                                                + productionDTO.getProductQuantityMeasurementUnit() + " | " +
+                                                "[ " + UtilsService
+                                .formatPrice(productionDTO.getProductCurrentPrice()) + " ]");
 
                 lblGrossProductQuantity.setText(UtilsService.formatQuantity(productionDTO.getGrossQuantityProduced())
-                                + " " + productionDTO.getGrossQuantityProduceddMeasurementUnit() + " (Bruto)");
+                                + " " + productionDTO.getGrossQuantityProduceddMeasurementUnit() + " (Bruto) => ");
 
                 lblProductQuantity.setText(
                                 UtilsService.formatQuantity(productionDTO.getQuantityProduced()) + " Unidades");
 
-                lblProductNameDesc.getStyleClass().add("purchase-info");
-                lblGrossProductQuantity.getStyleClass().add("purchase-info");
-                lblProductQuantity.getStyleClass().add("purchase-info");
+                lblProductNameDesc.getStyleClass().add("production-info");
+                lblGrossProductQuantity.getStyleClass().add("production-info");
+                lblProductQuantity.getStyleClass().add("production-info");
 
-                //lblGainsPerUnit.setText("Balanço por unidade: " + UtilsService.formatPrice(productionService.totalExpensePerUnit(productionDTO)));
-                lblGainsPerUnit.setText("");
+                lblNetIncomePerUnit.setText(UtilsService
+                                .formatPrice(productionService.productionNetIncomePertUnit(productionDTO)));
 
-                this.lblTotalExpense
+                lblGrossIncome.setText(UtilsService.formatPrice(productionService.productionGrossIncome(productionDTO)));
+
+                lblExpensePerUnit.setText(UtilsService
+                                .formatPrice(productionService.productionExpensePerProductUnit(productionDTO)));
+
+                lblNetIncome.setText(UtilsService.formatPrice(productionService.productionNetIncome(productionDTO)));
+
+                lblNetIncomePerUnit.getStyleClass().add("green-net-income");
+                lblExpensePerUnit.getStyleClass().add("blue-expense");
+                lblGrossIncome.getStyleClass().add("green-net-income");
+                lblNetIncome.getStyleClass().add("green-net-income");
+                lblTotalExpense
                                 .setText(UtilsService.formatPrice(
-                                                productionService.totalExpensePerProduction(productionDTO)));
+                                                productionService.productionTotalExpense(productionDTO)));
         }
 
         public void setOnDataChanged(Runnable onDataChanged) {

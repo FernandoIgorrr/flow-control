@@ -58,9 +58,9 @@
     -fx-padding: 4 8 4 8;
 }
 
-.label-grey-13-bold{
-    -fx-font-size:13;
-    -fx-font-weight:bold;
+.label-grey-13-bold {
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
     -fx-text-fill: #5C6572;
 }
 
@@ -69,6 +69,7 @@
     -fx-font-size: 13;
     -fx-text-fill: #374151;
 }
+
 
 .purchase-info-title {
     -fx-font-size: 15;
@@ -105,6 +106,12 @@
     -fx-text-fill: black;
 }
 
+.production-info {
+    -fx-font-size: 15;
+    -fx-font-weight: 600;
+    -fx-text-fill: black;
+}
+
 .purchase-info-price {
     -fx-font-size: 13;
     -fx-font-weight: bold;
@@ -114,24 +121,30 @@
 
 /*    BLUE BOX   */
 
-.blue-box{
+.blue-box {
     -fx-background-color: #EFF6FF;
     -fx-background-radius: 8;
     -fx-border-radius: 8;
     -fx-border-color: #C6DFFE;
 }
 
-.green-box{
+.green-box {
     -fx-background-color: #F0FDF4;
     -fx-background-radius: 8;
     -fx-border-radius: 8;
     -fx-border-color: #D2F9DF;
 }
 
-.blue-expense{
-     -fx-font-size: 14;
+.blue-expense {
+    -fx-font-size: 17;
     -fx-font-weight: bold;
     -fx-text-fill: #1D4ED8;
+}
+
+.green-net-income {
+    -fx-font-size: 17;
+    -fx-font-weight: bold;
+    -fx-text-fill: #166534;
 }
 
 
@@ -171,9 +184,15 @@
     -fx-opacity: 1;
 }
 
+.blue-icon {
+    -fx-effect: innershadow(gaussian, #2563eb, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+}
+
 /* ACTION BUTTONS */
 .btn-action-edit,
-.btn-action-delete {
+.btn-action-delete,
+.btn-action-add-purchase {
     -fx-background-color: transparent;
     /* cinza claro */
 
@@ -192,7 +211,11 @@
 .icon-delete {
     -fx-effect: innershadow(gaussian, #DC2626, 10, 0.5, 0, 0);
     -fx-opacity: 1;
+}
 
+.icon-add-purchase {
+    -fx-effect: innershadow(gaussian, #2563eb, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
 }
 
 /*
@@ -225,6 +248,11 @@
     -fx-background-radius: 8;
 }
 
+.btn-action-add-purchase :hover {
+    -fx-background-color: #e0edff;
+    -fx-background-radius: 8;
+}
+
 .product-info {
     -fx-font-size: 14;
     -fx-font-weight: 600;
@@ -246,4 +274,10 @@
     -fx-font-size: 26;
     -fx-font-weight: bold;
     -fx-text-fill: #1D4ED8;
+}
+
+.total-price-info-black {
+    -fx-font-size: 26;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
 }

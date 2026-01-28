@@ -1,9 +1,11 @@
 package br.com.midnightsyslabs.flow_control.view;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.hibernate.annotations.Immutable;
 
+import br.com.midnightsyslabs.flow_control.domain.entity.expense.Expense;
 import br.com.midnightsyslabs.flow_control.domain.entity.production.ProductionRawMaterialsPurchaseId;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -20,7 +22,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name ="production_raw_material_purchase_full")
-public class ProductionRawMaterialPurchaseView {
+public class ProductionRawMaterialPurchaseView implements Expense{
 
     @EmbeddedId
     private ProductionRawMaterialsPurchaseId id;
@@ -29,11 +31,22 @@ public class ProductionRawMaterialPurchaseView {
 
     private String rawMaterialDescription;
 
-    private BigDecimal purchaseTotalPrice;
+    private BigDecimal rawMaterialPricePerUnit;
 
-    private BigDecimal quantityTotal;
+    private BigDecimal rawMaterialQuantity;
 
     private String measurementSymbol;
    
     private BigDecimal quantityUsed;
+
+    @Override
+    public BigDecimal getExpense() {
+        return rawMaterialPricePerUnit.multiply(quantityUsed);
+    }
+
+    @Override
+    public LocalDate getDate() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDate'");
+    }
 }

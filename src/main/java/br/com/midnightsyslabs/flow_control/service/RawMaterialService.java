@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.midnightsyslabs.flow_control.repository.RawMaterialRepository;
 import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
+import br.com.midnightsyslabs.flow_control.exception.RawMaterialNotFoundException;
 
 @Service
 public class RawMaterialService {
@@ -44,6 +45,10 @@ public class RawMaterialService {
 
     public List<RawMaterial> getRawMaterials(){
         return rawMaterialRepository.findAll();
+    }
+
+    public RawMaterial getRawMaterialByName(String name){
+        return rawMaterialRepository.findByName(name).orElseThrow(RawMaterialNotFoundException::new);
     }
 
 }

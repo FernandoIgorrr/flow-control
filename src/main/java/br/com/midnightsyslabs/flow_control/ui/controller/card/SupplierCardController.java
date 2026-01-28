@@ -1,41 +1,41 @@
 package br.com.midnightsyslabs.flow_control.ui.controller.card;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
-import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
-import br.com.midnightsyslabs.flow_control.view.ClientView;
-import br.com.midnightsyslabs.flow_control.view.PartnerCategory;
 import br.com.midnightsyslabs.flow_control.view.SupplierView;
-import br.com.midnightsyslabs.flow_control.service.ClientService;
+import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
+import br.com.midnightsyslabs.flow_control.view.PartnerCategory;
 import br.com.midnightsyslabs.flow_control.service.SupplierService;
 import br.com.midnightsyslabs.flow_control.repository.CityRepository;
-import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.ClientEditFormController;
-import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.SupplierEditFormController;
+import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
 import br.com.midnightsyslabs.flow_control.repository.partner.CompanyPartnerRepository;
 import br.com.midnightsyslabs.flow_control.repository.partner.PersonalPartnerRepository;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.PurchaseFormController;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.PurchaseSupplierFormController;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.SupplierEditFormController;
+
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Modality;
 
+import javafx.scene.text.Text;
 import javafx.scene.image.Image;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert;
+import javafx.scene.text.TextFlow;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.scene.effect.ColorAdjust;
 
 import javafx.fxml.FXML;
@@ -59,7 +59,7 @@ public class SupplierCardController {
     @Autowired
     private SupplierService supplierService;
 
-    private SupplierView supplierDTO;
+    private SupplierView supplierView;
 
     private Runnable onDataChanged; // callback
 
@@ -77,29 +77,30 @@ public class SupplierCardController {
     private Label lblCity;
     @FXML
     private ImageView imgType;
-
     @FXML
     private Button btnEdit;
     @FXML
     private Button btnDelete;
     @FXML
+    private Button btnAddPurchase;
+    @FXML
     private StackPane iconContainer;
 
-    public void setSupplierDTO(SupplierView supplierDTO) {
-        this.supplierDTO = supplierDTO;
+    public void setSupplierView(SupplierView supplierView) {
+        this.supplierView = supplierView;
 
-        lblName.setText(supplierDTO.getName());
+        lblName.setText(supplierView.getName());
 
-        String document = supplierDTO.getCategory() == PartnerCategory.PERSONAL
-                ? "CPF: " + MaskUtils.applyMask(supplierDTO.getDocument(), "###.###.###-##")
-                : "CNPJ: " + MaskUtils.applyMask(supplierDTO.getDocument(), "##.###.###/####-##");
+        String document = supplierView.getCategory() == PartnerCategory.PERSONAL
+                ? "CPF: " + MaskUtils.applyMask(supplierView.getDocument(), "###.###.###-##")
+                : "CNPJ: " + MaskUtils.applyMask(supplierView.getDocument(), "##.###.###/####-##");
 
         lblDocument.setText(document);
-        lblPhone.setText("Tel: " + MaskUtils.applyMask(supplierDTO.getPhone(), "(##) #####-####"));
-        lblEmail.setText("Email: " + supplierDTO.getEmail());
-        lblCity.setText("Cidade: " + supplierDTO.getCity());
+        lblPhone.setText("Tel: " + MaskUtils.applyMask(supplierView.getPhone(), "(##) #####-####"));
+        lblEmail.setText("Email: " + supplierView.getEmail());
+        lblCity.setText("Cidade: " + supplierView.getCity());
 
-        if (supplierDTO.getCategory() == PartnerCategory.COMPANY) {
+        if (supplierView.getCategory() == PartnerCategory.COMPANY) {
             lblSubtitle.setText("Companhia");
             lblSubtitle.getStyleClass().add("client-category-company");
             imgType.setImage(new Image(
@@ -131,7 +132,7 @@ public class SupplierCardController {
                     context.getBean(SupplierService.class),
                     context.getBean(CityRepository.class));
 
-            controller.editSupplierForm(supplierDTO);
+            controller.editSupplierForm(supplierView);
             loader.setControllerFactory(ctr -> controller);
 
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -170,6 +171,7 @@ public class SupplierCardController {
         }
     }
 
+    @FXML
     public void onDelete() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("⚠️ CONFIRMAÇÃO DE EXCLUSÃO");
@@ -178,7 +180,7 @@ public class SupplierCardController {
 
         Label content = new Label(
                 "Esta ação é IRREVERSÍVEL.\n\n" +
-                        "O fornecedor " + supplierDTO.getName() + " será removido permanentemente do sistema.");
+                        "O fornecedor " + supplierView.getName() + " será removido permanentemente do sistema.");
         content.setWrapText(true);
 
         Text warningText = new Text("Esta ação é IRREVERSÍVEL. ");
@@ -187,7 +189,7 @@ public class SupplierCardController {
         Text startText = new Text("\n\nO fornecedor: ");
         startText.getStyleClass().add("common-text");
 
-        Text clientName = new Text(supplierDTO.getName());
+        Text clientName = new Text(supplierView.getName());
         clientName.getStyleClass().add("danger-name");
 
         Text endText = new Text(" será removido permanentemente do sistema.");
@@ -214,12 +216,12 @@ public class SupplierCardController {
 
         if (result.isPresent() && result.get() == deleteButton) {
             
-            if (supplierDTO.getCategory() == PartnerCategory.PERSONAL) {
-                personalPartnerRepository.findById(supplierDTO.getId()).ifPresentOrElse(supplier -> {
+            if (supplierView.getCategory() == PartnerCategory.PERSONAL) {
+                personalPartnerRepository.findById(supplierView.getId()).ifPresentOrElse(supplier -> {
                     supplierService.deletePersonalSupplier(supplier);
                 }, ClientNotFoundException::new);
             } else {
-                companyPartnerRepository.findById(supplierDTO.getId()).ifPresentOrElse(supplier -> {
+                companyPartnerRepository.findById(supplierView.getId()).ifPresentOrElse(supplier -> {
                     supplierService.deleteCompanySupplier(supplier);
                 }, ClientNotFoundException::new);
             }
@@ -228,6 +230,46 @@ public class SupplierCardController {
         // avisa o controller pai
         if (onDataChanged != null) {
             onDataChanged.run();
+        }
+    }
+
+    @FXML
+    public void onAddPurchase()
+    {
+         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/purchase-supplier-form.fxml"));
+
+            loader.setControllerFactory(context::getBean);
+
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            double width = screenBounds.getWidth() * 0.3;
+            double height = screenBounds.getHeight() * 0.6;
+
+            Stage dialog = new Stage();
+            dialog.setTitle("Cadastrar Compra");
+            dialog.setScene(new Scene(loader.load(), width, height));
+
+            Stage mainStage = (Stage) btnAddPurchase.getScene().getWindow();
+
+            dialog.initOwner(mainStage);
+            dialog.initModality(Modality.WINDOW_MODAL);
+
+            dialog.setResizable(false);
+
+            PurchaseSupplierFormController controller = loader.getController();
+            // CALLBACK
+            controller.setSupplier(this.supplierView);
+
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.8);
+            mainStage.getScene().getRoot().setEffect(darken);
+
+            dialog.setOnHidden(e -> mainStage.getScene().getRoot().setEffect(null));
+
+            dialog.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

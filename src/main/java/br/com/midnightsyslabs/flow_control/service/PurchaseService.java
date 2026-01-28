@@ -71,35 +71,32 @@ public class PurchaseService {
     public List<PurchaseView> getPurchasesView() {
         return purchaseFullRepository.findAll();
     }
-    
 
     // Mais antigo primeiro
     public List<PurchaseView> getPurchasesViewDateOrdened() {
         return getPurchasesView()
-        .stream()
-        .sorted(Comparator.comparing(PurchaseView::getDate))
-        .toList();
+                .stream()
+                .sorted(Comparator.comparing(PurchaseView::getDate))
+                .toList();
 
     }
 
-     // Mais recente primeiro
+    // Mais recente primeiro
     public List<PurchaseView> getPurchasesViewDateOrdenedReverse() {
-    return getPurchasesView()
-        .stream()
-        .sorted(
-            Comparator
-                .comparing(PurchaseView::getDate).reversed()
-                .thenComparing(PurchaseView::getId, Comparator.reverseOrder())
+        return getPurchasesView()
+                .stream()
+                .sorted(
+                        Comparator
+                                .comparing(PurchaseView::getDate).reversed()
+                                .thenComparing(PurchaseView::getId, Comparator.reverseOrder())
 
-        )
-        .toList();
-}
+                )
+                .toList();
+    }
 
-
-    public Optional<Purchase> getById(Integer id){
+    public Optional<Purchase> getById(Integer id) {
         return purchaseRepository.findById(id);
     }
-    
 
     // Como nós brasileiros usamos a virgula (,) para separar a parte decimal dos
     // número
@@ -108,20 +105,21 @@ public class PurchaseService {
         return bigDecimanStr.replace(",", ".");
     }
 
-    public BigDecimal calculateTotalPrice(PurchaseView purchaseView) {
-        return purchaseView.getPricePerUnit().multiply(purchaseView.getQuantity());
-    }
-
-    public  BigDecimal calculateTotalSpentInTime(LocalDate startDate,LocalDate endDate){
-        return getPurchasesFromDate(startDate, endDate).stream()
-                .map(this::calculateTotalPrice)
+    public BigDecimal calculateTotalSpentInTime(List<PurchaseView> purchasesView ,LocalDate startDate, LocalDate endDate) {
+        return getPurchasesFromDate(purchasesView, startDate, endDate).stream()
+                .map(PurchaseView::getExpense)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private List<PurchaseView> getPurchasesFromDate(LocalDate startDate, LocalDate endDate) {
-        return purchaseFullRepository.findAll().stream().filter(p -> !p.getDate().isBefore(startDate)
-                && !p.getDate().isAfter(endDate)).toList();
+    public BigDecimal calculateTotalSpent(List<PurchaseView> purchasesView) {
+        return purchasesView.stream()
+        .map(PurchaseView::getExpense)
+        .reduce(BigDecimal.ZERO,BigDecimal::add);
     }
 
+    public List<PurchaseView> getPurchasesFromDate(List<PurchaseView> purchasesView, LocalDate startDate, LocalDate endDate) {
+        return purchasesView.stream().filter(p -> !p.getDate().isBefore(startDate)
+                && !p.getDate().isAfter(endDate)).toList();
+    }
 
 }

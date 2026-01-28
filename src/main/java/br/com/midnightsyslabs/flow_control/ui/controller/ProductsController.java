@@ -94,7 +94,7 @@ public class ProductsController {
                 Parent card = loader.load();
 
                 ProductCardController controller = loader.getController();
-                controller.setProductDTO(product);
+                controller.setProductView(product);
                 controller.setOnDataChanged(this::reloadProducts);
                 
                 cardsPane.getChildren().add(card);

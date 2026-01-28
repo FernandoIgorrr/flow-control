@@ -88,7 +88,7 @@ public class ClientsController {
                 Parent card = loader.load();
 
                 ClientCardController controller = loader.getController();
-                controller.setClientDTO(client);
+                controller.setClientView(client);
 
                 // CALLBACK
                 controller.setOnDataChanged(this::reloadClients);

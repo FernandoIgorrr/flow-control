@@ -73,28 +73,28 @@ public class ProductCardController {
     @FXML
     private Button btnDelete;
 
-    private ProductView productDTO;
+    private ProductView productView;
 
-    public void setProductDTO(ProductView productDTO) {
-        this.productDTO = productDTO;
+    public void setProductView(ProductView productView) {
+        this.productView = productView;
 
-        lblName.setText(this.productDTO.getName());
-        lblDescription.setText(this.productDTO.getDescription());
-        lblQuantity.setText( UtilsService.formatQuantity(this.productDTO.getQuantity()));
-        lblMeasurementUnitUnit.setText(this.productDTO.getMeasurementUnitUnit() + ": ");
-        lblMeasurementUnitName.setText(this.productDTO.getMeasurementUnitName());
-        lblMeasurementUnitSymbol.setText("(" + this.productDTO.getMeasurementUnitSymbol() + ")");
-        lblCurrentPrice.setText("(R$) " + UtilsService.formatPrice(this.productDTO.getCurrentPrice()));
+        lblName.setText(this.productView.getName());
+        lblDescription.setText(this.productView.getDescription());
+        lblQuantity.setText( UtilsService.formatQuantity(this.productView.getQuantity()));
+        lblMeasurementUnitUnit.setText(this.productView.getMeasurementUnitUnit() + ": ");
+        lblMeasurementUnitName.setText(this.productView.getMeasurementUnitName());
+        lblMeasurementUnitSymbol.setText("(" + this.productView.getMeasurementUnitSymbol() + ")");
+        lblCurrentPrice.setText("(R$) " + UtilsService.formatPrice(this.productView.getCurrentPrice()));
 
-        if(productDTO.getCategory().equals("Queijo")){
+        if(productView.getCategory().equals("Queijo")){
              imgType.setImage(new Image(
                     getClass().getResourceAsStream("/images/queijo.png")));
         }
-        else if(productDTO.getCategory().equals("Nata")){
+        else if(productView.getCategory().equals("Nata")){
             imgType.setImage(new Image(
                     getClass().getResourceAsStream("/images/nata.png")));
         }
-        else if(productDTO.getCategory().equals("Iogurte")){
+        else if(productView.getCategory().equals("Iogurte")){
              imgType.setImage(new Image(
                     getClass().getResourceAsStream("/images/iogurte.png")));
         }
@@ -114,7 +114,7 @@ public class ProductCardController {
                     context.getBean(ProductService.class),
                     context.getBean(ProductRepository.class));
 
-            controller.editProductForm(productDTO);
+            controller.editProductForm(this.productView);
             loader.setControllerFactory(ctr -> controller);
 
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -167,7 +167,7 @@ public class ProductCardController {
 
         Label content = new Label(
                 "Esta ação é IRREVERSÍVEL.\n\n" +
-                        "O cliente " + productDTO.getName() + " será removido permanentemente do sistema.");
+                        "O cliente " + productView.getName() + " será removido permanentemente do sistema.");
         content.setWrapText(true);
 
         Text warningText = new Text("Esta ação é IRREVERSÍVEL. ");
@@ -176,7 +176,7 @@ public class ProductCardController {
         Text startText = new Text("\n\nO produto: ");
         startText.getStyleClass().add("common-text");
 
-        Text clientName = new Text(productDTO.getName());
+        Text clientName = new Text(productView.getName());
         clientName.getStyleClass().add("danger-name");
 
         Text endText = new Text(" será removido permanentemente do sistema.");
@@ -203,7 +203,7 @@ public class ProductCardController {
 
         if (result.isPresent() && result.get() == deleteButton) {
 
-            productRepository.findById(productDTO.getId()).ifPresentOrElse(product -> {
+            productRepository.findById(productView.getId()).ifPresentOrElse(product -> {
                 productService.deleteProduct(product);
             }, ProductNotFoundException::new);
 

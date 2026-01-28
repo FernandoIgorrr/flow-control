@@ -6,36 +6,36 @@ import java.util.function.UnaryOperator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 
-import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
-import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
-import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentException;
+import br.com.midnightsyslabs.flow_control.view.SupplierView;
+import br.com.midnightsyslabs.flow_control.service.PurchaseService;
+import br.com.midnightsyslabs.flow_control.service.SupplierService;
+import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
 import br.com.midnightsyslabs.flow_control.exception.SupplierNotFoundException;
 import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRepository;
+import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
+import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
+import br.com.midnightsyslabs.flow_control.exception.RawMaterialNotFoundException;
+import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentException;
 import br.com.midnightsyslabs.flow_control.repository.product.MeasurementUnitRepository;
-import br.com.midnightsyslabs.flow_control.service.PurchaseService;
-import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
-import br.com.midnightsyslabs.flow_control.service.SupplierService;
-import br.com.midnightsyslabs.flow_control.view.SupplierView;
+
 import javafx.fxml.FXML;
+
+import javafx.stage.Stage;
+import javafx.scene.text.Text;
+import javafx.scene.control.Label;
+import javafx.scene.text.TextFlow;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
-import javafx.stage.Stage;
+
 import javafx.util.StringConverter;
 
 @Controller
-public class PurchaseFormController {
+public class PurchaseSupplierFormController {
 
     private final PurchaseService purchaseService;
-
-    private final SupplierService supplierService;
 
     private final RawMaterialService rawMaterialService;
 
@@ -43,13 +43,17 @@ public class PurchaseFormController {
 
     private final PartnerRepository partnerRepository;
 
+    private SupplierView supplierView;
+
+    private RawMaterial rawMaterialLeite;
+
     private Runnable onDataChanged;
 
     @FXML
-    private ComboBox<SupplierView> supplierComboBox;
+    private TextField supplierField;
 
     @FXML
-    private ComboBox<RawMaterial> rawMaterialComboBox;
+    private TextField rawMaterialField;
 
     @FXML
     private Label lblQuantity;
@@ -75,14 +79,12 @@ public class PurchaseFormController {
     @FXML
     private TextField noteField;
 
-    PurchaseFormController(
+    PurchaseSupplierFormController(
             PurchaseService purchaseService,
-            SupplierService supplierService,
             RawMaterialService rawMaterialService,
             MeasurementUnitRepository measurementUnitRepository,
             PartnerRepository partnerRepository) {
         this.purchaseService = purchaseService;
-        this.supplierService = supplierService;
         this.rawMaterialService = rawMaterialService;
         this.measurementUnitRepository = measurementUnitRepository;
         this.partnerRepository = partnerRepository;
@@ -90,64 +92,28 @@ public class PurchaseFormController {
 
     @FXML
     public void initialize() {
-
-        configureSupplierComboBox();
-        configureRawMaterialComboBox();
         configureMeasurementUnitComboBox();
-       
+
         configurePriceField();
         configureQuantityField();
         datePicker.setValue(LocalDate.now());
         datePicker.setEditable(false);
     }
 
-    public void configureSupplierComboBox() {
-        var suppliers = supplierService.getSuppliers();
+    public void setSupplier(SupplierView supplierView) {
+        this.supplierView = supplierView;
 
-        supplierComboBox.getItems().setAll(suppliers);
-
-        supplierComboBox.setConverter(new StringConverter<SupplierView>() {
-
-            @Override
-            public String toString(SupplierView supplierDTO) {
-                return supplierDTO == null
-                        ? ""
-                        : supplierDTO.getName();
-            }
-
-            @Override
-            public SupplierView fromString(String string) {
-                return null;
-            }
-        });
-
-        if (!suppliers.isEmpty()) {
-            supplierComboBox.getSelectionModel().selectFirst();
-        }
-    }
-
-    public void configureRawMaterialComboBox() {
-        var rawMaterials = rawMaterialService.getRawMaterials();
-
-        rawMaterialComboBox.getItems().setAll(rawMaterials);
-
-        rawMaterialComboBox.setConverter(new StringConverter<RawMaterial>() {
-
-            @Override
-            public String toString(RawMaterial rawMaterial) {
-                return rawMaterial == null
-                        ? ""
-                        : rawMaterial.getName();
-            }
-
-            @Override
-            public RawMaterial fromString(String string) {
-                return null;
-            }
-        });
-
-        if (!rawMaterials.isEmpty()) {
-            rawMaterialComboBox.getSelectionModel().selectFirst();
+        supplierField.setText(supplierView.getName());
+        try {
+            rawMaterialLeite = rawMaterialService.getRawMaterialByName("Leite");
+            rawMaterialField.setText(rawMaterialLeite.getName());
+        } catch (RawMaterialNotFoundException e) {
+            showLabelAlert(Alert.AlertType.WARNING, "Dado não encontrado",
+                    "A matéria prima / Insumo com nome de \"Leite\" não foi encontrado!");
+            return;
+        } catch (Exception e) {
+            showLabelAlert(Alert.AlertType.WARNING, "Algo deu errado!", e.getMessage());
+            return;
         }
     }
 
@@ -173,13 +139,13 @@ public class PurchaseFormController {
 
         measurementUnitComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                lblQuantity.setText(newValue.getUnit() + " *");
-                txtPriceTitle.setText(newValue.getName() + " (R$)*");
+                lblQuantity.setText(newValue.getUnit() + " em " + newValue.getPluralName() + " *");
+                txtPriceTitle.setText(newValue.getName() + " (R$) *");
             }
         });
 
         if (!measurementUnits.isEmpty()) {
-            measurementUnitComboBox.getSelectionModel().selectFirst();
+            measurementUnitComboBox.getSelectionModel().select(1);
         }
     }
 
@@ -212,8 +178,7 @@ public class PurchaseFormController {
 
         try {
 
-            if (supplierComboBox.getValue() == null || rawMaterialComboBox.getValue() == null
-                    || priceField.getText().isEmpty()
+            if (priceField.getText().isEmpty()
                     || quantityField.getText().isEmpty() || measurementUnitComboBox.getValue() == null
                     || datePicker.getValue() == null) {
                 showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
@@ -221,9 +186,9 @@ public class PurchaseFormController {
                 return;
             }
 
-            partnerRepository.findById(supplierComboBox.getValue().getId()).ifPresentOrElse(partner -> {
+            partnerRepository.findById(this.supplierView.getId()).ifPresentOrElse(partner -> {
                 purchaseService.savePurchase(partner,
-                        rawMaterialComboBox.getValue(),
+                        rawMaterialLeite,
                         quantityField.getText(),
                         measurementUnitComboBox.getValue(),
                         priceField.getText(),
@@ -234,7 +199,6 @@ public class PurchaseFormController {
             if (onDataChanged != null) {
                 onDataChanged.run();
             }
-
 
         } catch (IllegalEmailArgumentException e) {
             showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
@@ -258,9 +222,8 @@ public class PurchaseFormController {
 
         close();
 
-        
-             showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
-                    "Compra cadastrada com sucesso!");
+        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+                "Compra cadastrada com sucesso!");
     }
 
     @FXML
@@ -269,7 +232,7 @@ public class PurchaseFormController {
     }
 
     private void close() {
-        Stage stage = (Stage) supplierComboBox.getScene().getWindow();
+        Stage stage = (Stage) supplierField.getScene().getWindow();
         stage.close();
     }
 

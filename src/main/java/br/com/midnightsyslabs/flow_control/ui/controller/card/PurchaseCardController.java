@@ -66,7 +66,7 @@ public class PurchaseCardController {
         lblPurchaseId.setEditable(false);
         lblPurchaseId.setFocusTraversable(false);
 
-        lblTotalPrice.setText(UtilsService.formatPrice( purchaseService.calculateTotalPrice(purchaseView)));
+        lblTotalPrice.setText(UtilsService.formatPrice( purchaseView.getExpense()));
         lblQuantityTitle.setText(purchaseView.getMeasurementUnitUnit());
         lblSupplierName.setText(purchaseView.getPartnerName());
         lblPricePerUnitTitle.setText("Preço por " + purchaseView.getMeasurementUnitName() + " ("

@@ -56,7 +56,7 @@ public class ClientCardController {
     @Autowired
     private ClientService clientService;
 
-    private ClientView clientDTO;
+    private ClientView clientView;
 
     private Runnable onDataChanged; // callback
 
@@ -82,8 +82,8 @@ public class ClientCardController {
     @FXML
     private StackPane iconContainer;
 
-    public void setClientDTO(ClientView client) {
-        this.clientDTO = client;
+    public void setClientView(ClientView client) {
+        this.clientView = client;
 
         lblName.setText(client.getName());
 
@@ -128,7 +128,7 @@ public class ClientCardController {
                     context.getBean(ClientService.class),
                     context.getBean(CityRepository.class));
 
-            controller.editClientForm(clientDTO);
+            controller.editClientForm(clientView);
             loader.setControllerFactory(ctr -> controller);
 
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -180,7 +180,7 @@ public class ClientCardController {
 
         Label content = new Label(
                 "Esta ação é IRREVERSÍVEL.\n\n" +
-                        "O cliente " + clientDTO.getName() + " será removido permanentemente do sistema.");
+                        "O cliente " + clientView.getName() + " será removido permanentemente do sistema.");
         content.setWrapText(true);
 
         Text warningText = new Text("Esta ação é IRREVERSÍVEL. ");
@@ -189,7 +189,7 @@ public class ClientCardController {
         Text startText = new Text("\n\nO cliente: ");
         startText.getStyleClass().add("common-text");
 
-        Text clientName = new Text(clientDTO.getName());
+        Text clientName = new Text(clientView.getName());
         clientName.getStyleClass().add("danger-name");
 
         Text endText = new Text(" será removido permanentemente do sistema.");
@@ -216,12 +216,12 @@ public class ClientCardController {
 
         if (result.isPresent() && result.get() == deleteButton) {
             // 👉 CHAME A LÓGICA DE DELETE AQUI
-            if (clientDTO.getCategory() == PartnerCategory.PERSONAL) {
-                personalPartnerRepository.findById(clientDTO.getId()).ifPresentOrElse(client -> {
+            if (clientView.getCategory() == PartnerCategory.PERSONAL) {
+                personalPartnerRepository.findById(clientView.getId()).ifPresentOrElse(client -> {
                     clientService.deletePersonalClient(client);
                 }, ClientNotFoundException::new);
             } else {
-                companyPartnerRepository.findById(clientDTO.getId()).ifPresentOrElse(client -> {
+                companyPartnerRepository.findById(clientView.getId()).ifPresentOrElse(client -> {
                     clientService.deleteCompanyClient(client);
                 }, ClientNotFoundException::new);
             }

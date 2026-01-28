@@ -12,7 +12,9 @@ public enum TimeIntervalEnum {
     LAST_SEMESTER("Nos últimos 6 meses"),
 
     PREVIOUS_YEAR("No ano passado"),
-    CURRENT_YEAR("No ano atual");
+    CURRENT_YEAR("No ano atual"),
+
+    ALL_TIME("Todo tempo");
 
     private final String label;
 

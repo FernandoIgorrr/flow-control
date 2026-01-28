@@ -64,7 +64,7 @@ public class ProductionDTO {
         this.productDescription                     = productionView.getProductDescription();
         this.productQuantity                        = productionView.getProductQuantity();
         this.productQuantityMeasurementUnit         = productionView.getProductQuantityMeasurementUnit();
-        this.productCurrentPrice                           = productionView.getProductCurrentPrice();
+        this.productCurrentPrice                    = productionView.getProductCurrentPrice();
         this.quantityProduced                       = productionView.getQuantityProduced();
         this.grossQuantityProduced                  = productionView.getGrossQuantityProduced();
         this.grossQuantityProduceddMeasurementUnit  = productionView.getGrossQuantityMeasurementUnitSymbol();

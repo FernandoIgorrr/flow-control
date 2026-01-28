@@ -8,6 +8,7 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.View;
 
 import br.com.midnightsyslabs.flow_control.converter.PartnerCategoryConverter;
+import br.com.midnightsyslabs.flow_control.domain.entity.expense.Expense;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "purchase_full")
-public class PurchaseView {
+public class PurchaseView implements Expense{
     @Id
     private Integer id;
 
@@ -56,4 +57,14 @@ public class PurchaseView {
     private OffsetDateTime deletedAt;
 
     private boolean isClosed;
+
+    @Override
+    public BigDecimal getExpense(){
+        return pricePerUnit.multiply(quantity);
+    }
+
+    @Override
+    public LocalDate getDate(){
+        return date;
+    }
 }

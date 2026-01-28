@@ -89,7 +89,7 @@ public class SuppliersController {
                 Parent card = loader.load();
 
                 SupplierCardController controller = loader.getController();
-                controller.setSupplierDTO(supplier);
+                controller.setSupplierView(supplier);
 
                 // CALLBACK
                 controller.setOnDataChanged(this::reloadSuppliers);

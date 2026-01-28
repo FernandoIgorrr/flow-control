@@ -210,7 +210,7 @@ public class ProductionFormController {
                                         " | " + UtilsService.formatQuantity(purchaseView.getQuantity()) +
                                         " " + purchaseView.getMeasurementUnitPluralName() +
                                         " de " + purchaseView.getRawMaterialName() +
-                                        " ( " + UtilsService.formatPrice( purchaseService.calculateTotalPrice(purchaseView)) + ")" +
+                                        " ( " + UtilsService.formatPrice( purchaseView.getExpense()) + ")" +
                                         " ~ " + purchaseView.getPartnerName());
 
                         item.setOnAction(e -> {

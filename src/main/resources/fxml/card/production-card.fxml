@@ -91,16 +91,32 @@
           <Label text="Produto Produzido " styleClass="label-grey-13-bold" />
 
         </HBox>
-         <!-- CAIXAS AZUIS AQUI DENTRO -->
+        <!-- CAIXAS AZUIS AQUI DENTRO -->
         <VBox spacing="12" styleClass="green-box">
-            <padding>
-        <Insets top="8" right="8" bottom="8" left="8" />
-      </padding>
+          <padding>
+            <Insets top="8" right="8" bottom="8" left="8" />
+          </padding>
           <Label fx:id="lblProductNameDesc" />
-
-          <Label fx:id="lblGrossProductQuantity"/>
-          <Label fx:id="lblProductQuantity"/>
-          <Label fx:id="lblGainsPerUnit"/>
+          <HBox>
+            <Label fx:id="lblGrossProductQuantity" />
+            <Label fx:id="lblProductQuantity" />
+          </HBox>
+          <HBox>
+            <Label text="Gasto por unidade: " styleClass="production-info"/>
+            <Label fx:id="lblExpensePerUnit" />
+          </HBox>
+          <HBox>
+            <Label text="Receita líquida por unidade: " styleClass="production-info" />
+            <Label fx:id="lblNetIncomePerUnit" />
+          </HBox>
+          <HBox>
+            <Label text="Receita bruta (Hipotética) da produção: " styleClass="production-info" />
+            <Label fx:id="lblGrossIncome" />
+          </HBox>
+          <HBox>
+            <Label text="Receita líquida (Hipotética) da produção: " styleClass="production-info" />
+            <Label fx:id="lblNetIncome" />
+          </HBox>
         </VBox>
       </VBox>
     </HBox>
