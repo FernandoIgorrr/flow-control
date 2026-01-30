@@ -59,6 +59,9 @@ public class ProductionCardController {
         private Label lblProductNameDesc;
 
         @FXML
+        private Label lblProductPrice;
+
+        @FXML
         private Label lblGrossProductQuantity;
 
         @FXML
@@ -78,6 +81,9 @@ public class ProductionCardController {
 
         @FXML
         private Label lblNetIncome;
+       
+        @FXML
+        private Label lblNetIncome2;
 
         @FXML
         public void initialize() {
@@ -144,11 +150,14 @@ public class ProductionCardController {
 
                 lblProductNameDesc.setText(
                                 productionDTO.getProductName() + " - " + productionDTO.getProductDescription() + " "
-                                                + UtilsService.formatQuantity(productionDTO.getProductQuantity())
-                                                + " - "
-                                                + productionDTO.getProductQuantityMeasurementUnit() + " | " +
-                                                "[ " + UtilsService
-                                .formatPrice(productionDTO.getProductCurrentPrice()) + " ]");
+                                                + " - " + UtilsService.formatQuantity(productionDTO.getProductQuantity())     
+                                                + productionDTO.getProductQuantityMeasurementUnit());
+
+                lblProductPrice.setText( UtilsService
+                                .formatPrice(productionDTO.getProductCurrentPrice()));
+
+                lblProductPrice.getStyleClass().add("green-net-income-15");
+
 
                 lblGrossProductQuantity.setText(UtilsService.formatQuantity(productionDTO.getGrossQuantityProduced())
                                 + " " + productionDTO.getGrossQuantityProduceddMeasurementUnit() + " (Bruto) => ");
@@ -156,7 +165,7 @@ public class ProductionCardController {
                 lblProductQuantity.setText(
                                 UtilsService.formatQuantity(productionDTO.getQuantityProduced()) + " Unidades");
 
-                lblProductNameDesc.getStyleClass().add("production-info");
+                lblProductNameDesc.getStyleClass().add("production-info-result");
                 lblGrossProductQuantity.getStyleClass().add("production-info");
                 lblProductQuantity.getStyleClass().add("production-info");
 
@@ -169,11 +178,13 @@ public class ProductionCardController {
                                 .formatPrice(productionService.productionExpensePerProductUnit(productionDTO)));
 
                 lblNetIncome.setText(UtilsService.formatPrice(productionService.productionNetIncome(productionDTO)));
+                lblNetIncome2.setText(UtilsService.formatPrice(productionService.productionNetIncome(productionDTO)));
 
-                lblNetIncomePerUnit.getStyleClass().add("green-net-income");
-                lblExpensePerUnit.getStyleClass().add("blue-expense");
+                lblNetIncomePerUnit.getStyleClass().add("green-light-datas-info");
+                lblExpensePerUnit.getStyleClass().add("red-light-datas-info");
                 lblGrossIncome.getStyleClass().add("green-net-income");
-                lblNetIncome.getStyleClass().add("green-net-income");
+                lblNetIncome.getStyleClass().add("green-light-datas-info");
+                lblNetIncome2.getStyleClass().add("green-net-income");
                 lblTotalExpense
                                 .setText(UtilsService.formatPrice(
                                                 productionService.productionTotalExpense(productionDTO)));

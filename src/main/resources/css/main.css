@@ -116,11 +116,27 @@
     -fx-graphic-text-gap: 15px;
 }
 
+.btn-primary-red {
+    -fx-background-color: linear-gradient(to right, #DC2626, #EF4444);
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 18;
+    -fx-pref-height: 22px;
+    -fx-cursor: hand;
+    -fx-graphic-text-gap: 15px;
+}
+
 .btn-primary .btn-primary-icon {
     -fx-effect: innershadow(gaussian, white, 10, 0.5, 0, 0);
     -fx-opacity: 1;
 }
 
+.btn-primary-red .btn-primary-icon {
+    -fx-effect: innershadow(gaussian, white, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+}
 
 
 /* =========================

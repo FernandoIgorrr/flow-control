@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.Partner;
@@ -22,14 +23,12 @@ import jakarta.transaction.Transactional;
 @Service
 public class PurchaseService {
 
-    private final PurchaseRepository purchaseRepository;
+    @Autowired
+    private PurchaseRepository purchaseRepository;
 
-    private final PurchaseFullRepository purchaseFullRepository;
+    @Autowired
+    private PurchaseFullRepository purchaseFullRepository;
 
-    public PurchaseService(PurchaseFullRepository purchaseFullRepository, PurchaseRepository purchaseRepository) {
-        this.purchaseFullRepository = purchaseFullRepository;
-        this.purchaseRepository = purchaseRepository;
-    }
 
     @Transactional
     public void savePurchase(
@@ -41,8 +40,8 @@ public class PurchaseService {
             LocalDate date,
             String note) {
 
-        price = solveComma(price);
-        quantity = solveComma(quantity);
+        var price_ = solveComma(price);
+        var quantity_ = solveComma(quantity);
 
         var purchase = new Purchase();
 
@@ -50,8 +49,8 @@ public class PurchaseService {
         purchase.setRawMaterial(rawMaterial);
 
         try {
-            purchase.setQuantity(new BigDecimal(quantity));
-            purchase.setPricePerUnit(new BigDecimal(price));
+            purchase.setPricePerUnit(new BigDecimal(price_));
+            purchase.setQuantity(new BigDecimal(quantity_));
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Tem algo errado com formato do preço ou com a quantidade!");
         }

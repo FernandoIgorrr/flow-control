@@ -5,11 +5,11 @@ import javafx.scene.control.TextField;
 
 // Dentro da ProductionFormController
 public class PurchaseRow {
-    public PurchaseView dto;
+    public PurchaseView purchaseView;
     public TextField quantityField;
 
-    PurchaseRow(PurchaseView dto, TextField quantityField) {
-        this.dto = dto;
+    PurchaseRow(PurchaseView purchaseView, TextField quantityField) {
+        this.purchaseView = purchaseView;
         this.quantityField = quantityField;
     }
 }

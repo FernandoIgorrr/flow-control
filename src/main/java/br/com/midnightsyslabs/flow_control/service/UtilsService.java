@@ -6,7 +6,9 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-@Serivce
+import org.springframework.stereotype.Service;
+
+@Service
 public class UtilsService {
     // Como nós brasileiros usamos a virgula (,) para separar a parte decimal dos
     // número

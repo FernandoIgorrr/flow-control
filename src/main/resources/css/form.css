@@ -125,6 +125,17 @@
     );
 }
 
+.btn-add-fields {
+    -fx-text-fill: white;
+
+    -fx-background-color: linear-gradient(
+        to bottom right,
+        #22c55e,
+        #16a34a
+    );
+}
+
+
 .btn-primary:hover {
     -fx-background-color: linear-gradient(
         to bottom right,
@@ -135,4 +146,34 @@
 
 .btn-primary:pressed {
     -fx-background-color: #15803d;
+}
+
+
+/* ACTION BUTTONS */
+.btn-action-edit,
+.btn-action-delete,
+.btn-action-add-purchase {
+  /*  -fx-background-color: transparent;*/
+    /* cinza claro */
+
+    -fx-pref-width: 50;
+    -fx-pref-height: 50;
+    -fx-cursor: hand;
+
+}
+
+
+.icon-edit {
+    -fx-effect: innershadow(gaussian, #16A34A, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+}
+
+.icon-delete {
+    -fx-effect: innershadow(gaussian, #DC2626, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
+}
+
+.icon-add-purchase {
+    -fx-effect: innershadow(gaussian, #2563eb, 10, 0.5, 0, 0);
+    -fx-opacity: 1;
 }

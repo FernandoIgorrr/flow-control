@@ -168,9 +168,9 @@
                         </Button>
 
                         <Button
-                            fx:id="ordersButton"
+                            fx:id="salesButton"
                             text="Vendas"
-                            onAction="#goToOrders"
+                            onAction="#goToSales"
                             styleClass="sidebar-button">
                             <graphic>
                                 <StackPane prefWidth="32" prefHeight="32" maxWidth="32"

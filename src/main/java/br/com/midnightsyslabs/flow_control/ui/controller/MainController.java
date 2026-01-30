@@ -39,7 +39,7 @@ public class MainController {
     private Button productionsButton;
     
     @FXML
-    private Button ordersButton;
+    private Button salesButton;
 
     @FXML
     private Button purchasesButton;
@@ -60,8 +60,8 @@ public class MainController {
     public void initialize() {
         navService.setMainContainer(conteudoPrincipal);
         // Carrega uma tela inicial opcional
-        navService.navigateTo("/fxml/productions.fxml");
-        setActive(productionsButton);
+        navService.navigateTo("/fxml/sales.fxml");
+        setActive(salesButton);
     }
 
     private void setActive(Button activeButton) {
@@ -111,9 +111,9 @@ public class MainController {
     }
 
     @FXML
-    public void goToOrders() {
-        navService.navigateTo("/fxml/orders.fxml");
-        setActive(ordersButton);
+    public void goToSales() {
+        navService.navigateTo("/fxml/sales.fxml");
+        setActive(salesButton);
     }
 
     @FXML

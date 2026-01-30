@@ -2,12 +2,15 @@ package br.com.midnightsyslabs.flow_control.service;
 
 import java.time.OffsetDateTime;
 import java.util.InputMismatchException;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.midnightsyslabs.flow_control.config.Constants;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.City;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.CompanyPartner;
+import br.com.midnightsyslabs.flow_control.domain.entity.partner.Partner;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.PartnerRole;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.PersonalPartner;
 import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentException;
@@ -16,25 +19,20 @@ import br.com.midnightsyslabs.flow_control.exception.InvalidCPFException;
 import br.com.midnightsyslabs.flow_control.repository.partner.CompanyPartnerRepository;
 import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRoleRepository;
 import br.com.midnightsyslabs.flow_control.repository.partner.PersonalPartnerRepository;
+import br.com.midnightsyslabs.flow_control.repository.view.ClientRepository;
+import br.com.midnightsyslabs.flow_control.view.ClientView;
 
 @Service
 public class ClientService {
 
-    private final PersonalPartnerRepository personalPartnerRepository;
-    private final CompanyPartnerRepository companyPartnerRepository;
-    private final PartnerRoleRepository partnerRoleRepository;
-
-    public ClientService(
-
-            CompanyPartnerRepository companyPartnerRepository,
-            PersonalPartnerRepository personalPartnerRepository,
-            PartnerRoleRepository partnerRoleRepository) {
-
-        this.companyPartnerRepository = companyPartnerRepository;
-        this.personalPartnerRepository = personalPartnerRepository;
-        this.partnerRoleRepository = partnerRoleRepository;
-
-    }
+    @Autowired
+    private ClientRepository clientRepository;
+    @Autowired
+    private PersonalPartnerRepository personalPartnerRepository;
+    @Autowired
+    private CompanyPartnerRepository companyPartnerRepository;
+    @Autowired
+    private PartnerRoleRepository partnerRoleRepository;
 
     public void saveClient(String name,
             String document,
@@ -128,6 +126,10 @@ public class ClientService {
     public void deleteCompanyClient(CompanyPartner client) {
         client.setDeletedAt(OffsetDateTime.now());
         companyPartnerRepository.save(client);
+    }
+
+    public List<ClientView> getClients() {
+        return clientRepository.findAll();
     }
 
     private void dataValidations(String document,

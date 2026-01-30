@@ -187,7 +187,6 @@ public class ProductionFormController {
     }
 
     private void setupPurchaseAutocomplete(
-
             TextField purchaseField,
             TextField quantityUsedField,
             ContextMenu purchasesSuggestions) {

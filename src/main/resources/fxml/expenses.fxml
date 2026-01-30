@@ -1,14 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="br.com.midnightsyslabs.flow_control.ui.controller.ExpensesController">
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="br.com.midnightsyslabs.flow_control.ui.controller.ExpensesController"
+    stylesheets="@../css/card.css"
+    styleClass="content-root">
 
-    <!-- CENTER -->
+    <!-- HEADER -->
+    <top>
+        <HBox spacing="20"
+            alignment="CENTER_LEFT"
+            styleClass="page-header"
+            BorderPane.alignment="CENTER">
+
+            <padding>
+                <Insets top="0" right="10" bottom="0" left="10" />
+            </padding>
+
+            <!-- LEFT: TITLE + SUBTITLE -->
+            <VBox spacing="4">
+                <Label text="Gastos e Despesas"
+                    styleClass="page-title" />
+
+                <Label text="Controle todas as despesas da fábrica"
+                    styleClass="page-subtitle" />
+            </VBox>
+
+            <!-- SPACER -->
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- RIGHT: BUTTON -->
+            <Button
+                fx:id="btnAddEmployee"
+                text="Registrar Funcionário"
+                onAction="#onAddEmployee"
+                styleClass="btn-primary-red">
+                <graphic>
+                    <StackPane prefWidth="22" prefHeight="22" maxWidth="22" maxHeight="22">
+                        <children>
+                            <ImageView fitHeight="22.0" fitWidth="22.0" preserveRatio="true"
+                                styleClass="btn-primary-icon">
+                                <image>
+                                    <Image url="@/images/ic--baseline-plus.png" />
+                                </image>
+                            </ImageView>
+                        </children>
+                    </StackPane>
+                </graphic>
+            </Button>
+            <Button
+                fx:id="btnAddEmployeePayments"
+                text="Registrar Pagamentos"
+                onAction="#onAddEmployeePayments"
+                styleClass="btn-primary-red">
+                <graphic>
+                    <StackPane prefWidth="22" prefHeight="22" maxWidth="22" maxHeight="22">
+                        <children>
+                            <ImageView fitHeight="22.0" fitWidth="22.0" preserveRatio="true"
+                                styleClass="btn-primary-icon">
+                                <image>
+                                    <Image url="@/images/ic--baseline-plus.png" />
+                                </image>
+                            </ImageView>
+                        </children>
+                    </StackPane>
+                </graphic>
+            </Button>
+            <Button
+                fx:id="btnAddExpense"
+                text="Registrar gasto"
+                onAction="#onAddExpense"
+                styleClass="btn-primary-red">
+                <graphic>
+                    <StackPane prefWidth="22" prefHeight="22" maxWidth="22" maxHeight="22">
+                        <children>
+                            <ImageView fitHeight="22.0" fitWidth="22.0" preserveRatio="true"
+                                styleClass="btn-primary-icon">
+                                <image>
+                                    <Image url="@/images/ic--baseline-plus.png" />
+                                </image>
+                            </ImageView>
+                        </children>
+                    </StackPane>
+                </graphic>
+            </Button>
+        </HBox>
+    </top>
+
+    <!-- CONTENT -->
     <center>
-        <Label text="EXPENSES HERE!!!!!!!!!!!!!!!!"/>
+
     </center>
 </BorderPane>

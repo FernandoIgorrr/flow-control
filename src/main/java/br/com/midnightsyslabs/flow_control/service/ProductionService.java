@@ -66,7 +66,7 @@ public class ProductionService {
                 productionRawMaterialPurchase
                         .setQuantityUsed(new BigDecimal(UtilsService.solveComma(row.quantityField.getText())));
 
-                purchaseService.getById(row.dto.getId()).ifPresentOrElse(purchase -> {
+                purchaseService.getById(row.purchaseView.getId()).ifPresentOrElse(purchase -> {
                     productionRawMaterialPurchase.setPurchase(purchase);
                 }, PurchaseNotFoundException::new);
 

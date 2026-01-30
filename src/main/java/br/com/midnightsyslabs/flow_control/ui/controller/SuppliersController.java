@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 
-import br.com.midnightsyslabs.flow_control.repository.view.SupplierRepository;
 import br.com.midnightsyslabs.flow_control.service.SupplierService;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.SupplierCardController;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.SupplierFormController;

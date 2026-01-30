@@ -53,7 +53,7 @@
 
     </HBox>
     <!-- CONTEÚDO -->
-    <HBox spacing="8">
+    <HBox spacing="24">
       <padding>
         <Insets top="12" right="0" bottom="0" left="0" />
       </padding>
@@ -72,7 +72,7 @@
           <Label text="Insumos utilizados" styleClass="label-grey-13-bold" />
         </HBox>
         <!-- CAIXAS VERDES AQUI DENTRO -->
-        <VBox fx:id="rawMaterialsPurchase" HBox.hgrow="ALWAYS" spacing="6">
+        <VBox fx:id="rawMaterialsPurchase" spacing="6">
 
         </VBox>
       </VBox>
@@ -94,30 +94,48 @@
         <!-- CAIXAS AZUIS AQUI DENTRO -->
         <VBox spacing="12" styleClass="green-box">
           <padding>
-            <Insets top="8" right="8" bottom="8" left="8" />
+            <Insets top="12" right="12" bottom="12" left="12" />
           </padding>
           <Label fx:id="lblProductNameDesc" />
+          <HBox>
+            <Label text="Preço atual: " styleClass="production-info"/>
+            <Label fx:id="lblProductPrice" />
+          </HBox>
           <HBox>
             <Label fx:id="lblGrossProductQuantity" />
             <Label fx:id="lblProductQuantity" />
           </HBox>
-          <HBox>
-            <Label text="Gasto por unidade: " styleClass="production-info"/>
-            <Label fx:id="lblExpensePerUnit" />
+          <Separator prefWidth="120" styleClass="green-separator" />
+          <HBox spacing="24">
+            <VBox HBox.hgrow="ALWAYS">
+              <Label text="Custo/Unid" styleClass="production-info" />
+              <Label fx:id="lblExpensePerUnit" />
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS">
+              <Label text="Lucro/Unid" styleClass="production-info" />
+              <Label fx:id="lblNetIncomePerUnit" />
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS">
+              <Label text="Receita Líq." styleClass="production-info" />
+              <Label fx:id="lblNetIncome" />
+            </VBox>
           </HBox>
-          <HBox>
-            <Label text="Receita líquida por unidade: " styleClass="production-info" />
-            <Label fx:id="lblNetIncomePerUnit" />
-          </HBox>
-          <HBox>
-            <Label text="Receita bruta (Hipotética) da produção: " styleClass="production-info" />
-            <Label fx:id="lblGrossIncome" />
-          </HBox>
-          <HBox>
-            <Label text="Receita líquida (Hipotética) da produção: " styleClass="production-info" />
-            <Label fx:id="lblNetIncome" />
-          </HBox>
+
         </VBox>
+
+        <HBox spacing="12" styleClass="green-box2">
+          <padding>
+            <Insets top="12" right="12" bottom="12" left="12" />
+          </padding>
+          <VBox HBox.hgrow="ALWAYS">
+            <Label text="Total Receita Bruta" styleClass="production-info-result" />
+            <Label fx:id="lblGrossIncome" />
+          </VBox>
+          <VBox HBox.hgrow="ALWAYS">
+            <Label text="Total Receita Líquida" styleClass="production-info-result" />
+            <Label fx:id="lblNetIncome2" />
+          </VBox>
+        </HBox>
       </VBox>
     </HBox>
   </VBox>

@@ -34,8 +34,8 @@ public class ProductService {
             String quantity,
             MeasurementUnit measurementUnit) {
 
-        price = UtilsService.solveComma(price);
-        quantity = UtilsService.solveComma(quantity);
+        var price_ = UtilsService.solveComma(price);
+        var quantity_ = UtilsService.solveComma(quantity);
 
         var product = new Product();
         var productPrice = new ProductPrice();
@@ -46,8 +46,8 @@ public class ProductService {
         product.setMeasurementUnit(measurementUnit);
         product.setCreatedAt(OffsetDateTime.now());
         try {
-            product.setQuantity(new BigDecimal(quantity));
-            productPrice.setPrice(new BigDecimal(price));
+            product.setQuantity(new BigDecimal(quantity_));
+            productPrice.setPrice(new BigDecimal(price_));
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Tem algo errado com formato do preço ou da quantidade!");
         }
@@ -67,13 +67,13 @@ public class ProductService {
             String description,
             String price) {
 
-        price = UtilsService.solveComma(price);
+        var price_ = UtilsService.solveComma(price);
 
         product.setName(name);
         product.setDescription(description);
         try {
 
-            var newPrice = new BigDecimal(price);
+            var newPrice = new BigDecimal(price_);
 
             var currentPrice = product.getProductPriceHistory()
                     .stream()

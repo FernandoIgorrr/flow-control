@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.NotNull;
@@ -21,12 +22,12 @@ import jakarta.validation.constraints.NotNull;
 public class Employee {
 
     @Id
+    @GeneratedValue
     private UUID id;
 
     @NotNull
     private String name;
 
-    @NotNull
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmployeeWage>  employeeWageHistory;
 }
