@@ -29,5 +29,5 @@ public class Employee {
     private String name;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EmployeeWage>  employeeWageHistory;
+    private List<EmployeePayment>  employeePaymentHistory;
 }

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.employee.Employee;
-import br.com.midnightsyslabs.flow_control.domain.entity.employee.EmployeeWage;
+import br.com.midnightsyslabs.flow_control.domain.entity.employee.EmployeePayment;
 import br.com.midnightsyslabs.flow_control.repository.employee.EmployeeRepository;
 import jakarta.transaction.Transactional;
 import javafx.scene.control.TextField;
@@ -31,7 +31,7 @@ public class EmployeeService {
     }
 
     @Transactional
-    public void editEmployee(Employee employee, String wage, LocalDate date) {
+    public void editEmployee(Employee employee, String payment, LocalDate date) {
         
     }
 
@@ -47,15 +47,15 @@ public class EmployeeService {
             
         try {
 
-            EmployeeWage employeeWage = new EmployeeWage();
-            employeeWage.setEmployee(entry.getKey());
-            employeeWage.setWage(new BigDecimal( UtilsService.solveComma(value)));
-            employeeWage.setWageChangeDate(paymentDate);
+            EmployeePayment employeePayment = new EmployeePayment();
+            employeePayment.setEmployee(entry.getKey());
+            employeePayment.setPayment(new BigDecimal( UtilsService.solveComma(value)));
+            employeePayment.setPaymentChangeDate(paymentDate);
 
-            if (entry.getKey().getEmployeeWageHistory() == null) {
-                entry.getKey().setEmployeeWageHistory(List.of(employeeWage));
+            if (entry.getKey().getEmployeePaymentHistory() == null) {
+                entry.getKey().setEmployeePaymentHistory(List.of(employeePayment));
             } else {
-                entry.getKey().getEmployeeWageHistory().add(employeeWage);
+                entry.getKey().getEmployeePaymentHistory().add(employeePayment);
             }
 
         } catch (Exception e) {

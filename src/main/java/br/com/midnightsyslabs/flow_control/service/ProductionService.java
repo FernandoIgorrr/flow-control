@@ -15,9 +15,9 @@ import br.com.midnightsyslabs.flow_control.dto.ProductionDTO;
 import br.com.midnightsyslabs.flow_control.exception.PurchaseNotFoundException;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.PurchaseRow;
 import br.com.midnightsyslabs.flow_control.view.ProductionRawMaterialPurchaseView;
-import br.com.midnightsyslabs.flow_control.repository.production.ProductionRawMaterialPurchaseViewRepository;
 import br.com.midnightsyslabs.flow_control.repository.production.ProductionRepository;
-import br.com.midnightsyslabs.flow_control.repository.production.ProductionViewRepository;
+import br.com.midnightsyslabs.flow_control.repository.view.ProductionRawMaterialPurchaseViewRepository;
+import br.com.midnightsyslabs.flow_control.repository.view.ProductionViewRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;

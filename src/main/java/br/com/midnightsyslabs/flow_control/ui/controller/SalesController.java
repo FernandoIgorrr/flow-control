@@ -1,25 +1,42 @@
 package br.com.midnightsyslabs.flow_control.ui.controller;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 
-import br.com.midnightsyslabs.flow_control.domain.entity.sale.Sale;
+import br.com.midnightsyslabs.flow_control.config.TimeIntervalEnum;
+import br.com.midnightsyslabs.flow_control.domain.entity.product.Product;
+import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
+import br.com.midnightsyslabs.flow_control.dto.SaleDTO;
+import br.com.midnightsyslabs.flow_control.service.ClientService;
+import br.com.midnightsyslabs.flow_control.service.DateService;
+import br.com.midnightsyslabs.flow_control.service.ProductService;
 import br.com.midnightsyslabs.flow_control.service.SaleService;
-
+import br.com.midnightsyslabs.flow_control.service.UtilsService;
+import br.com.midnightsyslabs.flow_control.ui.controller.card.SaleCardController;
+import br.com.midnightsyslabs.flow_control.view.ClientView;
+import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 @Controller
 public class SalesController {
@@ -28,9 +45,35 @@ public class SalesController {
     private SaleService saleService;
 
     @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ClientService clientService;
+
+    @Autowired
     private ApplicationContext context;
 
-    private List<Sale> sales;
+    private List<SaleDTO> allSalesDTO;
+
+    private List<SaleDTO> filteredSalesDTO;
+
+    @FXML
+    private ComboBox<TimeIntervalEnum> timeIntervalEnumComboBoxFilter;
+
+    @FXML
+    private ImageView imgType;
+
+    @FXML
+    private Label lblTotalSales;
+
+    @FXML
+    private Label lblTotalPrice;
+
+    @FXML
+    private ComboBox<Product> productComboBoxFilter;
+
+    @FXML
+    private ComboBox<ClientView> clientComboBoxFilter;
 
     @FXML
     private Button btnAddSale;
@@ -42,8 +85,89 @@ public class SalesController {
     private VBox cardsPane;
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         reloadSales();
+
+        configureTimeIntervalEnumComboBoxFilter();
+        configureProductComboBoxFilter();
+        configureClientComboBoxFilter();
+
+        imgType.setImage(new Image(
+                getClass().getResourceAsStream("/images/game-icons--basket.png")));
+        imgType.getStyleClass().add("blue-icon");
+    }
+
+    public void configureTimeIntervalEnumComboBoxFilter() {
+        this.timeIntervalEnumComboBoxFilter.getItems().setAll(TimeIntervalEnum.values());
+
+        this.timeIntervalEnumComboBoxFilter.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(TimeIntervalEnum interval) {
+                return interval == null ? "" : interval.getLabel();
+            }
+
+            @Override
+            public TimeIntervalEnum fromString(String string) {
+                return null;
+            }
+        });
+
+        this.timeIntervalEnumComboBoxFilter.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue == null)
+                return;
+            applyFilters();
+        });
+
+        this.timeIntervalEnumComboBoxFilter.getSelectionModel().selectFirst();
+    }
+
+    private void configureProductComboBoxFilter() {
+        productComboBoxFilter.getItems().setAll(
+                productService.getProducts());
+
+        productComboBoxFilter.getItems().add(new Product());
+        productComboBoxFilter.setConverter(new StringConverter<Product>() {
+            @Override
+            public String toString(Product p) {
+                return (p == null || p.getName() == null) ? "Todos" : p.getName() + " | " + p.getDescription();
+            }
+
+            @Override
+            public Product fromString(String s) {
+                return null;
+            }
+        });
+
+        productComboBoxFilter.valueProperty().addListener((obs, old, newVal) -> {
+
+            applyFilters();
+        });
+        productComboBoxFilter.getSelectionModel().selectLast();
+    }
+
+    private void configureClientComboBoxFilter() {
+        clientComboBoxFilter.getItems().setAll(
+                clientService.getClients());
+
+        clientComboBoxFilter.getItems().add(new ClientView());
+        clientComboBoxFilter.setConverter(new StringConverter<ClientView>() {
+            @Override
+            public String toString(ClientView c) {
+                return (c == null || c.getName() == null) ? "Todos" : c.getName();
+            }
+
+            @Override
+            public ClientView fromString(String s) {
+                return null;
+            }
+        });
+
+        clientComboBoxFilter.getSelectionModel().selectLast();
+
+        clientComboBoxFilter.valueProperty().addListener((obs, old, newVal) -> {
+
+            applyFilters();
+        });
     }
 
     @FXML
@@ -83,11 +207,11 @@ public class SalesController {
         }
     }
 
-    private void renderCards(List<Sale> sales) {
+    private void renderCards(List<SaleDTO> salesDTO) {
 
-         cardsPane.getChildren().clear();
+        cardsPane.getChildren().clear();
 
-        /*for (ProductionDTO pDTO : productionsDTO) {
+        for (var sDTO : salesDTO) {
             try {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/fxml/card/sale-card.fxml"));
@@ -96,21 +220,65 @@ public class SalesController {
 
                 Parent card = loader.load();
 
-                ProductionCardController controller = loader.getController();
-                controller.setProductionDTO(pDTO);
-                controller.setOnDataChanged(this::reloadProductions);
+                SaleCardController controller = loader.getController();
+                controller.setSaleDTO(sDTO);
+                controller.setOnDataChanged(this::reloadSales);
 
                 cardsPane.getChildren().add(card);
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } */
+        }
+    }
+
+    private void applyFilters() {
+
+        filteredSalesDTO = allSalesDTO.stream()
+
+                // 🔹 filtro por produto vendido
+                .filter(sDTO -> productComboBoxFilter.getValue() == null
+                        || productComboBoxFilter.getValue().getName() == null ||
+                        sDTO.getSaleProductsView().stream().anyMatch(spv -> spv.getProductId() != null
+                                && spv.getProductId() != null
+                                && spv.getProductId()
+                                        .equals(productComboBoxFilter.getValue().getId())))
+
+                // 🔹 filtro por cliente
+                .filter(sDTO -> clientComboBoxFilter.getValue() == null
+                        || clientComboBoxFilter.getValue().getName() == null ||
+                        sDTO.getClientId().equals(clientComboBoxFilter.getValue().getId()))
+
+                // 🔹 filtro por intervalo de datas
+                .filter(sDTO -> {
+                    if (timeIntervalEnumComboBoxFilter.getValue() == TimeIntervalEnum.ALL_TIME) {
+                        return true;
+                    }
+
+                    LocalDate from = DateService.timeIntervalEnumToDateFrom(timeIntervalEnumComboBoxFilter.getValue());
+                    LocalDate to = DateService.timeIntervalEnumToDateTo(timeIntervalEnumComboBoxFilter.getValue());
+
+                    return !sDTO.getDate().isBefore(from) && !sDTO.getDate().isAfter(to);
+                })
+
+                .toList();
+
+        renderCards(filteredSalesDTO);
+
+        renderRecentSilesPriceCard();
+    }
+
+    private void renderRecentSilesPriceCard() {
+        lblTotalPrice.setText(UtilsService.formatPrice(saleService.calculateTotalRevenue(filteredSalesDTO)));
+        lblTotalSales.setText("" + filteredSalesDTO.size());
     }
 
     public void reloadSales() {
-        this.sales = saleService.getSales();
-        renderCards(this.sales);
-       
+        allSalesDTO = saleService.getSalesDTO();
+
+        filteredSalesDTO = allSalesDTO;
+
+        renderCards(filteredSalesDTO);
+        renderRecentSilesPriceCard();
     }
 }

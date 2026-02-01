@@ -25,7 +25,7 @@ import jakarta.persistence.GenerationType;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeWage implements Expense{
+public class EmployeePayment implements Expense{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,20 +37,20 @@ public class EmployeeWage implements Expense{
     
     @Positive
     @NotNull
-    private BigDecimal wage;
+    private BigDecimal payment;
 
     @NotNull
     @Column(columnDefinition="date")
-    private LocalDate wageChangeDate;
+    private LocalDate paymentChangeDate;
 
     @Override
     public BigDecimal getExpense() {
-        return wage;
+        return payment;
     }
 
     @Override
     public LocalDate getDate() {
-        return wageChangeDate;
+        return paymentChangeDate;
     }
 
 

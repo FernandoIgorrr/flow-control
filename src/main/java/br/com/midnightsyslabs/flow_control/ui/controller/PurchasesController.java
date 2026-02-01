@@ -276,11 +276,11 @@ public class PurchasesController {
     }
 
     private void reloadPurchases() {
-        this.allPurchasesView = purchaseService.getPurchasesViewDateOrdenedReverse();
+        allPurchasesView = purchaseService.getPurchasesViewDateOrdenedReverse();
 
-        this.filteredPurchases = this.allPurchasesView;
+        filteredPurchases = allPurchasesView;
 
-        renderCards(this.filteredPurchases);
+        renderCards(filteredPurchases);
         renderRecentPurchasesPriceCard();
     }
 

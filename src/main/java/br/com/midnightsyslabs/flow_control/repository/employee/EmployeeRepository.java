@@ -16,7 +16,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
     @Query("""
             SELECT e
             FROM Employee e
-            LEFT JOIN FETCH e.employeeWageHistory
+            LEFT JOIN FETCH e.employeePaymentHistory
             WHERE e.id = :id""")
-    Optional<Product> findByIdWithWageHistory(@Param("id") UUID id);
+    Optional<Product> findByIdWithPaymentHistory(@Param("id") UUID id);
 }

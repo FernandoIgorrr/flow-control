@@ -153,11 +153,17 @@
 .btn-action-edit,
 .btn-action-delete,
 .btn-action-add-purchase {
-  /*  -fx-background-color: transparent;*/
-    /* cinza claro */
+   -fx-background-color: transparent;
 
-    -fx-pref-width: 50;
-    -fx-pref-height: 50;
+    -fx-min-width: 32;
+    -fx-max-width: 32;
+    -fx-pref-width: 32;
+    
+    -fx-min-height: 32;
+    -fx-max-height: 32;
+    -fx-pref-height: 32;
+
+    -fx-padding: 0; /* Remove o espaço interno padrão que estica o botão */
     -fx-cursor: hand;
 
 }

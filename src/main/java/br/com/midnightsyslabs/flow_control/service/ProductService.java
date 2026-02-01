@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 
 import jakarta.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.product.Product;
@@ -18,12 +19,8 @@ import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit
 @Service
 public class ProductService {
 
-    private final ProductRepository productRepository;
-
-    public ProductService(
-            ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    @Autowired
+    private ProductRepository productRepository;
 
     @Transactional
     public Product saveProduct(

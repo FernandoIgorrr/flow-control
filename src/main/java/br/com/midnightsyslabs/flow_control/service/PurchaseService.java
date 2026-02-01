@@ -29,7 +29,6 @@ public class PurchaseService {
     @Autowired
     private PurchaseFullRepository purchaseFullRepository;
 
-
     @Transactional
     public void savePurchase(
             Partner partner,
@@ -104,7 +103,8 @@ public class PurchaseService {
         return bigDecimanStr.replace(",", ".");
     }
 
-    public BigDecimal calculateTotalSpentInTime(List<PurchaseView> purchasesView ,LocalDate startDate, LocalDate endDate) {
+    public BigDecimal calculateTotalSpentInTime(List<PurchaseView> purchasesView, LocalDate startDate,
+            LocalDate endDate) {
         return getPurchasesFromDate(purchasesView, startDate, endDate).stream()
                 .map(PurchaseView::getExpense)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -112,11 +112,12 @@ public class PurchaseService {
 
     public BigDecimal calculateTotalSpent(List<PurchaseView> purchasesView) {
         return purchasesView.stream()
-        .map(PurchaseView::getExpense)
-        .reduce(BigDecimal.ZERO,BigDecimal::add);
+                .map(PurchaseView::getExpense)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public List<PurchaseView> getPurchasesFromDate(List<PurchaseView> purchasesView, LocalDate startDate, LocalDate endDate) {
+    public List<PurchaseView> getPurchasesFromDate(List<PurchaseView> purchasesView, LocalDate startDate,
+            LocalDate endDate) {
         return purchasesView.stream().filter(p -> !p.getDate().isBefore(startDate)
                 && !p.getDate().isAfter(endDate)).toList();
     }

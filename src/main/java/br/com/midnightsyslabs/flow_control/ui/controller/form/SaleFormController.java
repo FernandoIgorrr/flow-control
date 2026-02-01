@@ -10,11 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.product.Product;
+import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
+import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRepository;
 import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.service.ProductService;
+import br.com.midnightsyslabs.flow_control.service.SaleService;
 import br.com.midnightsyslabs.flow_control.view.ClientView;
+import jakarta.validation.ConstraintViolationException;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -41,6 +45,12 @@ public class SaleFormController {
 
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private SaleService saleService;
+
+    @Autowired
+    private PartnerRepository partnerRepository;
 
     private List<ProductRow> productsRows;
 
@@ -85,13 +95,12 @@ public class SaleFormController {
         productItemBox.getStyleClass().add("purchase-item");
 
         HBox headerBox = new HBox(10);
-
+        headerBox.setAlignment(Pos.BOTTOM_LEFT);
         Label lblProductComboBox = new Label("Selecione o produto *");
 
         // espaçador
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-
 
         Label lblProductQuantitySold = new Label("Preencha a quantidade do produto *");
 
@@ -143,6 +152,8 @@ public class SaleFormController {
             iconRemove.getStyleClass().add("icon-delete");
 
             pane.getChildren().add(iconRemove);
+
+            btnRemove.getStyleClass().add("btn-action-add-purchase");
 
             btnRemove.setGraphic(pane);
 
@@ -236,7 +247,51 @@ public class SaleFormController {
 
     @FXML
     public void onSave() {
+        if (this.productsRows.isEmpty()) {
+            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Adicione pelo menos um produto.");
+            return;
+        }
 
+        try {
+            for (var row : this.productsRows) {
+                String productQuantitySold = row.productQuantitySoldField.getText().replace(",", ".");
+
+                if (productQuantitySold.isBlank()) {
+                    showLabelAlert(Alert.AlertType.WARNING, "Atenção",
+                            "Está faltando a quantidade vendida em algum campo!.");
+                    return;
+                }
+
+            }
+
+            if (this.selectedClient == null
+                    || this.datePicker == null) {
+                showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+                        "Por favor  preencha o campo referente ao cliente e a data");
+                return;
+            }
+
+            partnerRepository.findById(this.selectedClient.getId()).ifPresentOrElse(partner -> {
+                saleService.saveSale(productsRows, partner, datePicker.getValue());
+            }, ClientNotFoundException::new);
+
+            if (onDataChanged != null) {
+                onDataChanged.run();
+            }
+        } catch (ConstraintViolationException e) {
+            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algum campo viola as regras de valores!");
+            return;
+        }
+
+        catch (Exception e) {
+            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algo deu errado!" + e.getCause());
+            return;
+        }
+
+        close();
+
+        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+                "Venda cadastrada com sucesso!");
     }
 
     @FXML

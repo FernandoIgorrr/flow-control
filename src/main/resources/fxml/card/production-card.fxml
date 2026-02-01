@@ -91,7 +91,7 @@
           <Label text="Produto Produzido " styleClass="label-grey-13-bold" />
 
         </HBox>
-        <!-- CAIXAS AZUIS AQUI DENTRO -->
+        <!-- CAIXA VERDE AQUI DENTRO -->
         <VBox spacing="12" styleClass="green-box">
           <padding>
             <Insets top="12" right="12" bottom="12" left="12" />

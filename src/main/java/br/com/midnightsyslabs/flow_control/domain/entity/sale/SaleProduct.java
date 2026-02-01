@@ -37,6 +37,8 @@ public class SaleProduct {
     @JoinColumn(nullable = false)
     private Product product; 
 
+    private BigDecimal productPriceOnSaleDate;
+
     @NotNull
     private BigDecimal quantity;
 }

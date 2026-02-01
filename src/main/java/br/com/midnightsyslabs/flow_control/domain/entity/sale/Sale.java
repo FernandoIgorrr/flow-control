@@ -3,12 +3,9 @@ package br.com.midnightsyslabs.flow_control.domain.entity.sale;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.Partner;
-import br.com.midnightsyslabs.flow_control.domain.entity.product.ProductPrice;
-import br.com.midnightsyslabs.flow_control.domain.entity.production.Production;
 import br.com.midnightsyslabs.flow_control.domain.entity.revenue.Revenue;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -55,17 +52,8 @@ public class Sale implements Revenue {
 
    @Override
    public BigDecimal getRevenue() {
-      return saleProducts.stream().map(saleProduct -> {
-         
-         var currentPrice = saleProduct.getProduct()
-               .getProductPriceHistory()
-               .stream()
-               .max(Comparator.comparing(ProductPrice::getPriceChangeDate))
-               .map(ProductPrice::getPrice)
-               .orElse(BigDecimal.ZERO);
-
-         return currentPrice.multiply(saleProduct.getQuantity());
-      }).reduce(BigDecimal.ZERO, BigDecimal::add);
+      return saleProducts.stream().map(saleProduct ->
+      saleProduct.getProductPriceOnSaleDate().multiply(saleProduct.getQuantity())).reduce(BigDecimal.ZERO, BigDecimal::add);
    }
 
    @Override
