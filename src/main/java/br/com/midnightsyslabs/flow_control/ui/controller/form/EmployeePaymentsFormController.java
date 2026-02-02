@@ -35,7 +35,7 @@ public class EmployeePaymentsFormController {
     private VBox employeesContainer;
 
     // Guarda relação funcionário → campo de pagamento
-    private final Map<Employee, TextField> wageFields = new HashMap<>();
+    private final Map<Employee, TextField> paymentsFields = new HashMap<>();
 
     @FXML
     public void initialize() {
@@ -59,7 +59,7 @@ public class EmployeePaymentsFormController {
             row.setAlignment(Pos.CENTER_LEFT);
 
             employeesContainer.getChildren().add(row);
-            wageFields.put(employee, wageField);
+            paymentsFields.put(employee, wageField);
         }
     }
 
@@ -78,7 +78,7 @@ public class EmployeePaymentsFormController {
     @FXML
     private void onSave() {
         try {
-            employeeService.savePayments(wageFields, datePicker.getValue());
+            employeeService.savePayments(paymentsFields, datePicker.getValue());
 
         } catch (Exception e) {
             showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar pagamentos",
@@ -90,7 +90,7 @@ public class EmployeePaymentsFormController {
         close();
 
         showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
-                "Produto cadastrado com sucesso!");
+                "Pagamentos registrados com sucesso!");
     }
 
     @FXML

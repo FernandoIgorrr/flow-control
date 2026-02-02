@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.employee.Employee;
 import br.com.midnightsyslabs.flow_control.domain.entity.employee.EmployeePayment;
+import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
+import br.com.midnightsyslabs.flow_control.repository.employee.EmployeePaymentRepository;
 import br.com.midnightsyslabs.flow_control.repository.employee.EmployeeRepository;
 import jakarta.transaction.Transactional;
 import javafx.scene.control.TextField;
@@ -19,6 +21,9 @@ import javafx.scene.control.TextField;
 public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private EmployeePaymentRepository employeePaymentRepository;
 
     @Transactional
     public void saveEmployee(
@@ -32,42 +37,48 @@ public class EmployeeService {
 
     @Transactional
     public void editEmployee(Employee employee, String payment, LocalDate date) {
-        
+
     }
 
     @Transactional
     public void savePayments(
             Map<Employee, TextField> payments,
-            LocalDate paymentDate
-    ) {
+            LocalDate paymentDate) {
         for (Map.Entry<Employee, TextField> entry : payments.entrySet()) {
 
-             String value = entry.getValue().getText();
-            if (value == null || value.isBlank()) return;
-            
-        try {
+            String value = entry.getValue().getText();
 
-            EmployeePayment employeePayment = new EmployeePayment();
-            employeePayment.setEmployee(entry.getKey());
-            employeePayment.setPayment(new BigDecimal( UtilsService.solveComma(value)));
-            employeePayment.setPaymentChangeDate(paymentDate);
+            try {
 
-            if (entry.getKey().getEmployeePaymentHistory() == null) {
-                entry.getKey().setEmployeePaymentHistory(List.of(employeePayment));
-            } else {
-                entry.getKey().getEmployeePaymentHistory().add(employeePayment);
+                if (!(value == null || value.isBlank())) {
+
+                    EmployeePayment employeePayment = new EmployeePayment();
+                    employeePayment.setSpentCategory(new SpentCategory((short) 2, ""));
+                    employeePayment.setEmployee(entry.getKey());
+                    employeePayment.setPayment(new BigDecimal(UtilsService.solveComma(value)));
+                    employeePayment.setPaymentChangeDate(paymentDate);
+
+                    if (entry.getKey().getEmployeePaymentHistory() == null) {
+                        entry.getKey().setEmployeePaymentHistory(List.of(employeePayment));
+                    } else {
+                        entry.getKey().getEmployeePaymentHistory().add(employeePayment);
+                    }
+                }
+
+            } catch (Exception e) {
+                throw e;
             }
 
-        } catch (Exception e) {
-            throw e;
-        }
-
-        employeeRepository.save(entry.getKey());
+            employeeRepository.save(entry.getKey());
         }
     }
 
     public List<Employee> getEmployees() {
-        return employeeRepository.findAll();
+        return employeeRepository.findAllWithHistory();
+    }
+
+    public List<EmployeePayment> getEmployeePayments() {
+        return employeePaymentRepository.findAll();
     }
 
 }

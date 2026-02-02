@@ -321,3 +321,71 @@
     -fx-font-weight: bold;
     -fx-text-fill: black;
 }
+
+.employee-category-box {
+    -fx-font-size: 11px;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #462C70;
+    -fx-padding: 4 8 4 8;
+}
+
+.category-box-3 {
+    -fx-font-size: 11px;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #F97E48;
+    -fx-padding: 4 8 4 8;
+}
+
+.category-box-4 {
+    -fx-font-size: 11px;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #80DAFF;
+    -fx-padding: 4 8 4 8;
+}
+
+.category-box-5 {
+    -fx-font-size: 11px;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #C2B9D1;
+    -fx-padding: 4 8 4 8;
+}
+.category-box-6 {
+    -fx-font-size: 11px;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #E35050;
+    -fx-padding: 4 8 4 8;
+}
+.category-box-7 {
+    -fx-font-size: 11px;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: black;
+    -fx-padding: 4 8 4 8;
+}
+.category-box-8 {
+    -fx-font-size: 11px;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #5F6774;
+    -fx-padding: 4 8 4 8;
+}
+.category-box-9 {
+    -fx-font-size: 11px;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #D73864;
+    -fx-padding: 4 8 4 8;
+}

@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,7 @@ public class Spent implements Expense {
 
     private String description;
 
-    private BigDecimal price;
+    private BigDecimal amountPaid;
 
     @ManyToOne
     @JoinColumn
@@ -45,12 +46,17 @@ public class Spent implements Expense {
 
     @Override
     public BigDecimal getExpense() {
-        return price;
+        return amountPaid;
     }
 
     @Override
     public LocalDate getDate() {
         return date;
+    }
+
+    @Override
+    public SpentCategory getSpentCategory(){
+        return category;
     }
 
 }

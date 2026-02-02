@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.expense.Expense;
+import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -42,6 +43,10 @@ public class EmployeePayment implements Expense{
     @NotNull
     @Column(columnDefinition="date")
     private LocalDate paymentChangeDate;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private SpentCategory spentCategory;
 
     @Override
     public BigDecimal getExpense() {

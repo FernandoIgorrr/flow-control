@@ -9,9 +9,12 @@ import org.hibernate.annotations.View;
 
 import br.com.midnightsyslabs.flow_control.converter.PartnerCategoryConverter;
 import br.com.midnightsyslabs.flow_control.domain.entity.expense.Expense;
+import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -48,6 +51,10 @@ public class PurchaseView implements Expense{
 
     private BigDecimal pricePerUnit;
 
+    @ManyToOne
+    @JoinColumn
+    private SpentCategory spentCategory;
+
     private LocalDate date;
 
     private String note;
@@ -66,5 +73,10 @@ public class PurchaseView implements Expense{
     @Override
     public LocalDate getDate(){
         return date;
+    }
+
+    @Override
+    public SpentCategory getSpentCategory(){
+        return spentCategory;
     }
 }

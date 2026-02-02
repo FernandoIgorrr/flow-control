@@ -18,7 +18,6 @@ import br.com.midnightsyslabs.flow_control.repository.sale.SaleRepository;
 import br.com.midnightsyslabs.flow_control.repository.view.SaleProductViewRepository;
 import br.com.midnightsyslabs.flow_control.repository.view.SaleViewRepository;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.ProductRow;
-import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import br.com.midnightsyslabs.flow_control.view.SaleView;
 
 @Service
@@ -78,6 +77,10 @@ public class SaleService {
         });
 
         return salesDTO;
+    }
+
+    public List<SaleDTO> searchBetween(LocalDate start,LocalDate end){
+        return getSalesDTO().stream().filter(sDTO-> !sDTO.getDate().isBefore(start) && !sDTO.getDate().isAfter(end)).toList();
     }
 
        public BigDecimal calculateTotalRevenue(List<SaleDTO> SalesDTO) {

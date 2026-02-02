@@ -15,9 +15,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SpentCategory {
-    @Id
-      @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Short id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Short id;
 
-    private String name;
+  private String name;
 }

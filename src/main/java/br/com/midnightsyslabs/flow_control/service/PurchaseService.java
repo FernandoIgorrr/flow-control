@@ -15,8 +15,9 @@ import br.com.midnightsyslabs.flow_control.domain.entity.partner.Partner;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
 import br.com.midnightsyslabs.flow_control.domain.entity.purchase.Purchase;
 import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
+import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
 import br.com.midnightsyslabs.flow_control.repository.PurchaseRepository;
-import br.com.midnightsyslabs.flow_control.repository.view.PurchaseFullRepository;
+import br.com.midnightsyslabs.flow_control.repository.view.PurchaseViewRepository;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import jakarta.transaction.Transactional;
 
@@ -27,7 +28,7 @@ public class PurchaseService {
     private PurchaseRepository purchaseRepository;
 
     @Autowired
-    private PurchaseFullRepository purchaseFullRepository;
+    private PurchaseViewRepository purchaseViewRepository;
 
     @Transactional
     public void savePurchase(
@@ -46,6 +47,7 @@ public class PurchaseService {
 
         purchase.setPartner(partner);
         purchase.setRawMaterial(rawMaterial);
+        purchase.setSpentCategory(new SpentCategory((short) 1, ""));
 
         try {
             purchase.setPricePerUnit(new BigDecimal(price_));
@@ -67,7 +69,7 @@ public class PurchaseService {
     }
 
     public List<PurchaseView> getPurchasesView() {
-        return purchaseFullRepository.findAll();
+        return purchaseViewRepository.findAll();
     }
 
     // Mais antigo primeiro

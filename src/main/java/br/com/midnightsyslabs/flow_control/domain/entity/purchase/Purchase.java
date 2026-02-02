@@ -4,6 +4,7 @@ import br.com.midnightsyslabs.flow_control.domain.entity.expense.Expense;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.Partner;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
 import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
+import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,8 +30,8 @@ import jakarta.validation.constraints.NotNull;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Purchase implements Expense{
-    
+public class Purchase implements Expense {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -55,6 +56,10 @@ public class Purchase implements Expense{
 
     @NotNull
     private BigDecimal pricePerUnit;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private SpentCategory spentCategory;
 
     @NotNull
     @Column(columnDefinition = "date")
@@ -81,8 +86,7 @@ public class Purchase implements Expense{
     }
 
     @Override
-    public LocalDate getDate(){
+    public LocalDate getDate() {
         return date;
     }
-    
 }

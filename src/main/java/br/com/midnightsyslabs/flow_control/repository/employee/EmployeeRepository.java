@@ -1,5 +1,6 @@
 package br.com.midnightsyslabs.flow_control.repository.employee;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,4 +20,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
             LEFT JOIN FETCH e.employeePaymentHistory
             WHERE e.id = :id""")
     Optional<Product> findByIdWithPaymentHistory(@Param("id") UUID id);
+
+    @Query("SELECT e FROM Employee e LEFT JOIN FETCH e.employeePaymentHistory")
+    List<Employee> findAllWithHistory();
 }

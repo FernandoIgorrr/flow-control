@@ -7,6 +7,7 @@ import org.hibernate.annotations.Immutable;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.expense.Expense;
 import br.com.midnightsyslabs.flow_control.domain.entity.production.ProductionRawMaterialsPurchaseId;
+import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -47,6 +48,13 @@ public class ProductionRawMaterialPurchaseView implements Expense{
     @Override
     public LocalDate getDate() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDate'");
+        throw new UnsupportedOperationException("Unimplemented method 'getDate' in ProductionRawMaterialPurchaseView");
     }
+
+    @Override
+    public SpentCategory getSpentCategory() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSpentCategory' in ProductionRawMaterialPurchaseView");
+    }
+
 }
