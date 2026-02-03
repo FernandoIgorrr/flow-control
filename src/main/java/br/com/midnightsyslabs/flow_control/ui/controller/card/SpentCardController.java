@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.spent.Spent;
@@ -15,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 @Controller
+@Scope("prototype")
 public class SpentCardController {
     @Autowired
     private EmojiService emojiService;

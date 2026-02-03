@@ -23,7 +23,14 @@
             <StackPane
                 prefHeight="150"
                 minHeight="150"
-                styleClass="green-degrade-background" />
+                styleClass="green-degrade-background">
+                <children>
+                    <ImageView fx:id="logo" fitHeight="256" fitWidth="256"
+                        preserveRatio="true"
+                        styleClass="sidebar-icon" />
+
+                </children>
+            </StackPane>
 
             <!-- ÁREA ROLÁVEL -->
             <ScrollPane
@@ -39,6 +46,27 @@
                         styleClass="sidebar-content">
 
                         <Button
+                            fx:id="statementFinanceButton"
+                            text="Balanços"
+                            onAction="#goToStatementFinance"
+                            styleClass="sidebar-button">
+                            <graphic>
+                                <StackPane prefWidth="32" prefHeight="32" maxWidth="32"
+                                    maxHeight="32">
+                                    <children>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0"
+                                            preserveRatio="true"
+                                            styleClass="sidebar-icon">
+                                            <image>
+                                                <Image url="@/images/uil--chart-bar.png" />
+                                            </image>
+                                        </ImageView>
+                                    </children>
+                                </StackPane>
+                            </graphic>
+                        </Button>
+
+                        <!--<Button
                             fx:id="dashboardButton"
                             text="Dashboard"
                             onAction="#goToDashboard"
@@ -53,13 +81,13 @@
                                             styleClass="sidebar-icon">
                                             <image>
                                                 <Image
-                                                    url="@/images/material-symbols-light--dashboard-outline-rounded.png" />
+                                                    url="@/images/material-symbols-lightdashboard-outline-rounded.png" />
                                             </image>
                                         </ImageView>
                                     </children>
                                 </StackPane>
                             </graphic>
-                        </Button>
+                        </Button>-->
 
                         <Button
                             fx:id="productsButton"
@@ -232,10 +260,11 @@
                             </graphic>
                         </Button>
 
+                        
                         <Button
-                            fx:id="statementFinanceButton"
-                            text="Balanços"
-                            onAction="#goToStatementFinance"
+                            fx:id="employeesButton"
+                            text="Funcionários"
+                            onAction="#goToEmployees"
                             styleClass="sidebar-button">
                             <graphic>
                                 <StackPane prefWidth="32" prefHeight="32" maxWidth="32"
@@ -245,7 +274,7 @@
                                             preserveRatio="true"
                                             styleClass="sidebar-icon">
                                             <image>
-                                                <Image url="@/images/uil--chart-bar.png" />
+                                                <Image url="@/images/clarity--employee-line.png" />
                                             </image>
                                         </ImageView>
                                     </children>

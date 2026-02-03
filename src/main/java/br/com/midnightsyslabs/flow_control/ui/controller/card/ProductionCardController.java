@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.dto.ProductionDTO;
@@ -23,6 +24,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 @Controller
+@Scope("prototype")
 public class ProductionCardController {
         @Autowired
         private ProductionService productionService;

@@ -73,29 +73,38 @@ public class ProductCardController {
     @FXML
     private Button btnDelete;
 
+    @FXML
+    private ImageView btnIconDelete;
+
     private ProductView productView;
 
     public void setProductView(ProductView productView) {
         this.productView = productView;
 
+        if (productView.isClosed()) {
+            btnDelete.setDisable(true);
+            btnIconDelete.getStyleClass().add("icon-delete-disable");
+
+        } else {
+            btnIconDelete.getStyleClass().add("icon-delete");
+        }
+
         lblName.setText(this.productView.getName());
         lblDescription.setText(this.productView.getDescription());
-        lblQuantity.setText( UtilsService.formatQuantity(this.productView.getQuantity()));
+        lblQuantity.setText(UtilsService.formatQuantity(this.productView.getQuantity()));
         lblMeasurementUnitUnit.setText(this.productView.getMeasurementUnitUnit() + ": ");
         lblMeasurementUnitName.setText(this.productView.getMeasurementUnitName());
         lblMeasurementUnitSymbol.setText("(" + this.productView.getMeasurementUnitSymbol() + ")");
         lblCurrentPrice.setText("(R$) " + UtilsService.formatPrice(this.productView.getCurrentPrice()));
 
-        if(productView.getCategory().equals("Queijo")){
-             imgType.setImage(new Image(
+        if (productView.getCategory().equals("Queijo")) {
+            imgType.setImage(new Image(
                     getClass().getResourceAsStream("/images/queijo.png")));
-        }
-        else if(productView.getCategory().equals("Nata")){
+        } else if (productView.getCategory().equals("Nata")) {
             imgType.setImage(new Image(
                     getClass().getResourceAsStream("/images/nata.png")));
-        }
-        else if(productView.getCategory().equals("Iogurte")){
-             imgType.setImage(new Image(
+        } else if (productView.getCategory().equals("Iogurte")) {
+            imgType.setImage(new Image(
                     getClass().getResourceAsStream("/images/iogurte.png")));
         }
 

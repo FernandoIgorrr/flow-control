@@ -1,5 +1,6 @@
 package br.com.midnightsyslabs.flow_control.domain.entity.employee;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +28,13 @@ public class Employee {
 
     @NotNull
     private String name;
+
+    @NotNull
+    private OffsetDateTime createdAt;
+
+    private OffsetDateTime deletedAt;
+
+    private boolean isClosed;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmployeePayment>  employeePaymentHistory;

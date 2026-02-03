@@ -63,6 +63,8 @@ public class Product {
 
     private OffsetDateTime deletedAt;
 
+    private boolean isClosed;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = OffsetDateTime.now();

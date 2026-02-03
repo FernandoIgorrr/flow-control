@@ -41,19 +41,19 @@
         </HBox>
         <HBox>
           <VBox
-            prefWidth="220">
+            prefWidth="200">
             <Label text="Fornecedor" styleClass="purchase-info-title" />
             <Label fx:id="lblSupplierName" styleClass="purchase-info" />
           </VBox>
-          <VBox prefWidth="220">
+          <VBox prefWidth="200">
             <Label fx:id="lblQuantityTitle" styleClass="purchase-info-title" />
             <Label fx:id="lblQuantity" styleClass="purchase-info" />
           </VBox>
-          <VBox prefWidth="220">
+          <VBox prefWidth="200">
             <Label fx:id="lblPricePerUnitTitle" styleClass="purchase-info-title" />
             <Label fx:id="lblUnitPrice" styleClass="purchase-info-price" />
           </VBox>
-          <VBox prefWidth="220">
+          <VBox prefWidth="200">
             <Label text="Data da compra" styleClass="purchase-info-title" />
             <Label fx:id="lblDate" styleClass="purchase-info" />
           </VBox>
@@ -72,6 +72,39 @@
         </padding>
         <Label text="Valor Total" />
         <Label fx:id="lblTotalPrice" styleClass="total-price-info-blue" />
+      </VBox>
+        <VBox fx:id="buttons">
+         <padding>
+          <Insets top="22" right="0" bottom="0" left="0" />
+        </padding>
+      <Button fx:id="btnClose" onAction="#onClose" styleClass="btn-action-close">
+        <graphic>
+          <StackPane prefWidth="28" prefHeight="28">
+            <ImageView  fitHeight="28" fitWidth="28"
+              styleClass="icon-close" preserveRatio="true"
+            >
+              <image>
+                <Image url="@/images/line-md--confirm-circle.png" />
+              </image>
+            </ImageView>
+          </StackPane>
+        </graphic>
+      </Button>
+
+       <Button fx:id="btnDelete" onAction="#onDelete" styleClass="btn-action-delete">
+        <graphic>
+          <StackPane prefWidth="28" prefHeight="28">
+            <ImageView fitHeight="28" fitWidth="28"
+              styleClass="icon-delete" preserveRatio="true"
+            >
+              <image>
+                <Image url="@/images/delete.png" />
+              </image>
+            </ImageView>
+          </StackPane>
+        </graphic>
+      </Button>
+
       </VBox>
     </HBox>
   </VBox>

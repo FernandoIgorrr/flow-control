@@ -31,6 +31,7 @@ public class EmployeeService {
 
         var employee = new Employee();
         employee.setName(name);
+        employee.setCreatedAt(OffsetDateTime.now());
 
         employeeRepository.save(employee);
     }
@@ -38,6 +39,17 @@ public class EmployeeService {
     @Transactional
     public void editEmployee(Employee employee, String payment, LocalDate date) {
 
+    }
+
+    @Transactional
+    public void disconnectEmployee(Employee employee){
+        employee.setDeletedAt(OffsetDateTime.now());
+        employeeRepository.save(employee);
+    }
+    @Transactional
+    public void connectEmployee(Employee employee){
+        employee.setDeletedAt(null);
+        employeeRepository.save(employee);
     }
 
     @Transactional
@@ -74,9 +86,12 @@ public class EmployeeService {
     }
 
     public List<Employee> getEmployees() {
-        return employeeRepository.findAllWithHistory();
+        return employeeRepository.findAllConnectedWithHistory();
     }
 
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAllWithHistory();
+    }
     public List<EmployeePayment> getEmployeePayments() {
         return employeePaymentRepository.findAll();
     }

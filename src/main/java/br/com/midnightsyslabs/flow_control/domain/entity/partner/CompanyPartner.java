@@ -13,7 +13,6 @@ import lombok.Setter;
 @Setter
 public class CompanyPartner extends Partner {
 
-    
     @Column(nullable = true)
     private String cnpj;
 
@@ -34,8 +33,9 @@ public class CompanyPartner extends Partner {
             City city,
             PartnerRole category,
             OffsetDateTime createdAt,
-            OffsetDateTime deletedAt) {
-        super(id, name, email, phone, city, category, createdAt, deletedAt);
+            OffsetDateTime deletedAt,
+            boolean isClosed) {
+        super(id, name, email, phone, city, category, createdAt, deletedAt, isClosed);
         this.cnpj = CNPJ;
     }
 }

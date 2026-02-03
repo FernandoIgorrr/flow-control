@@ -17,6 +17,7 @@ import br.com.midnightsyslabs.flow_control.domain.entity.purchase.Purchase;
 import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
 import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
 import br.com.midnightsyslabs.flow_control.repository.PurchaseRepository;
+import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRepository;
 import br.com.midnightsyslabs.flow_control.repository.view.PurchaseViewRepository;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import jakarta.transaction.Transactional;
@@ -29,6 +30,9 @@ public class PurchaseService {
 
     @Autowired
     private PurchaseViewRepository purchaseViewRepository;
+
+    @Autowired
+    private PartnerRepository partnerRepository;
 
     @Transactional
     public void savePurchase(
@@ -44,6 +48,8 @@ public class PurchaseService {
         var quantity_ = solveComma(quantity);
 
         var purchase = new Purchase();
+
+        partner.setClosed(true);
 
         purchase.setPartner(partner);
         purchase.setRawMaterial(rawMaterial);
@@ -61,7 +67,24 @@ public class PurchaseService {
         purchase.setCreatedAt(OffsetDateTime.now());
         purchase.setNote(note);
 
+        partnerRepository.save(partner);
         purchaseRepository.save(purchase);
+    }
+
+    @Transactional
+    public void confirmPurchase(Purchase purchase) {
+        purchase.setClosed(true);
+        purchaseRepository.save(purchase);
+    }
+
+    @Transactional
+    public void deletePurchase(Purchase purchase) {
+        purchase.setDeletedAt(OffsetDateTime.now());
+        purchaseRepository.save(purchase);
+    }
+
+    public Optional<Purchase> findById(Integer id) {
+        return purchaseRepository.findById(id);
     }
 
     public List<Purchase> getPurchases() {

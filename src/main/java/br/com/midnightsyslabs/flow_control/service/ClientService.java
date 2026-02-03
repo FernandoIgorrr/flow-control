@@ -56,7 +56,7 @@ public class ClientService {
                     email,
                     city,
                     role,
-                    null, null);
+                    null, null,false);
             personalPartnerRepository.save(client);
         } else {
 
@@ -66,7 +66,7 @@ public class ClientService {
                     email,
                     city,
                     role,
-                    null, null);
+                    null, null,false);
             companyPartnerRepository.save(client);
         }
     }

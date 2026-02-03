@@ -30,6 +30,7 @@ public class SupplierView {
     private String phone;
     private String email;
     private String city;
+    private boolean isClosed;
 
     @Convert(converter = PartnerCategoryConverter.class)
     private PartnerCategory category;

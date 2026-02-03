@@ -19,7 +19,7 @@
 
     <!-- HEADER -->
     <HBox alignment="CENTER_LEFT" spacing="8">
-     
+
       <VBox spacing="8">
         <padding>
           <Insets top="22" right="0" bottom="0" left="0" />
@@ -53,6 +53,39 @@
         <Label text="Valor Total" />
         <Label fx:id="lblTotalRevenue" styleClass="total-price-info" />
       </VBox>
+      <VBox fx:id="buttons">
+         <padding>
+          <Insets top="22" right="0" bottom="0" left="0" />
+        </padding>
+      <Button fx:id="btnClose" onAction="#onClose" styleClass="btn-action-close">
+        <graphic>
+          <StackPane prefWidth="28" prefHeight="28">
+            <ImageView  fitHeight="28" fitWidth="28"
+              styleClass="icon-close" preserveRatio="true"
+            >
+              <image>
+                <Image url="@/images/line-md--confirm-circle.png" />
+              </image>
+            </ImageView>
+          </StackPane>
+        </graphic>
+      </Button>
+
+       <Button fx:id="btnDelete" onAction="#onDelete" styleClass="btn-action-delete">
+        <graphic>
+          <StackPane prefWidth="28" prefHeight="28">
+            <ImageView fitHeight="28" fitWidth="28"
+              styleClass="icon-delete" preserveRatio="true"
+            >
+              <image>
+                <Image url="@/images/delete.png" />
+              </image>
+            </ImageView>
+          </StackPane>
+        </graphic>
+      </Button>
+
+      </VBox>
     </HBox>
     <Separator prefWidth="120" />
     <!-- CONTEÚDO -->
@@ -63,5 +96,7 @@
       prefWidth="Infinity"
       styleClass="products-container">
     </FlowPane>
+
+
   </VBox>
 </StackPane>

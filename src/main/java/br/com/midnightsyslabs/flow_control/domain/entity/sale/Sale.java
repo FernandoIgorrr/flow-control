@@ -8,6 +8,7 @@ import java.util.List;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.Partner;
 import br.com.midnightsyslabs.flow_control.domain.entity.revenue.Revenue;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,19 +42,25 @@ public class Sale implements Revenue {
    private List<SaleProduct> saleProducts;
 
    @NotNull
+   @Column
    private LocalDate date;
 
    @NotNull
+   @Column
    private OffsetDateTime createdAt;
 
+   @Column
    private OffsetDateTime deletedAt;
 
+   @NotNull
+   @Column(name = "is_closed")
    private boolean isClosed;
 
    @Override
    public BigDecimal getRevenue() {
-      return saleProducts.stream().map(saleProduct ->
-      saleProduct.getProductPriceOnSaleDate().multiply(saleProduct.getQuantity())).reduce(BigDecimal.ZERO, BigDecimal::add);
+      return saleProducts.stream()
+            .map(saleProduct -> saleProduct.getProductPriceOnSaleDate().multiply(saleProduct.getQuantity()))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
    }
 
    @Override

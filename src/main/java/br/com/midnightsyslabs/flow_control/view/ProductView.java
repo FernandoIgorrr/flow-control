@@ -28,5 +28,6 @@ public class ProductView {
     private String measurementUnitUnit;
     private String measurementUnitName;
     private String measurementUnitSymbol;
+    private boolean isClosed;
 
 }

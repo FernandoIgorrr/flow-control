@@ -22,8 +22,8 @@ public class ExpenseService {
 
     @Autowired
     private EmployeeService employeeService;
-    
-    public List<Expense> getAllExpenses(){
+
+    public List<Expense> getAllExpenses() {
 
         List<Expense> result = new ArrayList<Expense>();
 
@@ -34,7 +34,8 @@ public class ExpenseService {
         return result;
     }
 
-      public  List<Expense> searchBetween(LocalDate start,LocalDate end){
-        return getAllExpenses().stream().filter(expense-> !expense.getDate().isBefore(start) && !expense.getDate().isAfter(end)).toList();
+    public List<Expense> searchBetween(LocalDate start, LocalDate end) {
+        return getAllExpenses().stream()
+                .filter(expense -> !expense.getDate().isBefore(start) && !expense.getDate().isAfter(end)).toList();
     }
 }

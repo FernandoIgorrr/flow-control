@@ -6,21 +6,24 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
 
-<VBox spacing="0.0" prefHeight="800.0" prefWidth="1100.0" style="-fx-background-color: #f0f2f5;"
+<VBox spacing="0.0" prefHeight="800.0" prefWidth="1100.0"
     xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="br.com.midnightsyslabs.flow_control.ui.controller.StatementFinanceController">
+    fx:controller="br.com.midnightsyslabs.flow_control.ui.controller.StatementFinanceController"
+    stylesheets="@../css/card.css"
+>
 
-    <VBox spacing="15.0" style="-fx-background-color: #f0f2f5;">
+    <VBox spacing="12">
         <padding>
             <Insets bottom="15.0" left="25.0" right="25.0" top="25.0" />
         </padding>
 
-        <HBox alignment="CENTER_LEFT" spacing="15.0"
-            style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);">
-            <Label text="Período de Análise:" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
-            <DatePicker fx:id="dpInicio" promptText="Início" />
-            <DatePicker fx:id="dpFim" promptText="Fim" />
-            <Button fx:id="btnFiltrar" onAction="#handleFiltrar" prefWidth="120.0"
+        <HBox alignment="CENTER_LEFT" spacing="12"
+            style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);"
+            >
+            <Label text="Período de Análise:" styleClass="client-name"/>
+            <DatePicker fx:id="dpInicio" minHeight="40" promptText="Início" />
+            <DatePicker fx:id="dpFim" minHeight="40" promptText="Fim" />
+            <Button fx:id="btnFiltrar" onAction="#handleFiltrar" minHeight="40" prefWidth="120.0"
                 style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"
                 text="Filtrar" />
         </HBox>
@@ -36,19 +39,21 @@
                     style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-border-left-width: 5; -fx-border-left-color: #4CAF50;">
                     <Text text="Receitas" style="-fx-fill: #757575;" />
                     <Label fx:id="lblTotalReceita" text="R$ 0,00"
-                        style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+                        styleClass="total-price-info" />
                 </VBox>
                 <VBox alignment="CENTER" GridPane.columnIndex="1"
                     style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-border-left-width: 5; -fx-border-left-color: #F44336;">
                     <Text text="Despesas" style="-fx-fill: #757575;" />
                     <Label fx:id="lblTotalDespesa" text="R$ 0,00"
-                        style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+                        styleClass="total-price-info-red" />
                 </VBox>
+
+
                 <VBox alignment="CENTER" GridPane.columnIndex="2"
                     style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-border-left-width: 5; -fx-border-left-color: #2196F3;">
                     <Text text="Saldo" style="-fx-fill: #757575;" />
                     <Label fx:id="lblSaldo" text="R$ 0,00"
-                        style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+                    />
                 </VBox>
             </children>
         </GridPane>
@@ -63,7 +68,7 @@
                 </padding>
 
                 <VBox
-                    style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10;">
+                    style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 8;">
                     <Label text="Evolução Financeira (Receitas vs Despesas)"
                         style="-fx-font-weight: bold; -fx-font-size: 16px;" />
                     <AreaChart fx:id="financialLineChart" minHeight="400.0" createSymbols="true">
@@ -77,8 +82,8 @@
                 </VBox>
 
                 <VBox
-                    style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;">
-                    <Label text="Clientes por Faturamento" style="-fx-font-weight: bold;" />
+                    style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8;">
+                    <Label text="Faturamento por Cliente" style="-fx-font-weight: bold;" />
                     <BarChart fx:id="clientBarChart" legendVisible="false" minHeight="350">
                         <xAxis>
                             <CategoryAxis side="BOTTOM" />
@@ -89,11 +94,25 @@
                     </BarChart>
                 </VBox>
 
+
                 <VBox spacing="20.0">
                     <VBox
-                        style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;">
+                        style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8;">
                         <Label text="Top Produtos por Faturamento" style="-fx-font-weight: bold;" />
                         <BarChart fx:id="productBarChart" legendVisible="false" minHeight="350">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis side="LEFT" />
+                            </yAxis>
+                        </BarChart>
+                    </VBox>
+
+                    <VBox
+                        style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8;">
+                        <Label text="Despesa por Fornecedor" style="-fx-font-weight: bold;" />
+                        <BarChart fx:id="purchaseBarChart" legendVisible="false" minHeight="350" styleClass="big-x-axis">
                             <xAxis>
                                 <CategoryAxis side="BOTTOM" />
                             </xAxis>

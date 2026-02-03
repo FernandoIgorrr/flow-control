@@ -18,6 +18,7 @@ import br.com.midnightsyslabs.flow_control.service.ProductService;
 import br.com.midnightsyslabs.flow_control.service.SaleService;
 import br.com.midnightsyslabs.flow_control.service.UtilsService;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.SaleCardController;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.SaleFormController;
 import br.com.midnightsyslabs.flow_control.view.ClientView;
 import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import javafx.fxml.FXML;
@@ -86,12 +87,12 @@ public class SalesController {
 
     @FXML
     public void initialize() {
-        reloadSales();
-
+        
         configureTimeIntervalEnumComboBoxFilter();
         configureProductComboBoxFilter();
         configureClientComboBoxFilter();
-
+        
+        reloadSales();
         imgType.setImage(new Image(
                 getClass().getResourceAsStream("/images/game-icons--basket.png")));
         imgType.getStyleClass().add("blue-icon");
@@ -186,6 +187,9 @@ public class SalesController {
             dialog.setTitle("Cadastrar Venda");
             dialog.setScene(new Scene(loader.load(), width, height));
 
+            SaleFormController controller = loader.getController();
+            controller.setOnDataChanged(this::reloadSales);
+
             Stage mainStage = (Stage) btnAddSale.getScene().getWindow();
 
             dialog.initOwner(mainStage);
@@ -277,7 +281,7 @@ public class SalesController {
         allSalesDTO = saleService.getSalesDTO();
 
         filteredSalesDTO = allSalesDTO;
-
+        applyFilters();
         renderCards(filteredSalesDTO);
         renderRecentSilesPriceCard();
     }

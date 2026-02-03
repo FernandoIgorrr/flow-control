@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import br.com.midnightsyslabs.flow_control.service.NavigationService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -20,8 +22,10 @@ public class MainController {
     @FXML
     private VBox sidebarButtons;
 
-    @FXML
-    private Button dashboardButton;
+    /*
+     * @FXML
+     * private Button dashboardButton;
+     */
 
     @FXML
     private Button productsButton;
@@ -34,10 +38,10 @@ public class MainController {
 
     @FXML
     private Button suppliersButton;
-    
+
     @FXML
     private Button productionsButton;
-    
+
     @FXML
     private Button salesButton;
 
@@ -46,11 +50,17 @@ public class MainController {
 
     @FXML
     private Button expensesButton;
+   
+    @FXML
+    private Button employeesButton;
 
     @FXML
     private Button statementFinanceButton;
 
     private final NavigationService navService;
+
+    @FXML
+    private ImageView logo;
 
     public MainController(NavigationService navService) {
         this.navService = navService;
@@ -58,10 +68,12 @@ public class MainController {
 
     @FXML
     public void initialize() {
+        logo.setImage(new Image(
+                getClass().getResourceAsStream("/images/logo.png")));
         navService.setMainContainer(conteudoPrincipal);
         // Carrega uma tela inicial opcional
-        navService.navigateTo("/fxml/expenses.fxml");
-        setActive(expensesButton);
+        navService.navigateTo("/fxml/statement-finance.fxml");
+        setActive(statementFinanceButton);
     }
 
     private void setActive(Button activeButton) {
@@ -74,11 +86,13 @@ public class MainController {
         activeButton.getStyleClass().add("selected");
     }
 
-    @FXML
-    public void goToDashboard() {
-        navService.navigateTo("/fxml/dashboard.fxml");
-        setActive(dashboardButton);
-    }
+    /*
+     * @FXML
+     * public void goToDashboard() {
+     * navService.navigateTo("/fxml/dashboard.fxml");
+     * setActive(dashboardButton);
+     * }
+     */
 
     @FXML
     public void goToProducts() {
@@ -105,7 +119,7 @@ public class MainController {
     }
 
     @FXML
-    public void goToProductions(){
+    public void goToProductions() {
         navService.navigateTo("/fxml/productions.fxml");
         setActive(productionsButton);
     }
@@ -117,7 +131,7 @@ public class MainController {
     }
 
     @FXML
-    public void goToPurchases(){
+    public void goToPurchases() {
         navService.navigateTo("/fxml/purchases.fxml");
         setActive(purchasesButton);
     }
@@ -132,5 +146,10 @@ public class MainController {
     public void goToStatementFinance() {
         navService.navigateTo("/fxml/statement-finance.fxml");
         setActive(statementFinanceButton);
+    }
+    @FXML
+    public void goToEmployees() {
+        navService.navigateTo("/fxml/employees.fxml");
+        setActive(employeesButton);
     }
 }

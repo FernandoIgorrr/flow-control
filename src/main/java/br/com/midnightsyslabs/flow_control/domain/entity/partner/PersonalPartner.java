@@ -33,8 +33,9 @@ public class PersonalPartner extends Partner {
             City city,
             PartnerRole role,
             OffsetDateTime createAt,
-            OffsetDateTime deletedAt) {
-        super(id, name, email, phone, city, role, createAt, deletedAt);
+            OffsetDateTime deletedAt,
+            boolean isClosed) {
+        super(id, name, email, phone, city, role, createAt, deletedAt, isClosed);
         this.cpf = cpf;
     }
 }

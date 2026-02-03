@@ -104,6 +104,10 @@ public class SpentFormController {
         try {
             spentService.saveSpent(amountPaid.getText(), spentCategoryComboBox.getValue(),
                     spentDescriptionField.getText(), datePicker.getValue());
+
+            if (onDataChanged != null) {
+                onDataChanged.run();
+            }
         } catch (Exception e) {
             showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algo deu errado!" + e.getMessage());
             return;

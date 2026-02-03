@@ -58,8 +58,8 @@
                 <Button fx:id="btnDelete" onAction="#onDelete" styleClass="btn-action-delete">
                     <graphic>
                         <StackPane prefWidth="28" prefHeight="28">
-                            <ImageView fitHeight="28" fitWidth="28" preserveRatio="true"
-                                styleClass="icon-delete">
+                            <ImageView fx:id="btnIconDelete" fitHeight="28" fitWidth="28" preserveRatio="true"
+                                >
                                 <image>
                                     <Image url="@/images/delete.png" />
                                 </image>

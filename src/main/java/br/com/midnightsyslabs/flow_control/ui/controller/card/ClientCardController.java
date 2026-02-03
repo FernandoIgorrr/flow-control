@@ -80,10 +80,20 @@ public class ClientCardController {
     @FXML
     private Button btnDelete;
     @FXML
+    private ImageView btnIconDelete;
+    @FXML
     private StackPane iconContainer;
 
     public void setClientView(ClientView client) {
         this.clientView = client;
+
+        if (clientView.isClosed()) {
+            btnDelete.setDisable(true);
+            btnIconDelete.getStyleClass().add("icon-delete-disable");
+
+        } else {
+            btnIconDelete.getStyleClass().add("icon-delete");
+        }
 
         lblName.setText(client.getName());
 

@@ -37,42 +37,7 @@
                 <Region HBox.hgrow="ALWAYS" />
 
                 <!-- RIGHT: BUTTON -->
-                <Button
-                    fx:id="btnAddEmployee"
-                    text="Registrar Funcionário"
-                    onAction="#onAddEmployee"
-                    styleClass="btn-primary-red">
-                    <graphic>
-                        <StackPane prefWidth="22" prefHeight="22" maxWidth="22" maxHeight="22">
-                            <children>
-                                <ImageView fitHeight="22.0" fitWidth="22.0" preserveRatio="true"
-                                    styleClass="btn-primary-icon">
-                                    <image>
-                                        <Image url="@/images/ic--baseline-plus.png" />
-                                    </image>
-                                </ImageView>
-                            </children>
-                        </StackPane>
-                    </graphic>
-                </Button>
-                <Button
-                    fx:id="btnAddEmployeePayments"
-                    text="Registrar Pagamentos"
-                    onAction="#onAddEmployeePayments"
-                    styleClass="btn-primary-red">
-                    <graphic>
-                        <StackPane prefWidth="22" prefHeight="22" maxWidth="22" maxHeight="22">
-                            <children>
-                                <ImageView fitHeight="22.0" fitWidth="22.0" preserveRatio="true"
-                                    styleClass="btn-primary-icon">
-                                    <image>
-                                        <Image url="@/images/ic--baseline-plus.png" />
-                                    </image>
-                                </ImageView>
-                            </children>
-                        </StackPane>
-                    </graphic>
-                </Button>
+           
                 <Button
                     fx:id="btnAddSpent"
                     text="Registrar despesa"

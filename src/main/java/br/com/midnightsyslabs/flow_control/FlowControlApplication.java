@@ -9,11 +9,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 @SpringBootApplication
-public class FlowControlApplication extends Application{
+public class FlowControlApplication extends Application {
 
 	private ConfigurableApplicationContext applicationContext;
 
@@ -22,32 +23,35 @@ public class FlowControlApplication extends Application{
 	}
 
 	@Override
-	public void init(){
+	public void init() {
 		applicationContext = SpringApplication.run(getClass());
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
-        fxmlLoader.setControllerFactory(applicationContext::getBean);
 
+		primaryStage.getIcons().add(
+				new Image(getClass().getResourceAsStream("/images/logo.png")));
+
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
+		fxmlLoader.setControllerFactory(applicationContext::getBean);
 
 		Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
 		double width = screenBounds.getWidth() * 0.9;
-    	double height = screenBounds.getHeight() * 0.9;
+		double height = screenBounds.getHeight() * 0.9;
 
 		Scene scene = new Scene(fxmlLoader.load(), width, height);
 
-		//primaryStage.setMaximized(true);
-        primaryStage.setTitle("Flow Control");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+		// primaryStage.setMaximized(true);
+		primaryStage.setTitle("Flow Control");
+		primaryStage.setScene(scene);
+		primaryStage.show();
 	}
 
 	@Override
-	public void stop(){
+	public void stop() {
 		applicationContext.close();
-        Platform.exit();
+		Platform.exit();
 	}
 
 }

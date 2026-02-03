@@ -84,10 +84,20 @@ public class SupplierCardController {
     @FXML
     private Button btnAddPurchase;
     @FXML
+    private ImageView btnIconDelete;
+    @FXML
     private StackPane iconContainer;
 
     public void setSupplierView(SupplierView supplierView) {
         this.supplierView = supplierView;
+
+        if (supplierView.isClosed()) {
+            btnDelete.setDisable(true);
+            btnIconDelete.getStyleClass().add("icon-delete-disable");
+
+        } else {
+            btnIconDelete.getStyleClass().add("icon-delete");
+        }
 
         lblName.setText(supplierView.getName());
 
@@ -176,7 +186,6 @@ public class SupplierCardController {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("⚠️ CONFIRMAÇÃO DE EXCLUSÃO");
         alert.setHeaderText("VOCÊ TEM CERTEZA?");
-     
 
         Label content = new Label(
                 "Esta ação é IRREVERSÍVEL.\n\n" +
@@ -215,7 +224,7 @@ public class SupplierCardController {
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.isPresent() && result.get() == deleteButton) {
-            
+
             if (supplierView.getCategory() == PartnerCategory.PERSONAL) {
                 personalPartnerRepository.findById(supplierView.getId()).ifPresentOrElse(supplier -> {
                     supplierService.deletePersonalSupplier(supplier);
@@ -234,9 +243,8 @@ public class SupplierCardController {
     }
 
     @FXML
-    public void onAddPurchase()
-    {
-         try {
+    public void onAddPurchase() {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/purchase-supplier-form.fxml"));
 
             loader.setControllerFactory(context::getBean);

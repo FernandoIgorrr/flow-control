@@ -16,11 +16,16 @@ import br.com.midnightsyslabs.flow_control.domain.entity.expense.Expense;
 import br.com.midnightsyslabs.flow_control.domain.entity.revenue.Revenue;
 import br.com.midnightsyslabs.flow_control.dto.SaleDTO;
 import br.com.midnightsyslabs.flow_control.service.ExpenseService;
+import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.SaleService;
+import br.com.midnightsyslabs.flow_control.service.SupplierService;
+import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import br.com.midnightsyslabs.flow_control.view.SaleProductView;
+import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.chart.AreaChart; // Alterado para AreaChart
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -39,6 +44,9 @@ public class StatementFinanceController {
     @Autowired
     private ExpenseService expenseService;
 
+    @Autowired
+    private PurchaseService purchaseService;
+
     @FXML
     private DatePicker dpInicio;
     @FXML
@@ -52,6 +60,9 @@ public class StatementFinanceController {
 
     @FXML
     private BarChart<String, Number> clientBarChart;
+
+    @FXML
+    private BarChart<String, Number> purchaseBarChart;
 
     @FXML
     private BarChart<String, Number> productBarChart;
@@ -71,41 +82,45 @@ public class StatementFinanceController {
         dpInicio.setValue(LocalDate.now().withDayOfMonth(1));
         dpFim.setValue(LocalDate.now());
 
+        dpInicio.setEditable(false);
+        dpFim.setEditable(false);
+
         // Rotaciona os nomes dos produtos no eixo X para evitar sobreposição
         CategoryAxis xAxisProduct = (CategoryAxis) productBarChart.getXAxis();
         CategoryAxis xAxisClient = (CategoryAxis) clientBarChart.getXAxis();
-        xAxisClient.setTickLabelRotation(45);
+        CategoryAxis xAxisPurchase = (CategoryAxis) purchaseBarChart.getXAxis();
 
+        xAxisClient.setTickLabelRotation(45);
         xAxisProduct.setTickLabelRotation(45);
+        xAxisPurchase.setTickLabelRotation(45);
 
         configureCategoryAxis(productBarChart);
         configureCategoryAxis(clientBarChart);
+        configureCategoryAxis(purchaseBarChart);
 
         // Chama o filtro inicial para carregar os dados
         handleFiltrar();
     }
 
     private void applyCurrencyTooltip(XYChart.Data<String, Number> data, String labelPrefix) {
-    data.nodeProperty().addListener((obs, oldNode, newNode) -> {
-        if (newNode != null) {
-            BigDecimal value = new BigDecimal(data.getYValue().toString());
+        data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            if (newNode != null) {
+                BigDecimal value = new BigDecimal(data.getYValue().toString());
 
-            Tooltip tooltip = new Tooltip(
-                    data.getXValue() + "\n" +
-                    labelPrefix + ": " + CURRENCY_FORMAT.format(value)
-            );
+                Tooltip tooltip = new Tooltip(
+                        data.getXValue() + "\n" +
+                                labelPrefix + ": " + CURRENCY_FORMAT.format(value));
 
-            tooltip.setStyle("""
-                -fx-font-size: 16px;
-                -fx-font-weight: bold;
-                -fx-padding: 12;
-            """);
+                tooltip.setStyle("""
+                            -fx-font-size: 16px;
+                            -fx-font-weight: bold;
+                            -fx-padding: 12;
+                        """);
 
-            Tooltip.install(newNode, tooltip);
-        }
-    });
-}
-
+                Tooltip.install(newNode, tooltip);
+            }
+        });
+    }
 
     private void configureCategoryAxis(BarChart<String, Number> chart) {
         CategoryAxis axis = (CategoryAxis) chart.getXAxis();
@@ -113,6 +128,7 @@ public class StatementFinanceController {
         axis.setTickLabelRotation(45); // ou 60 se nomes grandes
         axis.setTickLabelGap(5);
         axis.setAnimated(false);
+        axis.getStyleClass().add("axis-label");
     }
 
     @FXML
@@ -123,9 +139,11 @@ public class StatementFinanceController {
         if (start != null && end != null) {
             List<SaleDTO> revs = saleService.searchBetween(start, end);
             List<Expense> exps = expenseService.searchBetween(start, end);
+            List<PurchaseView> purchases = purchaseService.getPurchasesFromDate(purchaseService.getPurchasesView(),start, end);
 
             updatePieChart(exps);
             updateClientChart(revs);
+            updatePurchaseChart(purchases);
             updateLineChart(revs, exps);
             updateProductChart(revs);
             atualizarLabelsTotais(revs, exps);
@@ -175,6 +193,32 @@ public class StatementFinanceController {
         clientBarChart.getData().setAll(series);
     }
 
+    public void updatePurchaseChart(List<PurchaseView> purchases) {
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Gastos por Fornecedor");
+
+        Map<String, BigDecimal> purchaseMap = purchases.stream()
+            .collect(Collectors.groupingBy(
+                p -> p.getPartnerName() != null ? p.getPartnerName() : "Fornecedor não inentificao",
+                Collectors.mapping(
+                    PurchaseView::getExpense,
+                    Collectors.reducing(BigDecimal.ZERO,BigDecimal::add))));
+      
+
+        purchaseMap.entrySet().stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+                .limit(10)
+                .forEach(entry -> {
+                    XYChart.Data<String, Number> data = new XYChart.Data<>(entry.getKey(), entry.getValue());
+
+                    applyCurrencyTooltip(data, "Total gasto");
+
+                    series.getData().add(data);
+                });
+
+        purchaseBarChart.getData().setAll(series);
+    }
+
     public void updateLineChart(List<SaleDTO> revenues, List<Expense> expenses) {
         XYChart.Series<String, Number> revSeries = new XYChart.Series<>();
         revSeries.setName("Receitas");
@@ -196,6 +240,7 @@ public class StatementFinanceController {
         expByDate.forEach((date, val) -> expSeries.getData().add(new XYChart.Data<>(date.toString(), val)));
 
         financialLineChart.getData().setAll(revSeries, expSeries);
+
     }
 
     private void atualizarLabelsTotais(List<SaleDTO> revs, List<Expense> exps) {
@@ -215,9 +260,9 @@ public class StatementFinanceController {
 
         // Estilização dinâmica do saldo
         if (saldo.compareTo(BigDecimal.ZERO) < 0) {
-            lblSaldo.setStyle("-fx-text-fill: #D32F2F; -fx-font-size: 20px; -fx-font-weight: bold;");
+            lblSaldo.getStyleClass().add("total-price-info-red");
         } else {
-            lblSaldo.setStyle("-fx-text-fill: #1565C0; -fx-font-size: 20px; -fx-font-weight: bold;");
+            lblSaldo.getStyleClass().add("total-price-info");
         }
     }
 

@@ -24,6 +24,7 @@ import br.com.midnightsyslabs.flow_control.service.UtilsService;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.EmployeePaymentCardController;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.PurchaseCardController;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.SpentCardController;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.SpentFormController;
 import br.com.midnightsyslabs.flow_control.view.ClientView;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import javafx.fxml.FXML;
@@ -73,11 +74,7 @@ public class ExpensesController {
     @FXML
     private ImageView imgType;
 
-    @FXML
-    private Button btnAddEmployee;
 
-    @FXML
-    private Button btnAddEmployeePayments;
 
     @FXML
     private Button btnAddSpent;
@@ -179,78 +176,6 @@ public class ExpensesController {
     }
 
     @FXML
-    public void onAddEmployee() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/employee-form.fxml"));
-
-            loader.setControllerFactory(context::getBean);
-
-            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            double width = screenBounds.getWidth() * 0.3;
-            double height = screenBounds.getHeight() * 0.3;
-
-            Stage dialog = new Stage();
-            dialog.setTitle("Cadastrar Funcionário");
-            dialog.setScene(new Scene(loader.load(), width, height));
-
-            Stage mainStage = (Stage) btnAddEmployee.getScene().getWindow();
-
-            dialog.initOwner(mainStage);
-            dialog.initModality(Modality.WINDOW_MODAL);
-
-            dialog.setResizable(false);
-            // stage.showAndWait();
-
-            ColorAdjust darken = new ColorAdjust();
-            darken.setBrightness(-0.8);
-            mainStage.getScene().getRoot().setEffect(darken);
-
-            dialog.setOnHidden(e -> mainStage.getScene().getRoot().setEffect(null));
-
-            dialog.showAndWait();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    public void onAddEmployeePayments() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/employee-payments-form.fxml"));
-
-            loader.setControllerFactory(context::getBean);
-
-            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            double width = screenBounds.getWidth() * 0.3;
-            double height = screenBounds.getHeight() * 0.5;
-
-            Stage dialog = new Stage();
-            dialog.setTitle("Cadastrar Pagamentos");
-            dialog.setScene(new Scene(loader.load(), width, height));
-
-            Stage mainStage = (Stage) btnAddEmployee.getScene().getWindow();
-
-            dialog.initOwner(mainStage);
-            dialog.initModality(Modality.WINDOW_MODAL);
-
-            dialog.setResizable(false);
-            // stage.showAndWait();
-
-            ColorAdjust darken = new ColorAdjust();
-            darken.setBrightness(-0.8);
-            mainStage.getScene().getRoot().setEffect(darken);
-
-            dialog.setOnHidden(e -> mainStage.getScene().getRoot().setEffect(null));
-
-            dialog.showAndWait();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
     public void onAddSpent() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/spent-form.fxml"));
@@ -264,6 +189,9 @@ public class ExpensesController {
             Stage dialog = new Stage();
             dialog.setTitle("Cadastrar Despesa");
             dialog.setScene(new Scene(loader.load(), width, height));
+
+            SpentFormController controller = loader.getController();
+            controller.setOnDataChanged(this::reloadExpenses);
 
             Stage mainStage = (Stage) btnAddSpent.getScene().getWindow();
 

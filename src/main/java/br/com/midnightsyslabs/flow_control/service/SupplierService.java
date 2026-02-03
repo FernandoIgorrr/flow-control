@@ -62,7 +62,7 @@ public class SupplierService {
                     email,
                     city,
                     role,
-                    null, null);
+                    null, null,false);
             personalPartnerRepository.save(supplier);
         } else {
 
@@ -72,7 +72,7 @@ public class SupplierService {
                     email,
                     city,
                     role,
-                    null, null);
+                    null, null,false);
             companyPartnerRepository.save(supplier);
         }
     }

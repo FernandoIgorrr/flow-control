@@ -13,29 +13,39 @@ import javafx.stage.Stage;
 public class EmployeeFormController {
     @Autowired
     private EmployeeService employeeService;
-    
+
+    private Runnable onDataChanged;
+
     @FXML
     private TextField nameField;
 
     @FXML
-    private void onSave(){
-        if(nameField.getText().isBlank()){
-           showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
-                        "Por favor preencha o nome!");
-                return;
+    private void onSave() {
+        if (nameField.getText().isBlank()) {
+            showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+                    "Por favor preencha o nome!");
+            return;
         }
         try {
             employeeService.saveEmployee(nameField.getText());
+
+            if (onDataChanged != null) {
+                onDataChanged.run();
+            }
         } catch (Exception e) {
-             showLabelAlert(Alert.AlertType.WARNING, "Algo deu errado",
-                        e.getMessage());
+            showLabelAlert(Alert.AlertType.WARNING, "Algo deu errado",
+                    e.getMessage());
             return;
         }
 
-         close();
+        close();
 
         showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
                 "Funcionário cadastrado com sucesso!");
+    }
+
+    public void setOnDataChanged(Runnable onDataChanged) {
+        this.onDataChanged = onDataChanged;
     }
 
     @FXML
