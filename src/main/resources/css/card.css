@@ -416,11 +416,24 @@
     -fx-padding: 4 8 4 8;
 }
 
-.big-x-axis .axis:bottom .axis-tick-label {
-    -fx-font-size: 22px;
+.axis-label .text {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
 }
 
-.axis-label {
-    -fx-text-fill: black;
-    -fx-font-size: 22;
+.tab-pane:focused .tab-header-area .tab:selected {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+     -fx-alignment: CENTER;
+}
+
+/* Centraliza o texto dentro das abas */
+.tab-pane .tab {
+    -fx-alignment: CENTER;
+}
+
+/* Garante que o container do texto ocupe toda a aba */
+.tab-pane .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
 }

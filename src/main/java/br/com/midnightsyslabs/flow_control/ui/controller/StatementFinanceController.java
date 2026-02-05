@@ -3,6 +3,7 @@ package br.com.midnightsyslabs.flow_control.ui.controller;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -73,16 +74,18 @@ public class StatementFinanceController {
     private Label lblSaldo;
 
     @FXML
-private TabPane tabPane;
+    private TabPane tabPane;
 
     private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+
+    private static final DateTimeFormatter BR_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     @FXML
     public void initialize() {
         tabPane.tabMinWidthProperty().bind(tabPane.widthProperty().divide(5).subtract(2));
 
         // Define o mês atual por padrão
-        dpInicio.setValue(LocalDate.now().withDayOfMonth(1));
+        dpInicio.setValue(LocalDate.now().withDayOfYear(1));
         dpFim.setValue(LocalDate.now());
 
         dpInicio.setEditable(false);
@@ -131,7 +134,9 @@ private TabPane tabPane;
         axis.setTickLabelRotation(45); // ou 60 se nomes grandes
         axis.setTickLabelGap(5);
         axis.setAnimated(false);
-        axis.getStyleClass().add("axis-label");
+        // axis.getStyleClass().add("axis-label");
+        axis.setTickLabelFont(
+                javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 14));
     }
 
     @FXML
@@ -142,7 +147,8 @@ private TabPane tabPane;
         if (start != null && end != null) {
             List<SaleDTO> revs = saleService.searchBetween(start, end);
             List<Expense> exps = expenseService.searchBetween(start, end);
-            List<PurchaseView> purchases = purchaseService.getPurchasesFromDate(purchaseService.getPurchasesView(),start, end);
+            List<PurchaseView> purchases = purchaseService.getPurchasesFromDate(purchaseService.getPurchasesView(),
+                    start, end);
 
             updatePieChart(exps);
             updateClientChart(revs);
@@ -201,12 +207,11 @@ private TabPane tabPane;
         series.setName("Gastos por Fornecedor");
 
         Map<String, BigDecimal> purchaseMap = purchases.stream()
-            .collect(Collectors.groupingBy(
-                p -> p.getPartnerName() != null ? p.getPartnerName() : "Fornecedor não inentificao",
-                Collectors.mapping(
-                    PurchaseView::getExpense,
-                    Collectors.reducing(BigDecimal.ZERO,BigDecimal::add))));
-      
+                .collect(Collectors.groupingBy(
+                        p -> p.getPartnerName() != null ? p.getPartnerName() : "Fornecedor não inentificao",
+                        Collectors.mapping(
+                                PurchaseView::getExpense,
+                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
 
         purchaseMap.entrySet().stream()
                 .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
@@ -239,8 +244,11 @@ private TabPane tabPane;
                         Collectors.summingDouble(e -> e.getExpense().doubleValue())));
 
         // Adiciona os dados às séries
-        revByDate.forEach((date, val) -> revSeries.getData().add(new XYChart.Data<>(date.toString(), val)));
-        expByDate.forEach((date, val) -> expSeries.getData().add(new XYChart.Data<>(date.toString(), val)));
+        revByDate.forEach((date, val) -> revSeries.getData().add(
+                new XYChart.Data<>(date.format(BR_DATE_FORMAT), val)));
+
+        expByDate.forEach((date, val) -> expSeries.getData().add(
+                new XYChart.Data<>(date.format(BR_DATE_FORMAT), val)));
 
         financialLineChart.getData().setAll(revSeries, expSeries);
 

@@ -59,91 +59,119 @@
         </GridPane>
     </VBox>
 
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-        style="-fx-background-color: transparent; -fx-background: #f0f2f5;">
-        <content>
-            <VBox VBox.vgrow="ALWAYS">
+    <TabPane fx:id="tabPane"
+        tabClosingPolicy="UNAVAILABLE"
+        VBox.vgrow="ALWAYS"
+        stylesheets="@../css/tabs.css">
+        <tabs>
+            <!-- Aba 1 -->
+            <Tab text="Evolução Financeira">
+                <content>
+                    <ScrollPane fitToWidth="true"
+                        style="-fx-background-color: transparent; -fx-background: #f0f2f5;">
+                        <VBox spacing="10" style="-fx-padding: 20;">
+                            <Label text="Evolução Financeira (Receitas vs Despesas)"
+                                style="-fx-font-weight: bold; -fx-font-size: 16px;" />
 
-            <TabPane  fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" stylesheets="@../css/tabs.css">
+                            <AreaChart fx:id="financialLineChart"
+                                minHeight="500"
+                                createSymbols="true">
+                                <xAxis>
+                                    <CategoryAxis fx:id="xAxisLine" />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis />
+                                </yAxis>
+                            </AreaChart>
+                        </VBox>
+                    </ScrollPane>
+                </content>
+            </Tab>
 
-                <!-- Aba 1 -->
-                <Tab text="Evolução Financeira">
-                    <VBox spacing="10" style="-fx-padding: 20;">
-                        <Label text="Evolução Financeira (Receitas vs Despesas)"
-                            style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+            <!-- Aba 2 -->
+            <Tab text="Clientes">
+                <content>
+                    <ScrollPane fitToWidth="true">
+                        <VBox spacing="10" style="-fx-padding: 20;">
+                            <Label text="Faturamento por Cliente"
+                                style="-fx-font-weight: bold;" />
 
-                        <AreaChart fx:id="financialLineChart" minHeight="500" createSymbols="true">
-                            <xAxis>
-                                <CategoryAxis fx:id="xAxisLine" />
-                            </xAxis>
-                            <yAxis>
-                                <NumberAxis />
-                            </yAxis>
-                        </AreaChart>
-                    </VBox>
-                </Tab>
+                            <BarChart fx:id="clientBarChart"
+                                legendVisible="false"
+                                minHeight="500">
+                                <xAxis>
+                                    <CategoryAxis />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis />
+                                </yAxis>
+                            </BarChart>
+                        </VBox>
+                    </ScrollPane>
+                </content>
+            </Tab>
 
-                <!-- Aba 2 -->
-                <Tab text="Clientes">
-                    <VBox spacing="10" style="-fx-padding: 20;">
-                        <Label text="Faturamento por Cliente" style="-fx-font-weight: bold;" />
+            <!-- Aba 3 -->
+            <Tab text="Produtos Mais vendidos" >
+                <content>
+                    <ScrollPane fitToWidth="true">
+                        <VBox spacing="10" style="-fx-padding: 20;">
+                            <Label text="Top Produtos por Faturamento"
+                                style="-fx-font-weight: bold;" />
 
-                        <BarChart fx:id="clientBarChart" legendVisible="false" minHeight="500">
-                            <xAxis>
-                                <CategoryAxis />
-                            </xAxis>
-                            <yAxis>
-                                <NumberAxis />
-                            </yAxis>
-                        </BarChart>
-                    </VBox>
-                </Tab>
+                            <BarChart fx:id="productBarChart"
+                                legendVisible="false"
+                                minHeight="500">
+                                <xAxis>
+                                    <CategoryAxis />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis />
+                                </yAxis>
+                            </BarChart>
+                        </VBox>
+                    </ScrollPane>
+                </content>
+            </Tab>
 
-                <!-- Aba 3 -->
-                <Tab text="Produtos">
-                    <VBox spacing="10" style="-fx-padding: 20;">
-                        <Label text="Top Produtos por Faturamento" style="-fx-font-weight: bold;" />
+            <!-- Aba 4 -->
+            <Tab text="Fornecedores">
+                <content>
+                    <ScrollPane fitToWidth="true">
+                        <VBox spacing="10" style="-fx-padding: 20;">
+                            <Label text="Despesa por Fornecedor"
+                                style="-fx-font-weight: bold;" />
 
-                        <BarChart fx:id="productBarChart" legendVisible="false" minHeight="500">
-                            <xAxis>
-                                <CategoryAxis />
-                            </xAxis>
-                            <yAxis>
-                                <NumberAxis />
-                            </yAxis>
-                        </BarChart>
-                    </VBox>
-                </Tab>
+                            <BarChart fx:id="purchaseBarChart"
+                                legendVisible="false"
+                                minHeight="500">
+                                <xAxis>
+                                    <CategoryAxis />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis />
+                                </yAxis>
+                            </BarChart>
+                        </VBox>
+                    </ScrollPane>
+                </content>
+            </Tab>
 
-                <!-- Aba 4 -->
-                <Tab text="Fornecedores">
-                    <VBox spacing="10" style="-fx-padding: 20;">
-                        <Label text="Despesa por Fornecedor" style="-fx-font-weight: bold;" />
+            <!-- Aba 5 -->
+            <Tab text="Gastos por categorias">
+                <content>
+                    <ScrollPane fitToWidth="true">
+                        <VBox spacing="10" style="-fx-padding: 20;">
+                            <Label text="Despesas por Categoria"
+                                style="-fx-font-weight: bold;" />
 
-                        <BarChart fx:id="purchaseBarChart" legendVisible="false" minHeight="500"
-                            styleClass="big-x-axis">
-                            <xAxis>
-                                <CategoryAxis />
-                            </xAxis>
-                            <yAxis>
-                                <NumberAxis />
-                            </yAxis>
-                        </BarChart>
-                    </VBox>
-                </Tab>
-
-                <!-- Aba 5 -->
-                <Tab text="Categorias">
-                    <VBox spacing="10" style="-fx-padding: 20;">
-                        <Label text="Despesas por Categoria" style="-fx-font-weight: bold;" />
-
-                        <PieChart fx:id="categoryPieChart" labelsVisible="true" minHeight="500" />
-                    </VBox>
-                </Tab>
-
-            </TabPane>
-        </VBox>
-        </content>
-    </ScrollPane>
-
+                            <PieChart fx:id="categoryPieChart"
+                                labelsVisible="true"
+                                minHeight="500" />
+                        </VBox>
+                    </ScrollPane>
+                </content>
+            </Tab>
+        </tabs>
+    </TabPane>
 </VBox>
