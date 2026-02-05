@@ -1,6 +1,5 @@
 package br.com.midnightsyslabs.flow_control.ui.controller;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,14 +14,13 @@ import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
 import br.com.midnightsyslabs.flow_control.service.SupplierService;
 import br.com.midnightsyslabs.flow_control.service.UtilsService;
-import br.com.midnightsyslabs.flow_control.ui.controller.card.PurchaseCardController;
+import br.com.midnightsyslabs.flow_control.ui.cards.PurchaseCard;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.PurchaseFormController;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -52,6 +50,7 @@ public class PurchasesController {
     private ApplicationContext context;
 
     private List<PurchaseView> allPurchasesView; // lista completa
+
     private List<PurchaseView> filteredPurchases; // resultado dos filtros
 
     @FXML
@@ -84,12 +83,12 @@ public class PurchasesController {
     @FXML
     public void initialize() {
 
-        reloadPurchases();
+        loadPurchases();
         configureTimeIntervalEnumComboBoxFilter();
         configureRawMateialComboBoxFilter();
         configureSupplierComboBoxFilter();
 
-          imgType.setImage(new Image(
+        imgType.setImage(new Image(
                 getClass().getResourceAsStream("/images/game-icons--basket.png")));
         imgType.getStyleClass().add("blue-icon");
 
@@ -112,7 +111,7 @@ public class PurchasesController {
 
             PurchaseFormController controller = loader.getController();
             // CALLBACK
-            controller.setOnDataChanged(this::reloadPurchases);
+            controller.setOnDataChanged(this::loadPurchases);
 
             Stage mainStage = (Stage) btnAddPurchase.getScene().getWindow();
 
@@ -246,36 +245,49 @@ public class PurchasesController {
         cardsPane.getChildren().clear();
 
         for (PurchaseView purchaseView : purchasesView) {
-            try {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/fxml/card/purchase-card.fxml"));
-
-                loader.setControllerFactory(context::getBean);
-
-                Parent card = loader.load();
-
-                PurchaseCardController controller = loader.getController();
-                controller.setPurchaseView(purchaseView);
-                controller.setOnDataChanged(this::reloadPurchases);
-
-                cardsPane.getChildren().add(card);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            cardsPane.getChildren().add(new PurchaseCard(purchaseView, this::loadPurchases,purchaseService));
         }
     }
 
+   
+
+    /*
+     * private void renderCards(List<PurchaseView> purchasesView) {
+     * 
+     * cardsPane.getChildren().clear();
+     * 
+     * for (PurchaseView purchaseView : purchasesView) {
+     * try {
+     * FXMLLoader loader = new FXMLLoader(
+     * getClass().getResource("/fxml/card/purchase-card.fxml"));
+     * 
+     * loader.setControllerFactory(context::getBean);
+     * 
+     * Parent card = loader.load();
+     * 
+     * PurchaseCardController controller = loader.getController();
+     * controller.setPurchaseView(purchaseView);
+     * controller.setOnDataChanged(this::reloadPurchases);
+     * 
+     * cardsPane.getChildren().add(card);
+     * 
+     * } catch (IOException e) {
+     * e.printStackTrace();
+     * }
+     * }
+     * }
+     */
+
     private void renderRecentPurchasesPriceCard() {
         lblTotalPrice.setText(UtilsService.formatPrice(purchaseService.calculateTotalSpent(this.filteredPurchases)));
-        lblTotalPurchases.setText("" + this.filteredPurchases.size());
+        lblTotalPurchases.setText("" + filteredPurchases.size());
     }
 
     private String safe(String value) {
         return value == null ? "" : value.toLowerCase();
     }
 
-    private void reloadPurchases() {
+    private void loadPurchases() {
         allPurchasesView = purchaseService.getPurchasesViewDateOrdenedReverse();
 
         filteredPurchases = allPurchasesView;

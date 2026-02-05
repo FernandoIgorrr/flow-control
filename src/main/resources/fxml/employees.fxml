@@ -98,7 +98,7 @@
 
                 <columns>
                     <TableColumn text="Funcionário" fx:id="colName"
-                        style="-fx-font-size: 18;-fx-alignment: CENTER;" />
+                        style="-fx-font-size: 16;-fx-alignment: CENTER;" />
 
                     <TableColumn text="Desligar"
                         fx:id="colDisconnect"

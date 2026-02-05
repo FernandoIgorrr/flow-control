@@ -28,7 +28,4 @@ public interface PersonalPartnerRepository extends JpaRepository<PersonalPartner
     WHERE pp.role.id = 2
 """)
     List<PersonalPartner> findAllByRoleSupplier();
-    
-    @Override
-    Optional<PersonalPartner> findById(UUID id);
 }

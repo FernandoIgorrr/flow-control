@@ -71,9 +71,7 @@ public class Purchase implements Expense {
 
     private OffsetDateTime deletedAt;
 
-    private boolean isClosed;
-
-    private OffsetDateTime closedAt;
+    private boolean confirmed;
 
     @PrePersist
     protected void onCreate() {

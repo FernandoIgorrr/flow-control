@@ -81,7 +81,7 @@ public class ProductCardController {
     public void setProductView(ProductView productView) {
         this.productView = productView;
 
-        if (productView.isClosed()) {
+        if (productView.isConfirmed()) {
             btnDelete.setDisable(true);
             btnIconDelete.getStyleClass().add("icon-delete-disable");
 

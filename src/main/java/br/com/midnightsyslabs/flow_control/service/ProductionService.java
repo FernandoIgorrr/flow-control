@@ -64,7 +64,7 @@ public class ProductionService {
                 productionRawMaterialPurchase.setId(new ProductionRawMaterialsPurchaseId());
                 productionRawMaterialPurchase.setProduction(production);
                 productionRawMaterialPurchase
-                        .setQuantityUsed(new BigDecimal(UtilsService.solveComma(row.quantityField.getText())));
+                        .setQuantityUsed(new BigDecimal(UtilsService.solveComma(row.purchaseQuantityUsedField.getText())));
 
                 purchaseService.getById(row.purchaseView.getId()).ifPresentOrElse(purchase -> {
                     productionRawMaterialPurchase.setPurchase(purchase);

@@ -55,15 +55,25 @@
                                 <!-- O primeiro TextField será criado pelo controller -->
                             </VBox>
 
-                            <VBox spacing="4"
+                              <VBox spacing="8"
                                 GridPane.rowIndex="1"
+                                GridPane.columnIndex="0"
+                                GridPane.columnSpan="2">
+                                <Button text="Relacionar compra"
+                                    onAction="#addPurchaseField"
+                                    styleClass="btn-add-fields" 
+                                    maxWidth="Infinity" />
+                            </VBox>
+
+                            <VBox spacing="4"
+                                GridPane.rowIndex="2"
                                 GridPane.columnIndex="0">
                                 <Label fx:id="lblGrossQuantityProduced" />
                                 <TextField fx:id="grossQuantityProducedField" />
                             </VBox>
 
                             <VBox spacing="4" 
-                                GridPane.rowIndex="1" 
+                                GridPane.rowIndex="2" 
                                 GridPane.columnIndex="1">
                                 <Label text="Unidade *" />
                                 <ComboBox fx:id="gqpMeasurementUnitComboBox"

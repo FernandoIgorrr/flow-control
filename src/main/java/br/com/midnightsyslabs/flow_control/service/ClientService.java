@@ -3,6 +3,8 @@ package br.com.midnightsyslabs.flow_control.service;
 import java.time.OffsetDateTime;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +12,6 @@ import org.springframework.stereotype.Service;
 import br.com.midnightsyslabs.flow_control.config.Constants;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.City;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.CompanyPartner;
-import br.com.midnightsyslabs.flow_control.domain.entity.partner.Partner;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.PartnerRole;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.PersonalPartner;
 import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentException;
@@ -24,7 +25,6 @@ import br.com.midnightsyslabs.flow_control.view.ClientView;
 
 @Service
 public class ClientService {
-
     @Autowired
     private ClientRepository clientRepository;
     @Autowired
@@ -56,7 +56,7 @@ public class ClientService {
                     email,
                     city,
                     role,
-                    null, null,false);
+                    null, null, false);
             personalPartnerRepository.save(client);
         } else {
 
@@ -66,7 +66,7 @@ public class ClientService {
                     email,
                     city,
                     role,
-                    null, null,false);
+                    null, null, false);
             companyPartnerRepository.save(client);
         }
     }
@@ -84,8 +84,10 @@ public class ClientService {
                 email,
                 Constants.PERSONAL);
 
+        if (CPF != null && CPF.isBlank())
+            CPF = null;
         client.setName(name);
-        client.setCpf(CPF.isBlank() ? null : CPF);
+        client.setCpf(CPF);
         client.setPhone(phone);
         client.setEmail(email);
         client.setCity(city);
@@ -106,9 +108,12 @@ public class ClientService {
                 CNPJ,
                 email,
                 Constants.COMPANY);
+        
+        if (CNPJ != null && CNPJ.isBlank())
+            CNPJ = null;
 
         client.setName(name);
-        client.setCnpj(CNPJ.isBlank() ? null : CNPJ);
+        client.setCnpj(CNPJ);
         client.setPhone(phone);
         client.setEmail(email);
         client.setCity(city);
@@ -128,6 +133,14 @@ public class ClientService {
         companyPartnerRepository.save(client);
     }
 
+    public Optional<PersonalPartner> getPersonalPartner(UUID id) {
+        return personalPartnerRepository.findById(id);
+    }
+
+    public Optional<CompanyPartner> getCompanyPartner(UUID id) {
+        return companyPartnerRepository.findById(id);
+    }
+
     public List<ClientView> getClients() {
         return clientRepository.findAll();
     }
@@ -140,17 +153,21 @@ public class ClientService {
             throw new IllegalEmailArgumentException();
         }
 
+        if (document == null) {
+            return;
+        }
+
         String documentWithoutMask = document.replaceAll("\\D", "");
 
         if (partnerRole.equals(Constants.PERSONAL)) {
 
             if (!cPFValidator(documentWithoutMask)) {
-                throw new InvalidCPFException();
+                throw new InvalidCPFException("CPF Inválido: " + documentWithoutMask);
             }
 
         } else {
             if (!cNPJValidator(documentWithoutMask)) {
-                throw new InvalidCNPJException("CNPJ: " + documentWithoutMask);
+                throw new InvalidCNPJException("CNPJ Inválido: " + documentWithoutMask);
             }
         }
     }

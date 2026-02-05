@@ -3,6 +3,8 @@ package br.com.midnightsyslabs.flow_control.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,5 +36,24 @@ public class SpentService {
 
         spentRepository.save(spent);
 
+    }
+
+    @Transactional
+    public void deleteSpent(Spent spent){
+        spent.setDeletedAt(OffsetDateTime.now());
+        spentRepository.save(spent);
+    }
+    @Transactional
+    public void confirmSpent(Spent spent){
+        spent.setConfirmed(true);;
+        spentRepository.save(spent);
+    }
+
+    public List<Spent> getSpents(){
+        return spentRepository.findAll();
+    }
+
+    public Optional<Spent> findById(Integer id){
+        return spentRepository.findById(id);
     }
 }

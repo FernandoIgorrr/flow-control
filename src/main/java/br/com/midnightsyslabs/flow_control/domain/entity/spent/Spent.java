@@ -42,7 +42,7 @@ public class Spent implements Expense {
 
     private OffsetDateTime deletedAt;
 
-    private boolean isClosed;
+    private boolean confirmed;
 
     @Override
     public BigDecimal getExpense() {

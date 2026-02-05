@@ -63,7 +63,7 @@ public class Product {
 
     private OffsetDateTime deletedAt;
 
-    private boolean isClosed;
+    private boolean confirmed;
 
     @PrePersist
     protected void onCreate() {

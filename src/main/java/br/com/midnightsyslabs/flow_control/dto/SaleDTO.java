@@ -38,7 +38,7 @@ public class SaleDTO implements Revenue {
 
     private OffsetDateTime deletedAt;
 
-    private boolean isClosed;
+    private boolean confirmed;
 
     public SaleDTO(SaleView saleView) {
         
@@ -62,7 +62,7 @@ public class SaleDTO implements Revenue {
 
         deletedAt = saleView.getDeletedAt();
 
-        isClosed = saleView.isClosed();
+        confirmed = saleView.isConfirmed();
     }
 
     @Override

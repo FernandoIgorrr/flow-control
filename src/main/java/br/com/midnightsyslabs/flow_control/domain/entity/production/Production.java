@@ -68,13 +68,11 @@ public class Production {
     private OffsetDateTime deletedAt;
 
     @NotNull
-    private boolean isClosed;
-
-    private OffsetDateTime closedAt;
+    private boolean confirmed;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = OffsetDateTime.now();
-        this.isClosed = false;
+        this.confirmed = false;
     }
 }

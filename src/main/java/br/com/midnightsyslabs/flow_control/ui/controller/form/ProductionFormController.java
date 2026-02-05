@@ -22,9 +22,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -56,6 +59,8 @@ public class ProductionFormController {
 
     private Runnable onDataChanged;
 
+    private List<PurchaseView> purchaseViews;
+
     @FXML
     private ContextMenu purchasesSuggestions;
 
@@ -83,7 +88,11 @@ public class ProductionFormController {
     private DatePicker datePicker;
 
     @FXML
+    private Button btnAddPurchase;
+
+    @FXML
     public void initialize() {
+        purchaseViews = purchaseService.getPurchasesView();
         purchaseRows = new ArrayList<>();
         purchasesSuggestions = new ContextMenu();
         addPurchaseField();
@@ -128,6 +137,113 @@ public class ProductionFormController {
         }
     }
 
+    @FXML
+    private void addPurchaseField() {
+
+        VBox purchaseItemBox = new VBox(5);
+        purchaseItemBox.getStyleClass().add("purchase-item");
+
+        HBox headerBox = new HBox(10);
+        headerBox.setAlignment(Pos.BOTTOM_LEFT);
+        Label lblPurchaseMenuItem = new Label("ID da compra da matéria-prima *");
+
+        Label lblPurchaseQuantityUsed = new Label("Preencha a quantidade usada da matéria-prima *");
+
+        TextField purchaseField = new TextField();
+        purchaseField.setPromptText("Digite o ID da compra...");
+
+        TextField purchaseQuantityUsedField = new TextField();
+        purchaseQuantityUsedField.setPromptText("0,0");
+
+        //ContextMenu suggestions = new ContextMenu();
+        //setupPurchaseAutocomplete(purchaseField, suggestions);
+        configureQuantityField(purchaseQuantityUsedField);
+
+        // spacer
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        if (!purchaseFieldsBox.getChildren().isEmpty()) {
+            Button btnRemove = new Button();
+            btnRemove.getStyleClass().add("btn-action-delete");
+
+            StackPane pane = new StackPane();
+
+            pane.prefWidth(32);
+            pane.prefHeight(32);
+
+            ImageView iconRemove = new ImageView(
+                    new Image(getClass().getResourceAsStream("/images/carbon--close-outline.png")));
+
+            iconRemove.setFitWidth(32);
+            iconRemove.setFitHeight(32);
+            iconRemove.setPreserveRatio(true);
+            iconRemove.getStyleClass().add("icon-delete");
+
+            pane.getChildren().add(iconRemove);
+
+            btnRemove.getStyleClass().add("btn-action-add-purchase");
+
+            btnRemove.setGraphic(pane);
+
+            btnRemove.setOnAction(event -> {
+                purchaseFieldsBox.getChildren().remove(purchaseItemBox);
+                purchaseRows.removeIf(row -> row.purchaseQuantityUsedField == purchaseQuantityUsedField);
+            });
+            headerBox.getChildren().addAll(lblPurchaseMenuItem, spacer, btnRemove);
+        } else {
+            headerBox.getChildren().addAll(lblPurchaseMenuItem);
+        }
+        purchaseItemBox.getChildren().addAll(
+                headerBox,
+                purchaseField,
+                lblPurchaseQuantityUsed,
+                purchaseQuantityUsedField);
+
+        purchaseFieldsBox.getChildren().add(purchaseItemBox);
+
+        purchaseField.textProperty().addListener((obs, oldText, newText) -> {
+
+            if (newText == null || newText.length() < 1) {
+                purchasesSuggestions.hide();
+                return;
+            }
+
+            List<MenuItem> suggestionss = purchaseViews.stream()
+                    .filter(p -> p.getId().toString().contains(newText))
+                    .limit(10)
+                    .map(purchaseView -> {
+
+                        MenuItem item = new MenuItem(
+                                "#" + purchaseView.getId() +
+                                        " | " + UtilsService.formatQuantity(purchaseView.getQuantity()) +
+                                        " " + purchaseView.getMeasurementUnitPluralName() +
+                                        " de " + purchaseView.getRawMaterialName() +
+                                        " ( " + UtilsService.formatPrice(purchaseView.getExpense()) + ")" +
+                                        " ~ " + purchaseView.getPartnerName());
+
+                        item.setOnAction(e -> {
+                            purchaseField.setText(item.getText());
+                            purchasesSuggestions.hide();
+                            purchaseRows.removeIf(row -> row.purchaseQuantityUsedField == purchaseQuantityUsedField);
+                            purchaseRows.add(new PurchaseRow(purchaseView,purchaseQuantityUsedField));
+
+                        });
+
+                        return item;
+                    })
+                    .toList();
+
+            if (suggestionss.isEmpty()) {
+                purchasesSuggestions.hide();
+            } else {
+                purchasesSuggestions.getItems().setAll(suggestionss);
+                purchasesSuggestions.show(purchaseField, javafx.geometry.Side.BOTTOM, 0, 0);
+            }
+        });
+    }
+
+   /*  @FXML
     private void addPurchaseField() {
 
         boolean isFirst = purchaseFieldsBox.getChildren().isEmpty();
@@ -184,11 +300,11 @@ public class ProductionFormController {
                 quantityField);
 
         purchaseFieldsBox.getChildren().add(purchaseItemBox);
-    }
+    } */
 
-    private void setupPurchaseAutocomplete(
+   /*  private void setupPurchaseAutocomplete(
             TextField purchaseField,
-            TextField quantityUsedField,
+
             ContextMenu purchasesSuggestions) {
         var purchasesView = purchaseService.getPurchasesView();
 
@@ -209,7 +325,7 @@ public class ProductionFormController {
                                         " | " + UtilsService.formatQuantity(purchaseView.getQuantity()) +
                                         " " + purchaseView.getMeasurementUnitPluralName() +
                                         " de " + purchaseView.getRawMaterialName() +
-                                        " ( " + UtilsService.formatPrice( purchaseView.getExpense()) + ")" +
+                                        " ( " + UtilsService.formatPrice(purchaseView.getExpense()) + ")" +
                                         " ~ " + purchaseView.getPartnerName());
 
                         item.setOnAction(e -> {
@@ -232,7 +348,7 @@ public class ProductionFormController {
                 purchasesSuggestions.show(purchaseField, javafx.geometry.Side.BOTTOM, 0, 0);
             }
         });
-    }
+    } */
 
     private void configureQuantityField(TextField quantityField) {
         UnaryOperator<TextFormatter.Change> quantityFilter = change -> {
@@ -285,7 +401,7 @@ public class ProductionFormController {
 
         try {
             for (PurchaseRow row : this.purchaseRows) {
-                String quantityFieldText = row.quantityField.getText().replace(",", "."); // Converte para formato
+                String quantityFieldText = row.purchaseQuantityUsedField.getText().replace(",", "."); // Converte para formato
                                                                                           // decimal
                                                                                           // Java
                 if (quantityFieldText.isEmpty()) {
@@ -317,11 +433,11 @@ public class ProductionFormController {
             if (onDataChanged != null) {
                 onDataChanged.run();
             }
-        } catch (ConstraintViolationException e){
-             showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algum campo viola as regras de valores!");
+        } catch (ConstraintViolationException e) {
+            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algum campo viola as regras de valores!");
             return;
-        } 
-        
+        }
+
         catch (Exception e) {
             showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algo deu errado!" + e.getCause());
             return;

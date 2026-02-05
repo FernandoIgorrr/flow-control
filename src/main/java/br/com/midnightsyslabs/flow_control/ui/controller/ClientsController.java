@@ -1,21 +1,19 @@
 package br.com.midnightsyslabs.flow_control.ui.controller;
 
 import java.util.List;
-import java.io.IOException;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.context.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.com.midnightsyslabs.flow_control.repository.view.ClientRepository;
-import br.com.midnightsyslabs.flow_control.ui.controller.card.ClientCardController;
+import br.com.midnightsyslabs.flow_control.service.ClientService;
+import br.com.midnightsyslabs.flow_control.ui.cards.ClientCard;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.ClientFormController;
 import br.com.midnightsyslabs.flow_control.view.ClientView;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Screen;
-import javafx.scene.Parent;
 import javafx.stage.Modality;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -26,9 +24,11 @@ import javafx.scene.effect.ColorAdjust;
 
 @Controller
 public class ClientsController {
-
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientService clientService;
+
+    // @Autowired
+    // private ClientRepository clientRepository;
 
     @Autowired
     private ApplicationContext context;
@@ -47,9 +47,7 @@ public class ClientsController {
     @FXML
     public void initialize() {
 
-        clients = clientRepository.findAll();
-
-        renderCards(clients);
+        loadClients();
 
         txtSearch.textProperty().addListener((obs, oldValue, newValue) -> {
             filterCards(newValue);
@@ -74,30 +72,12 @@ public class ClientsController {
         renderCards(filtered);
     }
 
-    private void renderCards(List<ClientView> clients) {
+    private void renderCards(List<ClientView> clientsView) {
 
         cardsPane.getChildren().clear();
 
-        for (ClientView client : clients) {
-            try {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/fxml/card/client-card.fxml"));
-
-                loader.setControllerFactory(context::getBean);
-
-                Parent card = loader.load();
-
-                ClientCardController controller = loader.getController();
-                controller.setClientView(client);
-
-                // CALLBACK
-                controller.setOnDataChanged(this::reloadClients);
-
-                cardsPane.getChildren().add(card);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        for (ClientView cView : clientsView) {
+            cardsPane.getChildren().add(new ClientCard(cView, this::loadClients, clientService, context));
         }
     }
 
@@ -105,10 +85,10 @@ public class ClientsController {
         return value == null ? "" : value.toLowerCase();
     }
 
-    private void reloadClients() {
-        this.clients = clientRepository.findAll();
+    /* private void reloadClients() {
+        clients = clientService.getClients();
         filterCards(txtSearch.getText());
-    }
+    } */
 
     @FXML
     private void onAddClient() {
@@ -127,7 +107,7 @@ public class ClientsController {
 
             ClientFormController controller = loader.getController();
             // CALLBACK
-            controller.setOnDataChanged(this::reloadClients);
+            controller.setOnDataChanged(this::loadClients);
 
             Stage mainStage = (Stage) btnAddClient.getScene().getWindow();
 
@@ -148,5 +128,10 @@ public class ClientsController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void loadClients() {
+        clients = clientService.getClients();
+        renderCards(clients);
     }
 }

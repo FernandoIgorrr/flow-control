@@ -52,6 +52,6 @@ public class ProductionView {
 
     private OffsetDateTime deletedAt;
 
-    private boolean isClosed;
+    private boolean confirmed;
 
 }

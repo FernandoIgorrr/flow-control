@@ -47,6 +47,6 @@ public class SaleView{
 
     private OffsetDateTime deletedAt;
 
-    private boolean isClosed;
+    private boolean confirmed;
 
 }

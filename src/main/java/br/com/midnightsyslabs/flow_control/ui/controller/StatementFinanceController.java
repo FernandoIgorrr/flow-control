@@ -18,14 +18,11 @@ import br.com.midnightsyslabs.flow_control.dto.SaleDTO;
 import br.com.midnightsyslabs.flow_control.service.ExpenseService;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.SaleService;
-import br.com.midnightsyslabs.flow_control.service.SupplierService;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import br.com.midnightsyslabs.flow_control.view.SaleProductView;
-import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.chart.AreaChart; // Alterado para AreaChart
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -33,6 +30,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 
 @Controller
@@ -74,10 +72,15 @@ public class StatementFinanceController {
     @FXML
     private Label lblSaldo;
 
+    @FXML
+private TabPane tabPane;
+
     private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
     @FXML
     public void initialize() {
+        tabPane.tabMinWidthProperty().bind(tabPane.widthProperty().divide(5).subtract(2));
+
         // Define o mês atual por padrão
         dpInicio.setValue(LocalDate.now().withDayOfMonth(1));
         dpFim.setValue(LocalDate.now());

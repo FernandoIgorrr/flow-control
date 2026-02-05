@@ -53,7 +53,7 @@ public class SaleService {
         var sale = new Sale();
         List<SaleProduct> salesProduct = new ArrayList<>();
 
-        partner.setClosed(false);
+        partner.setConfirmed(true);
 
         sale.setClient(partner);
         sale.setDate(date);
@@ -66,7 +66,7 @@ public class SaleService {
 
                 Product product = row.productComboBox.getValue();
 
-                product.setClosed(true);
+                product.setConfirmed(true);
                 saleProduct.setProduct(product);
                 saleProduct
                         .setQuantity(new BigDecimal(UtilsService.solveComma(row.productQuantitySoldField.getText())));
@@ -94,7 +94,7 @@ public class SaleService {
 
     @Transactional
     public void confirmSale(Sale sale) {
-        sale.setClosed(true);
+        sale.setConfirmed(true);
         saleRepository.save(sale);
     }
 

@@ -52,9 +52,7 @@ public class Sale implements Revenue {
    @Column
    private OffsetDateTime deletedAt;
 
-   @NotNull
-   @Column(name = "is_closed")
-   private boolean isClosed;
+   private boolean confirmed;
 
    @Override
    public BigDecimal getRevenue() {

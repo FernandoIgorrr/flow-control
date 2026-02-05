@@ -55,7 +55,7 @@ public abstract class Partner {
 
     protected OffsetDateTime deletedAt;
 
-    protected boolean isClosed;
+    protected boolean confirmed;
 
     public abstract String getDocument();
 

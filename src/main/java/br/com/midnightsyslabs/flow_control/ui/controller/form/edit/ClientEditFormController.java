@@ -231,8 +231,8 @@ public class ClientEditFormController {
                 return;
             }
 
-            String document = documentField.getText().replaceAll("\\D", "");
-            String phone = phoneField.getText().replaceAll("\\D", "");
+            String document = documentField.getText() == null ? null : documentField.getText().replaceAll("\\D", "");
+            String phone = phoneField.getText() == null ? null : phoneField.getText().replaceAll("\\D", "");
 
             if (clientDTO != null) {
 
@@ -287,7 +287,7 @@ public class ClientEditFormController {
         }
 
         catch (Exception e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar cliente",
+            showLabelAlert(Alert.AlertType.ERROR, "Erro ao atualizar cliente",
                     "Ocorreu um erro ao tentar cadastrar o cliente: " + e.getMessage());
             System.err.println(e.getMessage());
             return;

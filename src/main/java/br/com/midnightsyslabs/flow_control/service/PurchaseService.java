@@ -9,12 +9,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.Partner;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
 import br.com.midnightsyslabs.flow_control.domain.entity.purchase.Purchase;
 import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
+import br.com.midnightsyslabs.flow_control.domain.entity.spent.Spent;
 import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
 import br.com.midnightsyslabs.flow_control.repository.PurchaseRepository;
 import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRepository;
@@ -49,7 +52,7 @@ public class PurchaseService {
 
         var purchase = new Purchase();
 
-        partner.setClosed(true);
+        partner.setConfirmed(true);
 
         purchase.setPartner(partner);
         purchase.setRawMaterial(rawMaterial);
@@ -73,7 +76,7 @@ public class PurchaseService {
 
     @Transactional
     public void confirmPurchase(Purchase purchase) {
-        purchase.setClosed(true);
+        purchase.setConfirmed(true);
         purchaseRepository.save(purchase);
     }
 
@@ -93,6 +96,9 @@ public class PurchaseService {
 
     public List<PurchaseView> getPurchasesView() {
         return purchaseViewRepository.findAll();
+    }
+    public Page<PurchaseView> getPurchasesViewPaged(int page, int size) {
+        return purchaseViewRepository.findAll(PageRequest.of(page, size));
     }
 
     // Mais antigo primeiro

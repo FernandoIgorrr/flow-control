@@ -63,7 +63,7 @@ public class PurchaseView implements Expense{
 
     private OffsetDateTime deletedAt;
 
-    private boolean isClosed;
+    private boolean confirmed;
 
     @Override
     public BigDecimal getExpense(){

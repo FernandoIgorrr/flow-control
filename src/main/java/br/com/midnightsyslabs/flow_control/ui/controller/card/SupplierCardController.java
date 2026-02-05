@@ -91,7 +91,7 @@ public class SupplierCardController {
     public void setSupplierView(SupplierView supplierView) {
         this.supplierView = supplierView;
 
-        if (supplierView.isClosed()) {
+        if (supplierView.isConfirmed()) {
             btnDelete.setDisable(true);
             btnIconDelete.getStyleClass().add("icon-delete-disable");
 

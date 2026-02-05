@@ -1,6 +1,5 @@
 package br.com.midnightsyslabs.flow_control.ui.controller;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -10,21 +9,18 @@ import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.config.TimeIntervalEnum;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.Product;
-import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
 import br.com.midnightsyslabs.flow_control.dto.SaleDTO;
 import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.service.DateService;
 import br.com.midnightsyslabs.flow_control.service.ProductService;
 import br.com.midnightsyslabs.flow_control.service.SaleService;
 import br.com.midnightsyslabs.flow_control.service.UtilsService;
-import br.com.midnightsyslabs.flow_control.ui.controller.card.SaleCardController;
+import br.com.midnightsyslabs.flow_control.ui.cards.SaleCard;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.SaleFormController;
 import br.com.midnightsyslabs.flow_control.view.ClientView;
-import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -88,11 +84,13 @@ public class SalesController {
     @FXML
     public void initialize() {
         
+        loadSales();
+        
         configureTimeIntervalEnumComboBoxFilter();
         configureProductComboBoxFilter();
         configureClientComboBoxFilter();
         
-        reloadSales();
+        
         imgType.setImage(new Image(
                 getClass().getResourceAsStream("/images/game-icons--basket.png")));
         imgType.getStyleClass().add("blue-icon");
@@ -188,7 +186,7 @@ public class SalesController {
             dialog.setScene(new Scene(loader.load(), width, height));
 
             SaleFormController controller = loader.getController();
-            controller.setOnDataChanged(this::reloadSales);
+            controller.setOnDataChanged(this::loadSales);
 
             Stage mainStage = (Stage) btnAddSale.getScene().getWindow();
 
@@ -216,23 +214,7 @@ public class SalesController {
         cardsPane.getChildren().clear();
 
         for (var sDTO : salesDTO) {
-            try {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/fxml/card/sale-card.fxml"));
-
-                loader.setControllerFactory(context::getBean);
-
-                Parent card = loader.load();
-
-                SaleCardController controller = loader.getController();
-                controller.setSaleDTO(sDTO);
-                controller.setOnDataChanged(this::reloadSales);
-
-                cardsPane.getChildren().add(card);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+           cardsPane.getChildren().add(new SaleCard(sDTO,this::loadSales,saleService));
         }
     }
 
@@ -277,11 +259,9 @@ public class SalesController {
         lblTotalSales.setText("" + filteredSalesDTO.size());
     }
 
-    public void reloadSales() {
+    public void loadSales() {
         allSalesDTO = saleService.getSalesDTO();
-
         filteredSalesDTO = allSalesDTO;
-        applyFilters();
         renderCards(filteredSalesDTO);
         renderRecentSilesPriceCard();
     }

@@ -13,19 +13,21 @@ import br.com.midnightsyslabs.flow_control.config.TimeIntervalEnum;
 import br.com.midnightsyslabs.flow_control.domain.entity.employee.Employee;
 import br.com.midnightsyslabs.flow_control.domain.entity.employee.EmployeePayment;
 import br.com.midnightsyslabs.flow_control.domain.entity.expense.Expense;
-import br.com.midnightsyslabs.flow_control.domain.entity.product.Product;
 import br.com.midnightsyslabs.flow_control.domain.entity.spent.Spent;
 import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
 import br.com.midnightsyslabs.flow_control.repository.spent.SpentCategoryRepository;
 import br.com.midnightsyslabs.flow_control.service.DateService;
+import br.com.midnightsyslabs.flow_control.service.EmojiService;
 import br.com.midnightsyslabs.flow_control.service.EmployeeService;
 import br.com.midnightsyslabs.flow_control.service.ExpenseService;
+import br.com.midnightsyslabs.flow_control.service.PurchaseService;
+import br.com.midnightsyslabs.flow_control.service.SpentService;
 import br.com.midnightsyslabs.flow_control.service.UtilsService;
-import br.com.midnightsyslabs.flow_control.ui.controller.card.EmployeePaymentCardController;
-import br.com.midnightsyslabs.flow_control.ui.controller.card.PurchaseCardController;
+import br.com.midnightsyslabs.flow_control.ui.cards.EmployeePaymentCard;
+import br.com.midnightsyslabs.flow_control.ui.cards.PurchaseCard;
+import br.com.midnightsyslabs.flow_control.ui.cards.SpentCard;
 import br.com.midnightsyslabs.flow_control.ui.controller.card.SpentCardController;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.SpentFormController;
-import br.com.midnightsyslabs.flow_control.view.ClientView;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,6 +48,16 @@ import javafx.util.StringConverter;
 
 @Controller
 public class ExpensesController {
+
+    @Autowired
+    private SpentService spentService;
+
+    @Autowired
+    private EmojiService emojiService;
+
+    @Autowired
+    private PurchaseService purchaseService;
+
     @Autowired
     private EmployeeService employeeService;
 
@@ -74,8 +86,6 @@ public class ExpensesController {
     @FXML
     private ImageView imgType;
 
-
-
     @FXML
     private Button btnAddSpent;
 
@@ -91,7 +101,7 @@ public class ExpensesController {
     @FXML
     public void initialize() {
 
-        reloadExpenses();
+        loadExpenses();
 
         configureTimeIntervalEnumComboBoxFilter();
         configureSpentCategoryComboBoxFilter();
@@ -191,7 +201,7 @@ public class ExpensesController {
             dialog.setScene(new Scene(loader.load(), width, height));
 
             SpentFormController controller = loader.getController();
-            controller.setOnDataChanged(this::reloadExpenses);
+            controller.setOnDataChanged(this::loadExpenses);
 
             Stage mainStage = (Stage) btnAddSpent.getScene().getWindow();
 
@@ -220,51 +230,21 @@ public class ExpensesController {
 
         for (var expense : expenses) {
             try {
-
-                FXMLLoader loader;
-
                 if (expense.getSpentCategory().getId() == 1) {
-                    loader = new FXMLLoader(
-                            getClass().getResource("/fxml/card/purchase-card.fxml"));
 
-                    loader.setControllerFactory(context::getBean);
-
-                    Parent card = loader.load();
-
-                    PurchaseCardController controller = loader.getController();
-                    controller.setPurchaseView((PurchaseView) expense);
-                    // controller.setOnDataChanged(this::reloadSales);
-
-                    cardsPane.getChildren().add(card);
+                    cardsPane.getChildren()
+                            .add(new PurchaseCard((PurchaseView) expense, this::loadExpenses, purchaseService));
 
                 } else if (expense.getSpentCategory().getId() == 2) {
-                    loader = new FXMLLoader(
-                            getClass().getResource("/fxml/card/employee-payment-card.fxml"));
 
-                    loader.setControllerFactory(context::getBean);
-
-                    Parent card = loader.load();
-
-                    EmployeePaymentCardController controller = loader.getController();
-                    controller.setEmployeePayment((EmployeePayment) expense);
-
-                    cardsPane.getChildren().add(card);
+                    cardsPane.getChildren().add(new EmployeePaymentCard((EmployeePayment) expense, this::loadExpenses,
+                            employeeService, emojiService));
                 } else {
-                    loader = new FXMLLoader(
-                            getClass().getResource("/fxml/card/spent-card.fxml"));
 
-                    loader.setControllerFactory(context::getBean);
-
-                    Parent card = loader.load();
-
-                    SpentCardController controller = loader.getController();
-                    controller.setSpent((Spent) expense);
-                    // controller.setOnDataChanged(this::reloadSales);
-
-                    cardsPane.getChildren().add(card);
+                    cardsPane.getChildren().add(new SpentCard((Spent) expense, this::loadExpenses, spentService,emojiService));
                 }
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -315,13 +295,13 @@ public class ExpensesController {
         return value == null ? "" : value.toLowerCase();
     }
 
-    private void reloadExpenses() {
+    private void loadExpenses() {
         allExpenses = expenseService.getAllExpenses();
 
         filteredExpenses = allExpenses;
 
         renderCards(filteredExpenses);
-        // renderRecentPurchasesPriceCard();
+        renderRecentExpenseAmountCard();
     }
 
 }

@@ -43,7 +43,7 @@ public class ProductionDTO {
 
     private OffsetDateTime deletedAt;
 
-    private boolean isClosed;
+    private boolean confirmed;
 
     public ProductionDTO(ProductionView productionView, List<ProductionRawMaterialPurchaseView> prmpv){
         this.id                         = productionView.getId();
@@ -55,7 +55,7 @@ public class ProductionDTO {
         this.date                       = productionView.getDate();
         this.createdAt                  = productionView.getCreatedAt();
         this.deletedAt                  = productionView.getDeletedAt();
-        this.isClosed                   = productionView.isClosed();
+        this.confirmed                   = productionView.isConfirmed();
     }
 
     public ProductionDTO(ProductionView productionView){
@@ -71,6 +71,6 @@ public class ProductionDTO {
         this.date                                   = productionView.getDate();
         this.createdAt                              = productionView.getCreatedAt();
         this.deletedAt                              = productionView.getDeletedAt();
-        this.isClosed                               = productionView.isClosed();
+        this.confirmed                               = productionView.isConfirmed();
     }
 }

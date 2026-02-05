@@ -19,8 +19,8 @@
 
         <HBox alignment="CENTER_LEFT" spacing="12"
             style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);"
-            >
-            <Label text="Período de Análise:" styleClass="client-name"/>
+        >
+            <Label text="Período de Análise:" styleClass="client-name" />
             <DatePicker fx:id="dpInicio" minHeight="40" promptText="Início" />
             <DatePicker fx:id="dpFim" minHeight="40" promptText="Fim" />
             <Button fx:id="btnFiltrar" onAction="#handleFiltrar" minHeight="40" prefWidth="120.0"
@@ -62,74 +62,88 @@
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
         style="-fx-background-color: transparent; -fx-background: #f0f2f5;">
         <content>
-            <VBox spacing="20.0">
-                <padding>
-                    <Insets bottom="25.0" left="25.0" right="25.0" top="10.0" />
-                </padding>
+            <VBox VBox.vgrow="ALWAYS">
 
-                <VBox
-                    style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 8;">
-                    <Label text="Evolução Financeira (Receitas vs Despesas)"
-                        style="-fx-font-weight: bold; -fx-font-size: 16px;" />
-                    <AreaChart fx:id="financialLineChart" minHeight="400.0" createSymbols="true">
-                        <xAxis>
-                            <CategoryAxis side="BOTTOM" fx:id="xAxisLine" />
-                        </xAxis>
-                        <yAxis>
-                            <NumberAxis side="LEFT" />
-                        </yAxis>
-                    </AreaChart>
-                </VBox>
+            <TabPane  fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" stylesheets="@../css/tabs.css">
 
-                <VBox
-                    style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8;">
-                    <Label text="Faturamento por Cliente" style="-fx-font-weight: bold;" />
-                    <BarChart fx:id="clientBarChart" legendVisible="false" minHeight="350">
-                        <xAxis>
-                            <CategoryAxis side="BOTTOM" />
-                        </xAxis>
-                        <yAxis>
-                            <NumberAxis side="LEFT" />
-                        </yAxis>
-                    </BarChart>
-                </VBox>
+                <!-- Aba 1 -->
+                <Tab text="Evolução Financeira">
+                    <VBox spacing="10" style="-fx-padding: 20;">
+                        <Label text="Evolução Financeira (Receitas vs Despesas)"
+                            style="-fx-font-weight: bold; -fx-font-size: 16px;" />
 
+                        <AreaChart fx:id="financialLineChart" minHeight="500" createSymbols="true">
+                            <xAxis>
+                                <CategoryAxis fx:id="xAxisLine" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis />
+                            </yAxis>
+                        </AreaChart>
+                    </VBox>
+                </Tab>
 
-                <VBox spacing="20.0">
-                    <VBox
-                        style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8;">
+                <!-- Aba 2 -->
+                <Tab text="Clientes">
+                    <VBox spacing="10" style="-fx-padding: 20;">
+                        <Label text="Faturamento por Cliente" style="-fx-font-weight: bold;" />
+
+                        <BarChart fx:id="clientBarChart" legendVisible="false" minHeight="500">
+                            <xAxis>
+                                <CategoryAxis />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis />
+                            </yAxis>
+                        </BarChart>
+                    </VBox>
+                </Tab>
+
+                <!-- Aba 3 -->
+                <Tab text="Produtos">
+                    <VBox spacing="10" style="-fx-padding: 20;">
                         <Label text="Top Produtos por Faturamento" style="-fx-font-weight: bold;" />
-                        <BarChart fx:id="productBarChart" legendVisible="false" minHeight="350">
+
+                        <BarChart fx:id="productBarChart" legendVisible="false" minHeight="500">
                             <xAxis>
-                                <CategoryAxis side="BOTTOM" />
+                                <CategoryAxis />
                             </xAxis>
                             <yAxis>
-                                <NumberAxis side="LEFT" />
+                                <NumberAxis />
                             </yAxis>
                         </BarChart>
                     </VBox>
+                </Tab>
 
-                    <VBox
-                        style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8;">
+                <!-- Aba 4 -->
+                <Tab text="Fornecedores">
+                    <VBox spacing="10" style="-fx-padding: 20;">
                         <Label text="Despesa por Fornecedor" style="-fx-font-weight: bold;" />
-                        <BarChart fx:id="purchaseBarChart" legendVisible="false" minHeight="350" styleClass="big-x-axis">
+
+                        <BarChart fx:id="purchaseBarChart" legendVisible="false" minHeight="500"
+                            styleClass="big-x-axis">
                             <xAxis>
-                                <CategoryAxis side="BOTTOM" />
+                                <CategoryAxis />
                             </xAxis>
                             <yAxis>
-                                <NumberAxis side="LEFT" />
+                                <NumberAxis />
                             </yAxis>
                         </BarChart>
                     </VBox>
+                </Tab>
 
-                    <VBox
-                        style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;">
+                <!-- Aba 5 -->
+                <Tab text="Categorias">
+                    <VBox spacing="10" style="-fx-padding: 20;">
                         <Label text="Despesas por Categoria" style="-fx-font-weight: bold;" />
-                        <PieChart fx:id="categoryPieChart" labelsVisible="true" minHeight="350" />
-                    </VBox>
-                </VBox>
 
-            </VBox>
+                        <PieChart fx:id="categoryPieChart" labelsVisible="true" minHeight="500" />
+                    </VBox>
+                </Tab>
+
+            </TabPane>
+        </VBox>
         </content>
     </ScrollPane>
+
 </VBox>
