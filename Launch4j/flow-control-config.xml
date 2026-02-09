@@ -20,6 +20,6 @@
     <requires64Bit>false</requires64Bit>
     <minVersion>21.0.0</minVersion>
     <maxVersion></maxVersion>
-    <opt>--module-path &quot;C:\Users\Figor\develop\javafx\javafx-sdk-21.0.9\lib&quot; --add-modules javafx.controls,javafx.fxml</opt>
+    <opt>--module-path &quot;C:\Users\samara\develop\javafx\javafx-sdk-21.0.9\lib&quot; --add-modules javafx.controls,javafx.fxml</opt>
   </jre>
 </launch4jConfig>
