@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict JhtMN9J4AdWTs5anXFOud0Cw5lp35tK7M2WVwDHGUs3Q7t3EZcm3Z637jZLVkIS
+\restrict xQz7ybEnbx2yReH4kG0uzqV2jXfrvdduQ9Bf2vB7k2EH1gclHST7rcdMhIMLZUw
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.0
 
--- Started on 2026-02-05 16:20:12
+-- Started on 2026-02-09 02:47:21
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 264 (class 1255 OID 50647)
+-- TOC entry 262 (class 1255 OID 50647)
 -- Name: set_product_price_on_sale(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -95,7 +95,7 @@ CREATE SEQUENCE public.city_id_seq
 ALTER SEQUENCE public.city_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5242 (class 0 OID 0)
+-- TOC entry 5227 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: city_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -150,7 +150,7 @@ CREATE TABLE public.personal_partner (
 ALTER TABLE public.personal_partner OWNER TO postgres;
 
 --
--- TOC entry 258 (class 1259 OID 75251)
+-- TOC entry 255 (class 1259 OID 75251)
 -- Name: client_full; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -229,7 +229,7 @@ CREATE SEQUENCE public.employee_wage_id_seq
 ALTER SEQUENCE public.employee_wage_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5243 (class 0 OID 0)
+-- TOC entry 5228 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: employee_wage_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -270,7 +270,7 @@ CREATE SEQUENCE public.measurement_unit_id_seq
 ALTER SEQUENCE public.measurement_unit_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5244 (class 0 OID 0)
+-- TOC entry 5229 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: measurement_unit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -308,7 +308,7 @@ CREATE SEQUENCE public.partner_role_id_seq
 ALTER SEQUENCE public.partner_role_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5245 (class 0 OID 0)
+-- TOC entry 5230 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: partner_role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -366,7 +366,7 @@ CREATE SEQUENCE public.product_category_id_seq
 ALTER SEQUENCE public.product_category_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5246 (class 0 OID 0)
+-- TOC entry 5231 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: product_category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -390,7 +390,7 @@ CREATE TABLE public.product_price (
 ALTER TABLE public.product_price OWNER TO postgres;
 
 --
--- TOC entry 257 (class 1259 OID 75246)
+-- TOC entry 254 (class 1259 OID 75246)
 -- Name: product_full; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -436,7 +436,7 @@ CREATE SEQUENCE public.product_id_seq
 ALTER SEQUENCE public.product_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5247 (class 0 OID 0)
+-- TOC entry 5232 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: product_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -461,7 +461,7 @@ CREATE SEQUENCE public.product_price_id_seq
 ALTER SEQUENCE public.product_price_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5248 (class 0 OID 0)
+-- TOC entry 5233 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: product_price_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -483,44 +483,40 @@ CREATE TABLE public.production (
     quantity_produced numeric(38,3) NOT NULL,
     date date NOT NULL,
     gross_quantity_produced numeric(38,3) NOT NULL,
-    gqp_measurement_unit_id smallint
+    gqp_measurement_unit_id smallint,
+    raw_material_purchase_date date CONSTRAINT production_raw_matrial_purchase_date_not_null NOT NULL,
+    quantity_used numeric(38,3) CONSTRAINT production_quantity_ued_not_null NOT NULL
 );
 
 
 ALTER TABLE public.production OWNER TO postgres;
 
 --
--- TOC entry 256 (class 1259 OID 75241)
+-- TOC entry 257 (class 1259 OID 83432)
 -- Name: production_full; Type: VIEW; Schema: public; Owner: postgres
 --
 
 CREATE VIEW public.production_full AS
- SELECT p.id,
-    prod.name AS product_name,
-    prod.description AS product_description,
-    prod.quantity AS product_quantity,
-    pp.price AS product_current_price,
-    muu.symbol AS product_quantity_measurement_unit,
-    p.quantity_produced,
-    p.gross_quantity_produced,
-    mu.unit AS gross_quantity_measurement_unit_unit,
-    mu.name AS gross_quantity_measurement_unit_name,
-    mu.plural_name AS gross_quantity_measurement_unit_plural_name,
-    mu.symbol AS gross_quantity_measurement_unit_symbol,
-    p.date,
-    p.created_at,
-    p.deleted_at,
-    p.confirmed
-   FROM ((((public.production p
-     JOIN public.product prod ON ((prod.id = p.product_id)))
-     JOIN public.measurement_unit mu ON ((mu.id = p.gqp_measurement_unit_id)))
-     JOIN public.measurement_unit muu ON ((muu.id = prod.measurement_unit_id)))
-     LEFT JOIN LATERAL ( SELECT product_price.price
-           FROM public.product_price
-          WHERE (product_price.product_id = prod.id)
-          ORDER BY product_price.price_change_date DESC
-         LIMIT 1) pp ON (true))
-  WHERE (p.deleted_at IS NULL);
+SELECT
+    NULL::integer AS id,
+    NULL::text AS product_name,
+    NULL::text AS product_description,
+    NULL::numeric(38,3) AS product_quantity,
+    NULL::numeric(38,2) AS product_current_price,
+    NULL::character varying(3) AS product_quantity_measurement_unit,
+    NULL::numeric(38,3) AS quantity_produced,
+    NULL::numeric(38,3) AS gross_quantity_produced,
+    NULL::text AS gross_quantity_measurement_unit_unit,
+    NULL::text AS gross_quantity_measurement_unit_name,
+    NULL::text AS gross_quantity_measurement_unit_plural_name,
+    NULL::character varying(3) AS gross_quantity_measurement_unit_symbol,
+    NULL::numeric AS avg_raw_material_unit_price,
+    NULL::date AS raw_material_purchase_date,
+    NULL::numeric(38,3) AS quantity_used,
+    NULL::date AS date,
+    NULL::timestamp with time zone AS created_at,
+    NULL::timestamp with time zone AS deleted_at,
+    NULL::boolean AS confirmed;
 
 
 ALTER VIEW public.production_full OWNER TO postgres;
@@ -542,7 +538,7 @@ CREATE SEQUENCE public.production_id_seq
 ALTER SEQUENCE public.production_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5249 (class 0 OID 0)
+-- TOC entry 5234 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: production_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -551,21 +547,7 @@ ALTER SEQUENCE public.production_id_seq OWNED BY public.production.id;
 
 
 --
--- TOC entry 239 (class 1259 OID 42585)
--- Name: production_raw_material_purchase; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.production_raw_material_purchase (
-    production_id integer CONSTRAINT production_raw_materials_production_id_not_null NOT NULL,
-    purchase_id integer CONSTRAINT production_raw_materials_purchase_id_not_null NOT NULL,
-    quantity_used numeric(38,3) CONSTRAINT production_raw_materials_quantity_used_not_null NOT NULL
-);
-
-
-ALTER TABLE public.production_raw_material_purchase OWNER TO postgres;
-
---
--- TOC entry 240 (class 1259 OID 42591)
+-- TOC entry 239 (class 1259 OID 42591)
 -- Name: purchase; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -588,7 +570,7 @@ CREATE TABLE public.purchase (
 ALTER TABLE public.purchase OWNER TO postgres;
 
 --
--- TOC entry 241 (class 1259 OID 42606)
+-- TOC entry 240 (class 1259 OID 42606)
 -- Name: raw_material; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -604,29 +586,7 @@ CREATE TABLE public.raw_material (
 ALTER TABLE public.raw_material OWNER TO postgres;
 
 --
--- TOC entry 244 (class 1259 OID 42758)
--- Name: production_raw_material_purchase_full; Type: VIEW; Schema: public; Owner: postgres
---
-
-CREATE VIEW public.production_raw_material_purchase_full AS
- SELECT prmp.production_id,
-    prmp.purchase_id,
-    rm.name AS raw_material_name,
-    rm.description AS raw_material_description,
-    pur.price_per_unit AS raw_material_price_per_unit,
-    pur.quantity AS raw_material_quantity,
-    mu.symbol AS measurement_symbol,
-    prmp.quantity_used
-   FROM (((public.production_raw_material_purchase prmp
-     JOIN public.purchase pur ON ((pur.id = prmp.purchase_id)))
-     JOIN public.raw_material rm ON ((rm.id = pur.raw_material_id)))
-     JOIN public.measurement_unit mu ON ((mu.id = pur.measurement_unit_id)));
-
-
-ALTER VIEW public.production_raw_material_purchase_full OWNER TO postgres;
-
---
--- TOC entry 253 (class 1259 OID 50703)
+-- TOC entry 251 (class 1259 OID 50703)
 -- Name: spent_category; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -639,7 +599,7 @@ CREATE TABLE public.spent_category (
 ALTER TABLE public.spent_category OWNER TO postgres;
 
 --
--- TOC entry 254 (class 1259 OID 75231)
+-- TOC entry 252 (class 1259 OID 75231)
 -- Name: purchase_full; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -678,7 +638,7 @@ CREATE VIEW public.purchase_full AS
 ALTER VIEW public.purchase_full OWNER TO postgres;
 
 --
--- TOC entry 242 (class 1259 OID 42625)
+-- TOC entry 241 (class 1259 OID 42625)
 -- Name: purchase_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -693,8 +653,8 @@ CREATE SEQUENCE public.purchase_id_seq
 ALTER SEQUENCE public.purchase_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5250 (class 0 OID 0)
--- Dependencies: 242
+-- TOC entry 5235 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: purchase_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -702,7 +662,7 @@ ALTER SEQUENCE public.purchase_id_seq OWNED BY public.purchase.id;
 
 
 --
--- TOC entry 243 (class 1259 OID 42626)
+-- TOC entry 242 (class 1259 OID 42626)
 -- Name: raw_material_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -718,8 +678,8 @@ CREATE SEQUENCE public.raw_material_id_seq
 ALTER SEQUENCE public.raw_material_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5251 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5236 (class 0 OID 0)
+-- Dependencies: 242
 -- Name: raw_material_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -727,7 +687,7 @@ ALTER SEQUENCE public.raw_material_id_seq OWNED BY public.raw_material.id;
 
 
 --
--- TOC entry 248 (class 1259 OID 50574)
+-- TOC entry 246 (class 1259 OID 50574)
 -- Name: sale; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -744,7 +704,7 @@ CREATE TABLE public.sale (
 ALTER TABLE public.sale OWNER TO postgres;
 
 --
--- TOC entry 259 (class 1259 OID 75256)
+-- TOC entry 256 (class 1259 OID 75256)
 -- Name: sale_full; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -768,7 +728,7 @@ CREATE VIEW public.sale_full AS
 ALTER VIEW public.sale_full OWNER TO postgres;
 
 --
--- TOC entry 247 (class 1259 OID 50573)
+-- TOC entry 245 (class 1259 OID 50573)
 -- Name: sale_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -784,8 +744,8 @@ CREATE SEQUENCE public.sale_id_seq
 ALTER SEQUENCE public.sale_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5252 (class 0 OID 0)
--- Dependencies: 247
+-- TOC entry 5237 (class 0 OID 0)
+-- Dependencies: 245
 -- Name: sale_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -793,7 +753,7 @@ ALTER SEQUENCE public.sale_id_seq OWNED BY public.sale.id;
 
 
 --
--- TOC entry 246 (class 1259 OID 50557)
+-- TOC entry 244 (class 1259 OID 50557)
 -- Name: sale_product; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -809,7 +769,7 @@ CREATE TABLE public.sale_product (
 ALTER TABLE public.sale_product OWNER TO postgres;
 
 --
--- TOC entry 249 (class 1259 OID 50671)
+-- TOC entry 247 (class 1259 OID 50671)
 -- Name: sale_product_full; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -838,7 +798,7 @@ CREATE VIEW public.sale_product_full AS
 ALTER VIEW public.sale_product_full OWNER TO postgres;
 
 --
--- TOC entry 245 (class 1259 OID 50556)
+-- TOC entry 243 (class 1259 OID 50556)
 -- Name: sale_product_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -854,8 +814,8 @@ CREATE SEQUENCE public.sale_product_id_seq
 ALTER SEQUENCE public.sale_product_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5253 (class 0 OID 0)
--- Dependencies: 245
+-- TOC entry 5238 (class 0 OID 0)
+-- Dependencies: 243
 -- Name: sale_product_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -863,7 +823,7 @@ ALTER SEQUENCE public.sale_product_id_seq OWNED BY public.sale_product.id;
 
 
 --
--- TOC entry 251 (class 1259 OID 50681)
+-- TOC entry 249 (class 1259 OID 50681)
 -- Name: spent; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -882,7 +842,7 @@ CREATE TABLE public.spent (
 ALTER TABLE public.spent OWNER TO postgres;
 
 --
--- TOC entry 252 (class 1259 OID 50702)
+-- TOC entry 250 (class 1259 OID 50702)
 -- Name: spent_category_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -898,8 +858,8 @@ CREATE SEQUENCE public.spent_category_id_seq
 ALTER SEQUENCE public.spent_category_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5254 (class 0 OID 0)
--- Dependencies: 252
+-- TOC entry 5239 (class 0 OID 0)
+-- Dependencies: 250
 -- Name: spent_category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -907,7 +867,7 @@ ALTER SEQUENCE public.spent_category_id_seq OWNED BY public.spent_category.id;
 
 
 --
--- TOC entry 250 (class 1259 OID 50680)
+-- TOC entry 248 (class 1259 OID 50680)
 -- Name: spent_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -923,8 +883,8 @@ CREATE SEQUENCE public.spent_id_seq
 ALTER SEQUENCE public.spent_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5255 (class 0 OID 0)
--- Dependencies: 250
+-- TOC entry 5240 (class 0 OID 0)
+-- Dependencies: 248
 -- Name: spent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -932,7 +892,7 @@ ALTER SEQUENCE public.spent_id_seq OWNED BY public.spent.id;
 
 
 --
--- TOC entry 255 (class 1259 OID 75236)
+-- TOC entry 253 (class 1259 OID 75236)
 -- Name: supplier_full; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -960,7 +920,7 @@ CREATE VIEW public.supplier_full AS
 ALTER VIEW public.supplier_full OWNER TO postgres;
 
 --
--- TOC entry 4974 (class 2604 OID 42632)
+-- TOC entry 4966 (class 2604 OID 42632)
 -- Name: city id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -968,7 +928,7 @@ ALTER TABLE ONLY public.city ALTER COLUMN id SET DEFAULT nextval('public.city_id
 
 
 --
--- TOC entry 4979 (class 2604 OID 42633)
+-- TOC entry 4971 (class 2604 OID 42633)
 -- Name: employee_payment id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -976,7 +936,7 @@ ALTER TABLE ONLY public.employee_payment ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 4983 (class 2604 OID 42634)
+-- TOC entry 4975 (class 2604 OID 42634)
 -- Name: measurement_unit id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -984,7 +944,7 @@ ALTER TABLE ONLY public.measurement_unit ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 4984 (class 2604 OID 42635)
+-- TOC entry 4976 (class 2604 OID 42635)
 -- Name: partner_role id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -992,7 +952,7 @@ ALTER TABLE ONLY public.partner_role ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4985 (class 2604 OID 42636)
+-- TOC entry 4977 (class 2604 OID 42636)
 -- Name: product id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1000,7 +960,7 @@ ALTER TABLE ONLY public.product ALTER COLUMN id SET DEFAULT nextval('public.prod
 
 
 --
--- TOC entry 4988 (class 2604 OID 42637)
+-- TOC entry 4980 (class 2604 OID 42637)
 -- Name: product_category id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1008,7 +968,7 @@ ALTER TABLE ONLY public.product_category ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 4989 (class 2604 OID 42638)
+-- TOC entry 4981 (class 2604 OID 42638)
 -- Name: product_price id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1016,7 +976,7 @@ ALTER TABLE ONLY public.product_price ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 4990 (class 2604 OID 42639)
+-- TOC entry 4982 (class 2604 OID 42639)
 -- Name: production id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1024,7 +984,7 @@ ALTER TABLE ONLY public.production ALTER COLUMN id SET DEFAULT nextval('public.p
 
 
 --
--- TOC entry 4992 (class 2604 OID 42640)
+-- TOC entry 4984 (class 2604 OID 42640)
 -- Name: purchase id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1032,7 +992,7 @@ ALTER TABLE ONLY public.purchase ALTER COLUMN id SET DEFAULT nextval('public.pur
 
 
 --
--- TOC entry 4996 (class 2604 OID 42641)
+-- TOC entry 4988 (class 2604 OID 42641)
 -- Name: raw_material id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1040,7 +1000,7 @@ ALTER TABLE ONLY public.raw_material ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4999 (class 2604 OID 50577)
+-- TOC entry 4991 (class 2604 OID 50577)
 -- Name: sale id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1048,7 +1008,7 @@ ALTER TABLE ONLY public.sale ALTER COLUMN id SET DEFAULT nextval('public.sale_id
 
 
 --
--- TOC entry 4997 (class 2604 OID 50560)
+-- TOC entry 4989 (class 2604 OID 50560)
 -- Name: sale_product id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1056,7 +1016,7 @@ ALTER TABLE ONLY public.sale_product ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 5002 (class 2604 OID 50684)
+-- TOC entry 4994 (class 2604 OID 50684)
 -- Name: spent id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1064,7 +1024,7 @@ ALTER TABLE ONLY public.spent ALTER COLUMN id SET DEFAULT nextval('public.spent_
 
 
 --
--- TOC entry 5005 (class 2604 OID 50706)
+-- TOC entry 4997 (class 2604 OID 50706)
 -- Name: spent_category id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1072,7 +1032,7 @@ ALTER TABLE ONLY public.spent_category ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 5011 (class 2606 OID 42643)
+-- TOC entry 5003 (class 2606 OID 42643)
 -- Name: city city_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1081,7 +1041,7 @@ ALTER TABLE ONLY public.city
 
 
 --
--- TOC entry 5013 (class 2606 OID 42645)
+-- TOC entry 5005 (class 2606 OID 42645)
 -- Name: city city_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1090,7 +1050,7 @@ ALTER TABLE ONLY public.city
 
 
 --
--- TOC entry 5006 (class 2606 OID 42646)
+-- TOC entry 4998 (class 2606 OID 42646)
 -- Name: company_partner cnpj_format; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1099,7 +1059,7 @@ ALTER TABLE public.company_partner
 
 
 --
--- TOC entry 5015 (class 2606 OID 42648)
+-- TOC entry 5007 (class 2606 OID 42648)
 -- Name: company_partner company_partner_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1108,7 +1068,7 @@ ALTER TABLE ONLY public.company_partner
 
 
 --
--- TOC entry 5007 (class 2606 OID 42649)
+-- TOC entry 4999 (class 2606 OID 42649)
 -- Name: personal_partner cpf_format; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1117,7 +1077,7 @@ ALTER TABLE public.personal_partner
 
 
 --
--- TOC entry 5026 (class 2606 OID 42651)
+-- TOC entry 5018 (class 2606 OID 42651)
 -- Name: employee employee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1126,7 +1086,7 @@ ALTER TABLE ONLY public.employee
 
 
 --
--- TOC entry 5028 (class 2606 OID 42653)
+-- TOC entry 5020 (class 2606 OID 42653)
 -- Name: employee_payment employee_wage_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1135,7 +1095,7 @@ ALTER TABLE ONLY public.employee_payment
 
 
 --
--- TOC entry 5031 (class 2606 OID 42655)
+-- TOC entry 5023 (class 2606 OID 42655)
 -- Name: measurement_unit measurement_unit_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1144,7 +1104,7 @@ ALTER TABLE ONLY public.measurement_unit
 
 
 --
--- TOC entry 5020 (class 2606 OID 42657)
+-- TOC entry 5012 (class 2606 OID 42657)
 -- Name: partner partner_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1153,7 +1113,7 @@ ALTER TABLE ONLY public.partner
 
 
 --
--- TOC entry 5033 (class 2606 OID 42659)
+-- TOC entry 5025 (class 2606 OID 42659)
 -- Name: partner_role partner_role_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1162,7 +1122,7 @@ ALTER TABLE ONLY public.partner_role
 
 
 --
--- TOC entry 5022 (class 2606 OID 42661)
+-- TOC entry 5014 (class 2606 OID 42661)
 -- Name: personal_partner personal_partner_cpf_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1171,7 +1131,7 @@ ALTER TABLE ONLY public.personal_partner
 
 
 --
--- TOC entry 5024 (class 2606 OID 42663)
+-- TOC entry 5016 (class 2606 OID 42663)
 -- Name: personal_partner personal_partner_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1180,7 +1140,7 @@ ALTER TABLE ONLY public.personal_partner
 
 
 --
--- TOC entry 5038 (class 2606 OID 42665)
+-- TOC entry 5030 (class 2606 OID 42665)
 -- Name: product_category product_category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1189,7 +1149,7 @@ ALTER TABLE ONLY public.product_category
 
 
 --
--- TOC entry 5036 (class 2606 OID 42667)
+-- TOC entry 5028 (class 2606 OID 42667)
 -- Name: product product_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1198,7 +1158,7 @@ ALTER TABLE ONLY public.product
 
 
 --
--- TOC entry 5040 (class 2606 OID 42669)
+-- TOC entry 5032 (class 2606 OID 42669)
 -- Name: product_price product_price_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1207,7 +1167,7 @@ ALTER TABLE ONLY public.product_price
 
 
 --
--- TOC entry 5042 (class 2606 OID 42671)
+-- TOC entry 5034 (class 2606 OID 42671)
 -- Name: production production_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1216,16 +1176,7 @@ ALTER TABLE ONLY public.production
 
 
 --
--- TOC entry 5046 (class 2606 OID 42673)
--- Name: production_raw_material_purchase production_raw_materials_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.production_raw_material_purchase
-    ADD CONSTRAINT production_raw_materials_pkey PRIMARY KEY (production_id, purchase_id);
-
-
---
--- TOC entry 5050 (class 2606 OID 42675)
+-- TOC entry 5038 (class 2606 OID 42675)
 -- Name: purchase purchase_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1234,7 +1185,7 @@ ALTER TABLE ONLY public.purchase
 
 
 --
--- TOC entry 5052 (class 2606 OID 42677)
+-- TOC entry 5040 (class 2606 OID 42677)
 -- Name: raw_material raw_material_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1243,7 +1194,7 @@ ALTER TABLE ONLY public.raw_material
 
 
 --
--- TOC entry 5058 (class 2606 OID 50581)
+-- TOC entry 5046 (class 2606 OID 50581)
 -- Name: sale sale_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1252,7 +1203,7 @@ ALTER TABLE ONLY public.sale
 
 
 --
--- TOC entry 5055 (class 2606 OID 50593)
+-- TOC entry 5043 (class 2606 OID 50593)
 -- Name: sale_product sale_production_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1261,7 +1212,7 @@ ALTER TABLE ONLY public.sale_product
 
 
 --
--- TOC entry 5009 (class 2606 OID 50800)
+-- TOC entry 5001 (class 2606 OID 50800)
 -- Name: purchase spent_category_id_checker; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1270,7 +1221,7 @@ ALTER TABLE public.purchase
 
 
 --
--- TOC entry 5008 (class 2606 OID 50799)
+-- TOC entry 5000 (class 2606 OID 50799)
 -- Name: employee_payment spent_category_id_cheker; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1279,7 +1230,7 @@ ALTER TABLE public.employee_payment
 
 
 --
--- TOC entry 5062 (class 2606 OID 50712)
+-- TOC entry 5050 (class 2606 OID 50712)
 -- Name: spent_category spent_category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1288,7 +1239,7 @@ ALTER TABLE ONLY public.spent_category
 
 
 --
--- TOC entry 5060 (class 2606 OID 50696)
+-- TOC entry 5048 (class 2606 OID 50696)
 -- Name: spent spent_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1297,7 +1248,7 @@ ALTER TABLE ONLY public.spent
 
 
 --
--- TOC entry 5034 (class 1259 OID 42678)
+-- TOC entry 5026 (class 1259 OID 42678)
 -- Name: fki_category_fkey; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1305,7 +1256,7 @@ CREATE INDEX fki_category_fkey ON public.product USING btree (category_id);
 
 
 --
--- TOC entry 5017 (class 1259 OID 42679)
+-- TOC entry 5009 (class 1259 OID 42679)
 -- Name: fki_city_fkey; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1313,7 +1264,7 @@ CREATE INDEX fki_city_fkey ON public.partner USING btree (city_id);
 
 
 --
--- TOC entry 5056 (class 1259 OID 50587)
+-- TOC entry 5044 (class 1259 OID 50587)
 -- Name: fki_client_fkey; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1321,7 +1272,7 @@ CREATE INDEX fki_client_fkey ON public.sale USING btree (client_id);
 
 
 --
--- TOC entry 5029 (class 1259 OID 42680)
+-- TOC entry 5021 (class 1259 OID 42680)
 -- Name: fki_employee_fkey; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1329,7 +1280,7 @@ CREATE INDEX fki_employee_fkey ON public.employee_payment USING btree (employee_
 
 
 --
--- TOC entry 5047 (class 1259 OID 42681)
+-- TOC entry 5035 (class 1259 OID 42681)
 -- Name: fki_measurement_unit_fkey; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1337,7 +1288,7 @@ CREATE INDEX fki_measurement_unit_fkey ON public.purchase USING btree (measureme
 
 
 --
--- TOC entry 5016 (class 1259 OID 42682)
+-- TOC entry 5008 (class 1259 OID 42682)
 -- Name: fki_partner_fkey; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1345,7 +1296,7 @@ CREATE INDEX fki_partner_fkey ON public.company_partner USING btree (id);
 
 
 --
--- TOC entry 5053 (class 1259 OID 50599)
+-- TOC entry 5041 (class 1259 OID 50599)
 -- Name: fki_product_fkey; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1353,23 +1304,7 @@ CREATE INDEX fki_product_fkey ON public.sale_product USING btree (product_id);
 
 
 --
--- TOC entry 5043 (class 1259 OID 42683)
--- Name: fki_production_fkey; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX fki_production_fkey ON public.production_raw_material_purchase USING btree (production_id);
-
-
---
--- TOC entry 5044 (class 1259 OID 42684)
--- Name: fki_purchase_fkey; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX fki_purchase_fkey ON public.production_raw_material_purchase USING btree (purchase_id);
-
-
---
--- TOC entry 5048 (class 1259 OID 42685)
+-- TOC entry 5036 (class 1259 OID 42685)
 -- Name: fki_raw_material_fkey; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1377,7 +1312,7 @@ CREATE INDEX fki_raw_material_fkey ON public.purchase USING btree (raw_material_
 
 
 --
--- TOC entry 5018 (class 1259 OID 42686)
+-- TOC entry 5010 (class 1259 OID 42686)
 -- Name: fki_role_fkey; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1385,7 +1320,46 @@ CREATE INDEX fki_role_fkey ON public.partner USING btree (role_id);
 
 
 --
--- TOC entry 5081 (class 2620 OID 50648)
+-- TOC entry 5221 (class 2618 OID 83435)
+-- Name: production_full _RETURN; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE OR REPLACE VIEW public.production_full AS
+ SELECT p.id,
+    prod.name AS product_name,
+    prod.description AS product_description,
+    prod.quantity AS product_quantity,
+    pp.price AS product_current_price,
+    muu.symbol AS product_quantity_measurement_unit,
+    p.quantity_produced,
+    p.gross_quantity_produced,
+    mu.unit AS gross_quantity_measurement_unit_unit,
+    mu.name AS gross_quantity_measurement_unit_name,
+    mu.plural_name AS gross_quantity_measurement_unit_plural_name,
+    mu.symbol AS gross_quantity_measurement_unit_symbol,
+    avg(pur.price_per_unit) AS avg_raw_material_unit_price,
+    p.raw_material_purchase_date,
+    p.quantity_used,
+    p.date,
+    p.created_at,
+    p.deleted_at,
+    p.confirmed
+   FROM (((((public.production p
+     JOIN public.product prod ON ((prod.id = p.product_id)))
+     JOIN public.measurement_unit mu ON ((mu.id = p.gqp_measurement_unit_id)))
+     JOIN public.measurement_unit muu ON ((muu.id = prod.measurement_unit_id)))
+     LEFT JOIN LATERAL ( SELECT product_price.price
+           FROM public.product_price
+          WHERE (product_price.product_id = prod.id)
+          ORDER BY product_price.price_change_date DESC
+         LIMIT 1) pp ON (true))
+     JOIN public.purchase pur ON ((pur.date = p.raw_material_purchase_date)))
+  WHERE (p.deleted_at IS NULL)
+  GROUP BY p.id, prod.name, prod.description, prod.quantity, pp.price, muu.symbol, p.quantity_produced, p.gross_quantity_produced, mu.unit, mu.name, mu.plural_name, mu.symbol, p.date, p.created_at, p.deleted_at, p.confirmed;
+
+
+--
+-- TOC entry 5067 (class 2620 OID 50648)
 -- Name: sale_product trg_set_product_price_on_sale; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1393,7 +1367,7 @@ CREATE TRIGGER trg_set_product_price_on_sale BEFORE INSERT ON public.sale_produc
 
 
 --
--- TOC entry 5069 (class 2606 OID 42687)
+-- TOC entry 5057 (class 2606 OID 42687)
 -- Name: product category_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1402,7 +1376,7 @@ ALTER TABLE ONLY public.product
 
 
 --
--- TOC entry 5080 (class 2606 OID 50731)
+-- TOC entry 5066 (class 2606 OID 50731)
 -- Name: spent category_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1411,7 +1385,7 @@ ALTER TABLE ONLY public.spent
 
 
 --
--- TOC entry 5074 (class 2606 OID 50738)
+-- TOC entry 5060 (class 2606 OID 50738)
 -- Name: purchase category_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1420,7 +1394,7 @@ ALTER TABLE ONLY public.purchase
 
 
 --
--- TOC entry 5067 (class 2606 OID 50794)
+-- TOC entry 5055 (class 2606 OID 50794)
 -- Name: employee_payment category_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1429,7 +1403,7 @@ ALTER TABLE ONLY public.employee_payment
 
 
 --
--- TOC entry 5064 (class 2606 OID 42692)
+-- TOC entry 5052 (class 2606 OID 42692)
 -- Name: partner city_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1438,7 +1412,7 @@ ALTER TABLE ONLY public.partner
 
 
 --
--- TOC entry 5079 (class 2606 OID 50582)
+-- TOC entry 5065 (class 2606 OID 50582)
 -- Name: sale client_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1447,7 +1421,7 @@ ALTER TABLE ONLY public.sale
 
 
 --
--- TOC entry 5068 (class 2606 OID 42697)
+-- TOC entry 5056 (class 2606 OID 42697)
 -- Name: employee_payment employee_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1456,7 +1430,7 @@ ALTER TABLE ONLY public.employee_payment
 
 
 --
--- TOC entry 5075 (class 2606 OID 42702)
+-- TOC entry 5061 (class 2606 OID 42702)
 -- Name: purchase measurement_unit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1465,7 +1439,7 @@ ALTER TABLE ONLY public.purchase
 
 
 --
--- TOC entry 5070 (class 2606 OID 42707)
+-- TOC entry 5058 (class 2606 OID 42707)
 -- Name: product measurement_unit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1474,7 +1448,7 @@ ALTER TABLE ONLY public.product
 
 
 --
--- TOC entry 5071 (class 2606 OID 42712)
+-- TOC entry 5059 (class 2606 OID 42712)
 -- Name: production measurement_unit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1483,7 +1457,7 @@ ALTER TABLE ONLY public.production
 
 
 --
--- TOC entry 5063 (class 2606 OID 42717)
+-- TOC entry 5051 (class 2606 OID 42717)
 -- Name: company_partner partner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1492,7 +1466,7 @@ ALTER TABLE ONLY public.company_partner
 
 
 --
--- TOC entry 5066 (class 2606 OID 42722)
+-- TOC entry 5054 (class 2606 OID 42722)
 -- Name: personal_partner partner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1501,7 +1475,7 @@ ALTER TABLE ONLY public.personal_partner
 
 
 --
--- TOC entry 5076 (class 2606 OID 42727)
+-- TOC entry 5062 (class 2606 OID 42727)
 -- Name: purchase partner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1510,7 +1484,7 @@ ALTER TABLE ONLY public.purchase
 
 
 --
--- TOC entry 5078 (class 2606 OID 50611)
+-- TOC entry 5064 (class 2606 OID 50611)
 -- Name: sale_product product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1519,25 +1493,7 @@ ALTER TABLE ONLY public.sale_product
 
 
 --
--- TOC entry 5072 (class 2606 OID 42732)
--- Name: production_raw_material_purchase production_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.production_raw_material_purchase
-    ADD CONSTRAINT production_fkey FOREIGN KEY (production_id) REFERENCES public.production(id) NOT VALID;
-
-
---
--- TOC entry 5073 (class 2606 OID 42737)
--- Name: production_raw_material_purchase purchase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.production_raw_material_purchase
-    ADD CONSTRAINT purchase_fkey FOREIGN KEY (purchase_id) REFERENCES public.purchase(id) NOT VALID;
-
-
---
--- TOC entry 5077 (class 2606 OID 42742)
+-- TOC entry 5063 (class 2606 OID 42742)
 -- Name: purchase raw_material_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1546,7 +1502,7 @@ ALTER TABLE ONLY public.purchase
 
 
 --
--- TOC entry 5065 (class 2606 OID 42747)
+-- TOC entry 5053 (class 2606 OID 42747)
 -- Name: partner role_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1554,11 +1510,11 @@ ALTER TABLE ONLY public.partner
     ADD CONSTRAINT role_fkey FOREIGN KEY (role_id) REFERENCES public.partner_role(id) NOT VALID;
 
 
--- Completed on 2026-02-05 16:20:13
+-- Completed on 2026-02-09 02:47:22
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict JhtMN9J4AdWTs5anXFOud0Cw5lp35tK7M2WVwDHGUs3Q7t3EZcm3Z637jZLVkIS
+\unrestrict xQz7ybEnbx2yReH4kG0uzqV2jXfrvdduQ9Bf2vB7k2EH1gclHST7rcdMhIMLZUw
 

@@ -70,11 +70,11 @@ public class ProductsController {
         String query = search.toLowerCase();
 
         List<ProductView> filtered = products.stream()
-                .filter(p -> safe(p.getName()).contains(query) ||
-                        safe(p.getDescription()).contains(query) ||
-                        safe(UtilsService.formatPrice(p.getCurrentPrice())).contains(query) ||
-                        safe(UtilsService.formatQuantity(p.getQuantity())).contains(query) ||
-                        safe(p.getMeasurementUnitName()).contains(query))
+                .filter(p -> safe(p.getName()).contains(safe(query)) ||
+                        safe(p.getDescription()).contains(safe(query)) ||
+                        safe(UtilsService.formatPrice(p.getCurrentPrice())).contains(safe(query)) ||
+                        safe(UtilsService.formatQuantity(p.getQuantity())).contains(safe(query)) ||
+                        safe(p.getMeasurementUnitName()).contains(safe(query)))
                 .toList();
 
         renderCards(filtered);

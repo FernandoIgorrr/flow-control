@@ -1,38 +1,28 @@
 package br.com.midnightsyslabs.flow_control.ui.controller.form;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
-import java.util.function.UnaryOperator;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.Product;
+import br.com.midnightsyslabs.flow_control.domain.entity.purchase.Purchase;
 import br.com.midnightsyslabs.flow_control.repository.product.MeasurementUnitRepository;
 import br.com.midnightsyslabs.flow_control.service.ProductService;
 import br.com.midnightsyslabs.flow_control.service.ProductionService;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
-import br.com.midnightsyslabs.flow_control.service.UtilsService;
-import br.com.midnightsyslabs.flow_control.view.PurchaseView;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 import jakarta.validation.ConstraintViolationException;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
@@ -53,21 +43,19 @@ public class ProductionFormController {
     @Autowired
     private ProductionService productionService;
 
-    private MeasurementUnit selectedMeasurementUnit;
-
-    private List<PurchaseView> selectedPurchasesDTO;
-
     private Runnable onDataChanged;
-
-    private List<PurchaseView> purchaseViews;
+/* 
+    private List<PurchaseView> purchaseViews; */
 
     @FXML
     private ContextMenu purchasesSuggestions;
 
-    @FXML
-    private VBox purchaseFieldsBox;
-
-    private List<PurchaseRow> purchaseRows;
+    /*
+     * @FXML
+     * private VBox purchaseFieldsBox;
+     */
+/* 
+    private List<PurchaseRow> purchaseRows; */
 
     @FXML
     private ComboBox<Product> productComboBox;
@@ -82,27 +70,71 @@ public class ProductionFormController {
     private ComboBox<MeasurementUnit> gqpMeasurementUnitComboBox;
 
     @FXML
+    private ComboBox<LocalDate> rawMaterialPurchaseDateComboBox;
+
+    @FXML
     private TextField quantityProducedField;
+
+    @FXML
+    private TextField quantityUsedField;
 
     @FXML
     private DatePicker datePicker;
 
-    @FXML
-    private Button btnAddPurchase;
+    /*
+     * @FXML
+     * private Button btnAddPurchase;
+     */
 
     @FXML
     public void initialize() {
-        purchaseViews = purchaseService.getPurchasesView();
+        /* purchaseViews = purchaseService.getPurchasesView();
         purchaseRows = new ArrayList<>();
-        purchasesSuggestions = new ContextMenu();
-        addPurchaseField();
+        purchasesSuggestions = new ContextMenu(); */
+
+        configureRawMaterialPurchaseDateComboBox();
+        // addPurchaseField();
         configureProductComboBox();
-        configureQuantityField(this.grossQuantityProducedField);
+        UiUtils.configureQuantityField(this.quantityUsedField);
+        UiUtils.configureQuantityField(this.grossQuantityProducedField);
         configureMeasurementUnitComboBox();
-        configureQuantityField(this.quantityProducedField);
+        UiUtils.configureQuantityField(this.quantityProducedField);
+
+        configureMeasurementUnitComboBox();
 
         datePicker.setValue(LocalDate.now());
         datePicker.setEditable(false);
+    }
+
+    private void configureRawMaterialPurchaseDateComboBox() {
+
+        List<LocalDate> dates = purchaseService.getPurchases().stream()
+                .map(Purchase::getDate).distinct()
+                .sorted(Comparator.reverseOrder())
+                .toList();
+
+        this.rawMaterialPurchaseDateComboBox.getItems().setAll(dates);
+
+        this.rawMaterialPurchaseDateComboBox.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+                        "dd 'de' MMMM 'de' yyyy",
+                        Locale.forLanguageTag("pt-BR"));
+                return date == null
+                        ? ""
+                        : date.format(formatter);
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                return null;
+            }
+        });
+
+        if (!dates.isEmpty()) {
+            this.rawMaterialPurchaseDateComboBox.getSelectionModel().selectFirst();
+        }
     }
 
     private void configureMeasurementUnitComboBox() {
@@ -127,8 +159,8 @@ public class ProductionFormController {
 
         gqpMeasurementUnitComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                this.selectedMeasurementUnit = newValue;
-                this.lblGrossQuantityProduced.setText("Bruto em (" + newValue.getSymbol() + ")" + " produzido *");
+            
+                lblGrossQuantityProduced.setText("Bruto em (" + newValue.getSymbol() + ")" + " produzido *");
             }
         });
 
@@ -137,232 +169,228 @@ public class ProductionFormController {
         }
     }
 
-    @FXML
-    private void addPurchaseField() {
+    /*
+     * @FXML
+     * private void addPurchaseField() {
+     * 
+     * VBox purchaseItemBox = new VBox(5);
+     * purchaseItemBox.getStyleClass().add("purchase-item");
+     * 
+     * HBox headerBox = new HBox(10);
+     * headerBox.setAlignment(Pos.BOTTOM_LEFT);
+     * Label lblPurchaseMenuItem = new Label("ID da compra da matéria-prima *");
+     * 
+     * Label lblPurchaseQuantityUsed = new
+     * Label("Preencha a quantidade usada da matéria-prima *");
+     * 
+     * TextField purchaseField = new TextField();
+     * purchaseField.setPromptText("Digite o ID da compra...");
+     * 
+     * TextField purchaseQuantityUsedField = new TextField();
+     * purchaseQuantityUsedField.setPromptText("0,0");
+     * 
+     * //ContextMenu suggestions = new ContextMenu();
+     * //setupPurchaseAutocomplete(purchaseField, suggestions);
+     * UiUtils.configureQuantityField(purchaseQuantityUsedField);
+     * 
+     * // spacer
+     * Region spacer = new Region();
+     * HBox.setHgrow(spacer, Priority.ALWAYS);
+     * 
+     * if (!purchaseFieldsBox.getChildren().isEmpty()) {
+     * Button btnRemove = new Button();
+     * btnRemove.getStyleClass().add("btn-action-delete");
+     * 
+     * StackPane pane = new StackPane();
+     * 
+     * pane.prefWidth(32);
+     * pane.prefHeight(32);
+     * 
+     * ImageView iconRemove = new ImageView(
+     * new
+     * Image(getClass().getResourceAsStream("/images/carbon--close-outline.png")));
+     * 
+     * iconRemove.setFitWidth(32);
+     * iconRemove.setFitHeight(32);
+     * iconRemove.setPreserveRatio(true);
+     * iconRemove.getStyleClass().add("icon-delete");
+     * 
+     * pane.getChildren().add(iconRemove);
+     * 
+     * btnRemove.getStyleClass().add("btn-action-add-purchase");
+     * 
+     * btnRemove.setGraphic(pane);
+     * 
+     * btnRemove.setOnAction(event -> {
+     * purchaseFieldsBox.getChildren().remove(purchaseItemBox);
+     * purchaseRows.removeIf(row -> row.purchaseQuantityUsedField ==
+     * purchaseQuantityUsedField);
+     * });
+     * headerBox.getChildren().addAll(lblPurchaseMenuItem, spacer, btnRemove);
+     * } else {
+     * headerBox.getChildren().addAll(lblPurchaseMenuItem);
+     * }
+     * purchaseItemBox.getChildren().addAll(
+     * headerBox,
+     * purchaseField,
+     * lblPurchaseQuantityUsed,
+     * purchaseQuantityUsedField);
+     * 
+     * purchaseFieldsBox.getChildren().add(purchaseItemBox);
+     * 
+     * purchaseField.textProperty().addListener((obs, oldText, newText) -> {
+     * 
+     * if (newText == null || newText.length() < 1) {
+     * purchasesSuggestions.hide();
+     * return;
+     * }
+     * 
+     * List<MenuItem> suggestionss = purchaseViews.stream()
+     * .filter(p -> p.getId().toString().contains(newText))
+     * .limit(10)
+     * .map(purchaseView -> {
+     * 
+     * MenuItem item = new MenuItem(
+     * "#" + purchaseView.getId() +
+     * " | " + UtilsService.formatQuantity(purchaseView.getQuantity()) +
+     * " " + purchaseView.getMeasurementUnitPluralName() +
+     * " de " + purchaseView.getRawMaterialName() +
+     * " ( " + UtilsService.formatPrice(purchaseView.getExpense()) + ")" +
+     * " ~ " + purchaseView.getPartnerName());
+     * 
+     * item.setOnAction(e -> {
+     * purchaseField.setText(item.getText());
+     * purchasesSuggestions.hide();
+     * purchaseRows.removeIf(row -> row.purchaseQuantityUsedField ==
+     * purchaseQuantityUsedField);
+     * purchaseRows.add(new PurchaseRow(purchaseView,purchaseQuantityUsedField));
+     * 
+     * });
+     * 
+     * return item;
+     * })
+     * .toList();
+     * 
+     * if (suggestionss.isEmpty()) {
+     * purchasesSuggestions.hide();
+     * } else {
+     * purchasesSuggestions.getItems().setAll(suggestionss);
+     * purchasesSuggestions.show(purchaseField, javafx.geometry.Side.BOTTOM, 0, 0);
+     * }
+     * });
+     * }
+     */
 
-        VBox purchaseItemBox = new VBox(5);
-        purchaseItemBox.getStyleClass().add("purchase-item");
+    /*
+     * @FXML
+     * private void addPurchaseField() {
+     * 
+     * boolean isFirst = purchaseFieldsBox.getChildren().isEmpty();
+     * 
+     * VBox purchaseItemBox = new VBox(5);
+     * purchaseItemBox.getStyleClass().add("purchase-item");
+     * 
+     * // Header
+     * HBox headerBox = new HBox(10);
+     * headerBox.setAlignment(Pos.CENTER_LEFT);
+     * 
+     * Label lblPurchase = new Label("Código da compra da matéria-prima *");
+     * 
+     * TextField purchaseField = new TextField();
+     * purchaseField.setPromptText("Digite o ID da compra...");
+     * 
+     * Label lblQuantityUsed = new Label("Digite a quantidade usada");
+     * 
+     * TextField quantityField = new TextField();
+     * 
+     * quantityField.setPromptText("0,0");
+     * 
+     * ContextMenu suggestions = new ContextMenu();
+     * setupPurchaseAutocomplete(purchaseField, quantityField, suggestions);
+     * configureQuantityField(quantityField);
+     * 
+     * Region spacer = new Region();
+     * HBox.setHgrow(spacer, Priority.ALWAYS);
+     * 
+     * // Só cria o botão se NÃO for o primeiro bloco
+     * if (!isFirst) {
+     * Button btnRemove = new Button("✖");
+     * btnRemove.setFocusTraversable(false);
+     * btnRemove.setStyle("""
+     * -fx-background-color: transparent;
+     * -fx-text-fill: red;
+     * -fx-font-size: 14px;
+     * """);
+     * 
+     * btnRemove.setOnAction(e -> {
+     * purchaseFieldsBox.getChildren().remove(purchaseItemBox);
+     * // Remove da nossa lista de controle procurando pelo campo de quantidade
+     * purchaseRows.removeIf(row -> row.quantityField == quantityField);
+     * });
+     * headerBox.getChildren().addAll(lblPurchase, spacer, btnRemove);
+     * } else {
+     * headerBox.getChildren().add(lblPurchase);
+     * }
+     * 
+     * purchaseItemBox.getChildren().addAll(
+     * headerBox,
+     * purchaseField,
+     * lblQuantityUsed,
+     * quantityField);
+     * 
+     * purchaseFieldsBox.getChildren().add(purchaseItemBox);
+     * }
+     */
 
-        HBox headerBox = new HBox(10);
-        headerBox.setAlignment(Pos.BOTTOM_LEFT);
-        Label lblPurchaseMenuItem = new Label("ID da compra da matéria-prima *");
-
-        Label lblPurchaseQuantityUsed = new Label("Preencha a quantidade usada da matéria-prima *");
-
-        TextField purchaseField = new TextField();
-        purchaseField.setPromptText("Digite o ID da compra...");
-
-        TextField purchaseQuantityUsedField = new TextField();
-        purchaseQuantityUsedField.setPromptText("0,0");
-
-        //ContextMenu suggestions = new ContextMenu();
-        //setupPurchaseAutocomplete(purchaseField, suggestions);
-        configureQuantityField(purchaseQuantityUsedField);
-
-        // spacer
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        if (!purchaseFieldsBox.getChildren().isEmpty()) {
-            Button btnRemove = new Button();
-            btnRemove.getStyleClass().add("btn-action-delete");
-
-            StackPane pane = new StackPane();
-
-            pane.prefWidth(32);
-            pane.prefHeight(32);
-
-            ImageView iconRemove = new ImageView(
-                    new Image(getClass().getResourceAsStream("/images/carbon--close-outline.png")));
-
-            iconRemove.setFitWidth(32);
-            iconRemove.setFitHeight(32);
-            iconRemove.setPreserveRatio(true);
-            iconRemove.getStyleClass().add("icon-delete");
-
-            pane.getChildren().add(iconRemove);
-
-            btnRemove.getStyleClass().add("btn-action-add-purchase");
-
-            btnRemove.setGraphic(pane);
-
-            btnRemove.setOnAction(event -> {
-                purchaseFieldsBox.getChildren().remove(purchaseItemBox);
-                purchaseRows.removeIf(row -> row.purchaseQuantityUsedField == purchaseQuantityUsedField);
-            });
-            headerBox.getChildren().addAll(lblPurchaseMenuItem, spacer, btnRemove);
-        } else {
-            headerBox.getChildren().addAll(lblPurchaseMenuItem);
-        }
-        purchaseItemBox.getChildren().addAll(
-                headerBox,
-                purchaseField,
-                lblPurchaseQuantityUsed,
-                purchaseQuantityUsedField);
-
-        purchaseFieldsBox.getChildren().add(purchaseItemBox);
-
-        purchaseField.textProperty().addListener((obs, oldText, newText) -> {
-
-            if (newText == null || newText.length() < 1) {
-                purchasesSuggestions.hide();
-                return;
-            }
-
-            List<MenuItem> suggestionss = purchaseViews.stream()
-                    .filter(p -> p.getId().toString().contains(newText))
-                    .limit(10)
-                    .map(purchaseView -> {
-
-                        MenuItem item = new MenuItem(
-                                "#" + purchaseView.getId() +
-                                        " | " + UtilsService.formatQuantity(purchaseView.getQuantity()) +
-                                        " " + purchaseView.getMeasurementUnitPluralName() +
-                                        " de " + purchaseView.getRawMaterialName() +
-                                        " ( " + UtilsService.formatPrice(purchaseView.getExpense()) + ")" +
-                                        " ~ " + purchaseView.getPartnerName());
-
-                        item.setOnAction(e -> {
-                            purchaseField.setText(item.getText());
-                            purchasesSuggestions.hide();
-                            purchaseRows.removeIf(row -> row.purchaseQuantityUsedField == purchaseQuantityUsedField);
-                            purchaseRows.add(new PurchaseRow(purchaseView,purchaseQuantityUsedField));
-
-                        });
-
-                        return item;
-                    })
-                    .toList();
-
-            if (suggestionss.isEmpty()) {
-                purchasesSuggestions.hide();
-            } else {
-                purchasesSuggestions.getItems().setAll(suggestionss);
-                purchasesSuggestions.show(purchaseField, javafx.geometry.Side.BOTTOM, 0, 0);
-            }
-        });
-    }
-
-   /*  @FXML
-    private void addPurchaseField() {
-
-        boolean isFirst = purchaseFieldsBox.getChildren().isEmpty();
-
-        VBox purchaseItemBox = new VBox(5);
-        purchaseItemBox.getStyleClass().add("purchase-item");
-
-        // Header
-        HBox headerBox = new HBox(10);
-        headerBox.setAlignment(Pos.CENTER_LEFT);
-
-        Label lblPurchase = new Label("Código da compra da matéria-prima *");
-
-        TextField purchaseField = new TextField();
-        purchaseField.setPromptText("Digite o ID da compra...");
-
-        Label lblQuantityUsed = new Label("Digite a quantidade usada");
-
-        TextField quantityField = new TextField();
-
-        quantityField.setPromptText("0,0");
-
-        ContextMenu suggestions = new ContextMenu();
-        setupPurchaseAutocomplete(purchaseField, quantityField, suggestions);
-        configureQuantityField(quantityField);
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        // Só cria o botão se NÃO for o primeiro bloco
-        if (!isFirst) {
-            Button btnRemove = new Button("✖");
-            btnRemove.setFocusTraversable(false);
-            btnRemove.setStyle("""
-                        -fx-background-color: transparent;
-                        -fx-text-fill: red;
-                        -fx-font-size: 14px;
-                    """);
-
-            btnRemove.setOnAction(e -> {
-                purchaseFieldsBox.getChildren().remove(purchaseItemBox);
-                // Remove da nossa lista de controle procurando pelo campo de quantidade
-                purchaseRows.removeIf(row -> row.quantityField == quantityField);
-            });
-            headerBox.getChildren().addAll(lblPurchase, spacer, btnRemove);
-        } else {
-            headerBox.getChildren().add(lblPurchase);
-        }
-
-        purchaseItemBox.getChildren().addAll(
-                headerBox,
-                purchaseField,
-                lblQuantityUsed,
-                quantityField);
-
-        purchaseFieldsBox.getChildren().add(purchaseItemBox);
-    } */
-
-   /*  private void setupPurchaseAutocomplete(
-            TextField purchaseField,
-
-            ContextMenu purchasesSuggestions) {
-        var purchasesView = purchaseService.getPurchasesView();
-
-        purchaseField.textProperty().addListener((obs, oldText, newText) -> {
-
-            if (newText == null || newText.length() < 1) {
-                purchasesSuggestions.hide();
-                return;
-            }
-
-            List<MenuItem> suggestions = purchasesView.stream()
-                    .filter(p -> p.getId().toString().contains(newText))
-                    .limit(10)
-                    .map(purchaseView -> {
-
-                        MenuItem item = new MenuItem(
-                                "#" + purchaseView.getId() +
-                                        " | " + UtilsService.formatQuantity(purchaseView.getQuantity()) +
-                                        " " + purchaseView.getMeasurementUnitPluralName() +
-                                        " de " + purchaseView.getRawMaterialName() +
-                                        " ( " + UtilsService.formatPrice(purchaseView.getExpense()) + ")" +
-                                        " ~ " + purchaseView.getPartnerName());
-
-                        item.setOnAction(e -> {
-                            purchaseField.setText(item.getText());
-                            purchasesSuggestions.hide();
-                            purchaseRows.add(new PurchaseRow(purchaseView, quantityUsedField));
-
-                            // aqui eu crio o novo campo automaticamente
-                            addPurchaseField();
-                        });
-
-                        return item;
-                    })
-                    .toList();
-
-            if (suggestions.isEmpty()) {
-                purchasesSuggestions.hide();
-            } else {
-                purchasesSuggestions.getItems().setAll(suggestions);
-                purchasesSuggestions.show(purchaseField, javafx.geometry.Side.BOTTOM, 0, 0);
-            }
-        });
-    } */
-
-    private void configureQuantityField(TextField quantityField) {
-        UnaryOperator<TextFormatter.Change> quantityFilter = change -> {
-            String text = change.getControlNewText();
-            if (text.matches("\\d*(,\\d{0,3})?")) {
-                return change;
-            }
-            return null;
-        };
-
-        quantityField.setTextFormatter(new TextFormatter<>(quantityFilter));
-        quantityField.setPromptText("0,0");
-
-    }
+    /*
+     * private void setupPurchaseAutocomplete(
+     * TextField purchaseField,
+     * 
+     * ContextMenu purchasesSuggestions) {
+     * var purchasesView = purchaseService.getPurchasesView();
+     * 
+     * purchaseField.textProperty().addListener((obs, oldText, newText) -> {
+     * 
+     * if (newText == null || newText.length() < 1) {
+     * purchasesSuggestions.hide();
+     * return;
+     * }
+     * 
+     * List<MenuItem> suggestions = purchasesView.stream()
+     * .filter(p -> p.getId().toString().contains(newText))
+     * .limit(10)
+     * .map(purchaseView -> {
+     * 
+     * MenuItem item = new MenuItem(
+     * "#" + purchaseView.getId() +
+     * " | " + UtilsService.formatQuantity(purchaseView.getQuantity()) +
+     * " " + purchaseView.getMeasurementUnitPluralName() +
+     * " de " + purchaseView.getRawMaterialName() +
+     * " ( " + UtilsService.formatPrice(purchaseView.getExpense()) + ")" +
+     * " ~ " + purchaseView.getPartnerName());
+     * 
+     * item.setOnAction(e -> {
+     * purchaseField.setText(item.getText());
+     * purchasesSuggestions.hide();
+     * purchaseRows.add(new PurchaseRow(purchaseView, quantityUsedField));
+     * 
+     * // aqui eu crio o novo campo automaticamente
+     * addPurchaseField();
+     * });
+     * 
+     * return item;
+     * })
+     * .toList();
+     * 
+     * if (suggestions.isEmpty()) {
+     * purchasesSuggestions.hide();
+     * } else {
+     * purchasesSuggestions.getItems().setAll(suggestions);
+     * purchasesSuggestions.show(purchaseField, javafx.geometry.Side.BOTTOM, 0, 0);
+     * }
+     * });
+     * }
+     */
 
     private void configureProductComboBox() {
         var products = productService.getProducts();
@@ -394,58 +422,59 @@ public class ProductionFormController {
 
     @FXML
     private void onSave() {
-        if (this.purchaseRows.isEmpty()) {
-            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Adicione pelo menos uma matéria prima.");
+       /*  if (this.purchaseRows.isEmpty()) {
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Adicione pelo menos uma matéria prima.");
             return;
-        }
+        } */
 
         try {
-            for (PurchaseRow row : this.purchaseRows) {
-                String quantityFieldText = row.purchaseQuantityUsedField.getText().replace(",", "."); // Converte para formato
-                                                                                          // decimal
-                                                                                          // Java
+           /*  for (PurchaseRow row : this.purchaseRows) {
+                String quantityFieldText = row.purchaseQuantityUsedField.getText().replace(",", "."); // Converte para
+                                                                                                      // formato
+                // decimal
+                // Java
                 if (quantityFieldText.isEmpty()) {
-                    showLabelAlert(Alert.AlertType.WARNING, "Atenção",
+                    UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção",
                             "Está faltando a quantidade usada em algum campo!.");
                     return;
                 }
 
-            }
+            } */
 
             if (this.grossQuantityProducedField.getText().isBlank() || this.quantityProducedField.getText().isBlank()
-                    || this.productComboBox.getValue() == null
+                    || this.productComboBox.getValue() == null || this.quantityUsedField.getText().isBlank()
                     || this.datePicker == null) {
-                showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
-                        "Por favor  preencha o campo de quantidade produzida do produto bruto e do refinado!");
+                UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+                        "Por favor  preencha o campo de quantidade usada, quantidade produzida do produto bruto e do refinado!");
                 return;
             }
 
             productionService.saveProdction(
-                    this.purchaseRows,
+                    // this.purchaseRows,
+                    this.quantityUsedField.getText(),
                     this.grossQuantityProducedField.getText(),
                     this.gqpMeasurementUnitComboBox.getValue(),
                     this.productComboBox.getValue(),
                     this.quantityProducedField.getText(),
-                    this.datePicker.getValue()
-
-            );
+                    this.datePicker.getValue(),
+                    this.rawMaterialPurchaseDateComboBox.getValue());
 
             if (onDataChanged != null) {
                 onDataChanged.run();
             }
         } catch (ConstraintViolationException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algum campo viola as regras de valores!");
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algum campo viola as regras de valores!");
             return;
         }
 
         catch (Exception e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algo deu errado!" + e.getCause());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algo deu errado!" + e.getCause());
             return;
         }
 
         close();
 
-        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+        UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
                 "Produção cadastrada com sucesso!");
     }
 
@@ -459,16 +488,7 @@ public class ProductionFormController {
     }
 
     private void close() {
-        Stage stage = (Stage) purchaseFieldsBox.getScene().getWindow();
+        Stage stage = (Stage) datePicker.getScene().getWindow();
         stage.close();
     }
-
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
 }

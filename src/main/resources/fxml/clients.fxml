@@ -30,7 +30,12 @@
 
                 <Label text="Gerencie seus clientes"
                     styleClass="page-subtitle" />
+
+                <Label fx:id="lblNumberOfClients"
+                    styleClass="total-price-info-grey" />
+
             </VBox>
+
 
             <!-- SPACER -->
             <Region HBox.hgrow="ALWAYS" />
@@ -71,7 +76,7 @@
                 styleClass="search-field" />
 
             <!-- CARDS -->
-            <ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
                 style="-fx-background-color: transparent;">
                 <content>
                     <TilePane

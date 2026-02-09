@@ -54,9 +54,9 @@ public class Production {
     @Positive
     private BigDecimal quantityProduced;
 
-    @NotNull
+   /*  @NotNull
     @OneToMany(mappedBy = "production", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductionRawMaterialPurchase> productionRawMaterialsPurchase;
+    private List<ProductionRawMaterialPurchase> productionRawMaterialsPurchase; */
 
     @NotNull
     @Column(columnDefinition = "date")
@@ -66,6 +66,12 @@ public class Production {
     private OffsetDateTime createdAt;
 
     private OffsetDateTime deletedAt;
+
+    @NotNull
+    @Column(columnDefinition =  "date")
+    private LocalDate rawMaterialPurchaseDate;
+
+    private BigDecimal quantityUsed;
 
     @NotNull
     private boolean confirmed;

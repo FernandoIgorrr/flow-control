@@ -1,23 +1,27 @@
 package br.com.midnightsyslabs.flow_control.ui.controller;
 
-import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 
-import br.com.midnightsyslabs.flow_control.dto.ProductionDTO;
 import br.com.midnightsyslabs.flow_control.service.ProductionService;
-import br.com.midnightsyslabs.flow_control.ui.controller.card.ProductionCardController;
+import br.com.midnightsyslabs.flow_control.service.UtilsService;
+import br.com.midnightsyslabs.flow_control.ui.cards.ProductionCard;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.ProductionFormController;
+import br.com.midnightsyslabs.flow_control.view.ProductionView;
+import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -32,7 +36,7 @@ public class ProductionsController {
     @Autowired
     private ApplicationContext context;
 
-    private List<ProductionDTO> productionsDTO;
+    private List<ProductionView> productionsView;
 
     @FXML
     private Button btnAddProduction;
@@ -41,11 +45,36 @@ public class ProductionsController {
     private TextField txtSearch;
 
     @FXML
-    private VBox cardsPane;
+    private TilePane cardsPane;
 
     @FXML
     public void initialize(){
-        reloadProductions();
+        loadProductions();
+
+         txtSearch.textProperty().addListener((obs, oldValue, newValue) -> {
+            filterCards(newValue);
+        });
+    }
+
+     private void filterCards(String search) {
+
+        if (search == null || search.isBlank()) {
+            renderCards(productionsView);
+            return;
+        }
+
+        String query = search.toLowerCase();
+
+        List<ProductionView> filtered = productionsView.stream()
+                .filter(pView -> {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+                            "dd 'de' MMMM 'de' yyyy",
+                            Locale.forLanguageTag("pt-BR"));
+                    return  safe(pView.getDate().format(formatter)).contains(safe(query));
+                })
+                .toList();
+
+        renderCards(filtered);
     }
 
     @FXML
@@ -64,9 +93,9 @@ public class ProductionsController {
             dialog.setTitle("Cadastrar Produção");
             dialog.setScene(new Scene(loader.load(), width, height));
 
-            // ProductionFormController controller = loader.getController();
+             ProductionFormController controller = loader.getController();
             // CALLBACK
-            // controller.setOnDataChanged(this::reloadProducts);
+             controller.setOnDataChanged(this::loadProductions);
 
             Stage mainStage = (Stage) btnAddProduction.getScene().getWindow();
 
@@ -89,34 +118,22 @@ public class ProductionsController {
         }
     }
 
-    private void renderCards(List<ProductionDTO> productionsDTO) {
+    private void renderCards(List<ProductionView> productions) {
 
         cardsPane.getChildren().clear();
 
-        for (ProductionDTO pDTO : productionsDTO) {
-            try {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/fxml/card/production-card.fxml"));
-
-                loader.setControllerFactory(context::getBean);
-
-                Parent card = loader.load();
-
-                ProductionCardController controller = loader.getController();
-                controller.setProductionDTO(pDTO);
-                controller.setOnDataChanged(this::reloadProductions);
-
-                cardsPane.getChildren().add(card);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        for (var pView : productions) {
+            cardsPane.getChildren().add(new ProductionCard(pView,productionService,this::loadProductions,context));
         }
     }
 
-    public void reloadProductions() {
-        this.productionsDTO = productionService.getProductionsDTO();
-        renderCards(this.productionsDTO);
+    public void loadProductions() {
+        productionsView = productionService.getProductionsView();
+        renderCards(productionsView);
        
+    }
+
+    public String safe(String str){
+        return str.toLowerCase();
     }
 }

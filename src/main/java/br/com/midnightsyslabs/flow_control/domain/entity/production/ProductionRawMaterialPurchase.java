@@ -1,4 +1,4 @@
-package br.com.midnightsyslabs.flow_control.domain.entity.production;
+/* package br.com.midnightsyslabs.flow_control.domain.entity.production;
 
 import java.math.BigDecimal;
 
@@ -42,3 +42,4 @@ public class ProductionRawMaterialPurchase {
     private BigDecimal quantityUsed;
 }
 
+ */

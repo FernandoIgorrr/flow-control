@@ -15,6 +15,7 @@ import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRepository;
 import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.service.ProductService;
 import br.com.midnightsyslabs.flow_control.service.SaleService;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 import br.com.midnightsyslabs.flow_control.view.ClientView;
 import jakarta.validation.ConstraintViolationException;
 import javafx.fxml.FXML;
@@ -81,7 +82,6 @@ public class SaleFormController {
     private void initialize() {
         clientsSuggestions = new ContextMenu();
         productsRows = new ArrayList<>();
-
         addProductFields();
         setupClientAutocomplete();
         datePicker.setValue(LocalDate.now());
@@ -132,7 +132,7 @@ public class SaleFormController {
 
         /* CAMPO PARA COLOCAR QUANTIDADE VENDIDA DO PRODUTO */
         TextField productQuantitySoldField = new TextField();
-        configureQuantityField(productQuantitySoldField);
+        UiUtils.configureQuantityField(productQuantitySoldField);
 
         if (!productFieldsBox.getChildren().isEmpty()) {
             Button btnRemove = new Button();
@@ -176,36 +176,7 @@ public class SaleFormController {
         productsRows.add(new ProductRow(productComboBox, productQuantitySoldField));
     }
 
-    private void configureQuantityField(TextField quantityField) {
-        UnaryOperator<TextFormatter.Change> quantityFilter = change -> {
-            String newText = change.getControlNewText();
-
-            // permite campo vazio (usuário apagando)
-            if (newText.isEmpty()) {
-                return change;
-            }
-
-            // só números inteiros
-            if (!newText.matches("\\d+")) {
-                return null;
-            }
-
-            // valor deve ser > 0
-            try {
-                int value = Integer.parseInt(newText);
-                if (value > 0) {
-                    return change;
-                }
-            } catch (NumberFormatException e) {
-                return null;
-            }
-
-            return null;
-        };
-
-        quantityField.setTextFormatter(new TextFormatter<>(quantityFilter));
-        quantityField.setPromptText("1");
-    }
+  
 
     private void setupClientAutocomplete() {
 
@@ -248,7 +219,7 @@ public class SaleFormController {
     @FXML
     public void onSave() {
         if (this.productsRows.isEmpty()) {
-            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Adicione pelo menos um produto.");
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Adicione pelo menos um produto.");
             return;
         }
 
@@ -257,7 +228,7 @@ public class SaleFormController {
                 String productQuantitySold = row.productQuantitySoldField.getText().replace(",", ".");
 
                 if (productQuantitySold.isBlank()) {
-                    showLabelAlert(Alert.AlertType.WARNING, "Atenção",
+                    UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção",
                             "Está faltando a quantidade vendida em algum campo!.");
                     return;
                 }
@@ -266,7 +237,7 @@ public class SaleFormController {
 
             if (this.selectedClient == null
                     || this.datePicker == null) {
-                showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+                UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
                         "Por favor  preencha o campo referente ao cliente e a data");
                 return;
             }
@@ -279,18 +250,18 @@ public class SaleFormController {
                 onDataChanged.run();
             }
         } catch (ConstraintViolationException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algum campo viola as regras de valores!");
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algum campo viola as regras de valores!");
             return;
         }
 
         catch (Exception e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algo deu errado!" + e.getCause());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algo deu errado!" + e.getCause());
             return;
         }
 
         close();
 
-        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+        UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
                 "Venda cadastrada com sucesso!");
     }
 
@@ -307,13 +278,4 @@ public class SaleFormController {
     public void setOnDataChanged(Runnable onDataChanged) {
         this.onDataChanged = onDataChanged;
     }
-
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
 }

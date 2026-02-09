@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.service.EmployeeService;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -22,7 +23,7 @@ public class EmployeeFormController {
     @FXML
     private void onSave() {
         if (nameField.getText().isBlank()) {
-            showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
                     "Por favor preencha o nome!");
             return;
         }
@@ -33,14 +34,14 @@ public class EmployeeFormController {
                 onDataChanged.run();
             }
         } catch (Exception e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Algo deu errado",
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Algo deu errado",
                     e.getMessage());
             return;
         }
 
         close();
 
-        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+        UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
                 "Funcionário cadastrado com sucesso!");
     }
 
@@ -57,13 +58,5 @@ public class EmployeeFormController {
     private void close() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
-    }
-
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

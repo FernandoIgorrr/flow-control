@@ -5,13 +5,28 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import br.com.midnightsyslabs.flow_control.exception.SaleNotFoundException;
+import br.com.midnightsyslabs.flow_control.repository.CityRepository;
+import br.com.midnightsyslabs.flow_control.repository.partner.CompanyPartnerRepository;
+import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRepository;
+import br.com.midnightsyslabs.flow_control.repository.partner.PersonalPartnerRepository;
+import br.com.midnightsyslabs.flow_control.repository.product.MeasurementUnitRepository;
+import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
+import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
+import br.com.midnightsyslabs.flow_control.service.SupplierService;
 import br.com.midnightsyslabs.flow_control.service.UtilsService;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.ClientEditFormController;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.PurchaseEditFormController;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -19,6 +34,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -28,9 +44,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 
-public class PurchaseCard extends StackPane implements card {
+public class PurchaseCard extends StackPane implements Card {
     private final PurchaseService purchaseService;
+
+    private final ApplicationContext context;
 
     private Runnable onDataChanged;
 
@@ -69,10 +90,16 @@ public class PurchaseCard extends StackPane implements card {
 
     private StackPane iconContainer = new StackPane();;
 
-    public PurchaseCard(PurchaseView pView, Runnable onDataChanged, PurchaseService purchaseService) {
+    private Button btnEdit1;
+
+    private Button btnEdit2;
+
+    public PurchaseCard(PurchaseView pView, Runnable onDataChanged, PurchaseService purchaseService,
+            ApplicationContext context) {
         this.purchaseService = purchaseService;
         this.pView = pView;
         this.onDataChanged = onDataChanged;
+        this.context = context;
         mountCard();
     }
 
@@ -84,7 +111,7 @@ public class PurchaseCard extends StackPane implements card {
         this.getStyleClass().add("client-card");
 
         imgType.setImage(new Image(
-                getClass().getResourceAsStream("/images/bx--purchase-tag.png")));
+                getClass().getResourceAsStream("/images/icon-park-outline--milk.png")));
         imgType.setFitHeight(22);
         imgType.setFitHeight(22);
         imgType.setPreserveRatio(true);
@@ -110,6 +137,13 @@ public class PurchaseCard extends StackPane implements card {
                 Locale.forLanguageTag("pt-BR"));
         lblDate.setText(pView.getDate().format(formatter));
         lblNote.setText(pView.getNote().isBlank() ? "-" : pView.getNote());
+
+        btnEdit1 = createIconButton("btn-action-edit", "icon-edit", "/images/edit.png");
+        btnEdit2 = createIconButton("btn-action-edit", "icon-edit", "/images/edit.png");
+
+        btnEdit1.setOnAction(this::editPurchase);
+
+        btnEdit2.setOnAction(this::editPurchase);
 
         contentVBox.setPadding(new Insets(0, 22, 12, 22));
 
@@ -148,13 +182,13 @@ public class PurchaseCard extends StackPane implements card {
                 createDetailColumn("Data da compra", lblDate, "purchase-info", 200, null));
 
         // Row 3: Observação
+
         VBox noteBox = new VBox();
+
         Label noteTitle = new Label("Observação");
         noteTitle.getStyleClass().add("purchase-info-title");
-        lblNote = new Label();
         lblNote.getStyleClass().add("purchase-info");
         noteBox.getChildren().addAll(noteTitle, lblNote);
-
         leftInfoContainer.getChildren().addAll(nameAndIdRow, detailsRow, noteBox);
 
         // --- SPACER ---
@@ -167,12 +201,22 @@ public class PurchaseCard extends StackPane implements card {
         totalPriceBox.setPadding(new Insets(12, 0, 0, 0));
         Label totalTitle = new Label("Valor Total");
         lblTotalPrice.getStyleClass().add("total-price-info-blue");
-        totalPriceBox.getChildren().addAll(totalTitle, lblTotalPrice);
+
+        if (pView.isConfirmed()) {
+
+            // --- SPACER ---
+            Region spacerTotalPriceBox = new Region();
+            VBox.setVgrow(spacerTotalPriceBox, Priority.ALWAYS);
+
+            totalPriceBox.getChildren().addAll(totalTitle, lblTotalPrice, spacerTotalPriceBox, btnEdit1);
+        } else {
+            totalPriceBox.getChildren().addAll(totalTitle, lblTotalPrice);
+        }
 
         // --- BUTTONS BOX ---
         buttonsBox.setPadding(new Insets(22, 0, 0, 0));
 
-        btnConfirm = createIconButton("btn-action-close", "icon-close", "/images/line-md--confirm-circle.png");
+        btnConfirm = createIconButton("btn-action-confirm", "icon-confirm", "/images/line-md--confirm-circle.png");
         btnDelete = createIconButton("btn-action-delete", "icon-delete", "/images/delete.png");
 
         btnConfirm.setOnAction(event -> {
@@ -185,7 +229,7 @@ public class PurchaseCard extends StackPane implements card {
             deletePurchase();
         });
 
-        buttonsBox.getChildren().addAll(btnConfirm, btnDelete);
+        buttonsBox.getChildren().addAll(btnConfirm, btnDelete, btnEdit2);
 
         // Montagem Final
         headerHBox.getChildren().addAll(leftInfoContainer, spacer, totalPriceBox, buttonsBox);
@@ -256,6 +300,58 @@ public class PurchaseCard extends StackPane implements card {
                 alertt.setHeaderText(e.getMessage());
                 alertt.show();
             }
+        }
+    }
+
+    private void editPurchase(ActionEvent event) {
+        try {
+
+              Button sourceButton = (Button) event.getSource();
+
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/purchase-edit-form.fxml"));
+
+            var controller = new PurchaseEditFormController(
+                    context.getBean(PurchaseService.class),
+                    context.getBean(SupplierService.class),
+                    context.getBean(PartnerRepository.class));
+
+            controller.editPurchaseForm(pView);
+            controller.setOnDataChanged(onDataChanged);
+            loader.setControllerFactory(ctr -> controller);
+
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            double width = screenBounds.getWidth() * 0.3;
+            double height = screenBounds.getHeight() * 0.6;
+
+            Stage dialog = new Stage();
+
+            dialog.setTitle("Editar Compra");
+
+            dialog.setScene(new Scene(loader.load(), width, height));
+
+           
+            Stage mainStage = (Stage) sourceButton.getScene().getWindow();
+
+            dialog.initOwner(mainStage);
+            dialog.initModality(Modality.WINDOW_MODAL);
+
+            dialog.setResizable(false);
+            // stage.showAndWait();
+
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.8);
+            mainStage.getScene().getRoot().setEffect(darken);
+
+            dialog.setOnHidden(e -> mainStage.getScene().getRoot().setEffect(null));
+
+            dialog.showAndWait();
+
+            if (onDataChanged != null)
+                onDataChanged.run();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

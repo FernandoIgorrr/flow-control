@@ -36,7 +36,7 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-public class ClientCard extends StackPane implements card {
+public class ClientCard extends StackPane implements Card {
 
     private ApplicationContext context;
 

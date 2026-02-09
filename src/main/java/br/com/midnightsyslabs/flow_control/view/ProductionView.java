@@ -46,6 +46,12 @@ public class ProductionView {
 
     private String grossQuantityMeasurementUnitSymbol;
 
+     private LocalDate rawMaterialPurchaseDate;
+
+    private BigDecimal avgRawMaterialUnitPrice;
+
+    private BigDecimal quantityUsed;
+
     private LocalDate date;
 
     private OffsetDateTime createdAt;

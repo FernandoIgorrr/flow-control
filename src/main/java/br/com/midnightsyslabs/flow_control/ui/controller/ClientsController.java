@@ -17,6 +17,7 @@ import javafx.stage.Screen;
 import javafx.stage.Modality;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.TilePane;
 import javafx.scene.control.TextField;
@@ -45,6 +46,9 @@ public class ClientsController {
     private TilePane cardsPane;
 
     @FXML
+    private Label lblNumberOfClients;
+
+    @FXML
     public void initialize() {
 
         loadClients();
@@ -64,9 +68,9 @@ public class ClientsController {
         String query = search.toLowerCase();
 
         List<ClientView> filtered = clients.stream()
-                .filter(c -> safe(c.getName()).contains(query) ||
-                        safe(c.getCity()).contains(query) ||
-                        safe(c.getDocument()).contains(query))
+                .filter(c -> safe(c.getName()).contains(safe(query)) ||
+                        safe(c.getCity()).contains(safe(query)) ||
+                        safe(c.getDocument()).contains(safe(query)))
                 .toList();
 
         renderCards(filtered);
@@ -132,6 +136,7 @@ public class ClientsController {
 
     private void loadClients() {
         clients = clientService.getClients();
+        lblNumberOfClients.setText("Número de clientes: " + clients.size());
         renderCards(clients);
     }
 }

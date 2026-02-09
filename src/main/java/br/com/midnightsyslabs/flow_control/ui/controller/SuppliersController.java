@@ -17,6 +17,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.layout.TilePane;
@@ -28,7 +29,7 @@ import javafx.stage.Stage;
 public class SuppliersController {
 
     @Autowired
-    private SupplierService supplierService; 
+    private SupplierService supplierService;
 
     @Autowired
     private ApplicationContext context;
@@ -45,11 +46,12 @@ public class SuppliersController {
     private TilePane cardsPane;
 
     @FXML
+    private Label lblNumberOfSuppliers;
+
+    @FXML
     public void initialize() {
 
-        suppliers = supplierService.getSuppliers();
-
-        renderCards(suppliers);
+        loadSuppliers();
 
         txtSearch.textProperty().addListener((obs, oldValue, newValue) -> {
             filterCards(newValue);
@@ -91,7 +93,7 @@ public class SuppliersController {
                 controller.setSupplierView(supplier);
 
                 // CALLBACK
-                controller.setOnDataChanged(this::reloadSuppliers);
+                controller.setOnDataChanged(this::loadSuppliers);
 
                 cardsPane.getChildren().add(card);
 
@@ -105,8 +107,9 @@ public class SuppliersController {
         return value == null ? "" : value.toLowerCase();
     }
 
-    private void reloadSuppliers() {
+    private void loadSuppliers() {
         this.suppliers = supplierService.getSuppliers();
+        lblNumberOfSuppliers.setText("Número de fornecedores: " + suppliers.size());
         filterCards(txtSearch.getText());
     }
 
@@ -127,7 +130,7 @@ public class SuppliersController {
 
             SupplierFormController controller = loader.getController();
             // CALLBACK
-            controller.setOnDataChanged(this::reloadSuppliers);
+            controller.setOnDataChanged(this::loadSuppliers);
 
             Stage mainStage = (Stage) btnAddSupplier.getScene().getWindow();
 

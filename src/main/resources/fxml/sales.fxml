@@ -112,6 +112,12 @@
                 <Insets top="15" right="0" bottom="0" left="0" />
             </padding>
 
+                    <!-- SEARCH BAR -->
+            <TextField
+                fx:id="txtSearch"
+                promptText="Buscar por nome, categoria do cliente, data ou preço"
+                styleClass="search-field" />
+
             <!-- CARDS -->
             <ScrollPane
                 fitToWidth="true"

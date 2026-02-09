@@ -23,7 +23,7 @@
 
                 <!-- LEFT -->
                 <VBox spacing="4">
-                    <Label text="Compras de Matérias-Primas" styleClass="page-title" />
+                    <Label text="Compras de Leite" styleClass="page-title" />
                     <Label text="Gerencie suas Compras" styleClass="page-subtitle" />
                 </VBox>
 
@@ -72,19 +72,22 @@
                                 preserveRatio="true" />
                         </StackPane>
                         <Label fx:id="lblTotalPurchases" styleClass="total-price-info-black" />
+                         <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblTotalInLiters" styleClass="total-price-info-grey" />
+                        
                         <Region HBox.hgrow="ALWAYS"/>
-                        <Label fx:id="lblTotalPrice" styleClass="total-price-info-blue" />
+                        <Label fx:id="lblTotalSpent" styleClass="total-price-info-blue" />
                     </HBox>
 
                 </VBox>
 
-                <HBox spacing="12" styleClass="card-generic" HBox.hgrow="ALWAYS">
+              <!--   <HBox spacing="12" styleClass="card-generic" HBox.hgrow="ALWAYS">
                     <padding>
                         <Insets top="24" bottom="12" left="24" right="24" />
                     </padding>
                     <Label text="Insumo" styleClass="client-name" />
                     <ComboBox fx:id="rawMaterialComboBoxFilter" />
-                </HBox>
+                </HBox> -->
 
                 <HBox spacing="12" styleClass="card-generic" HBox.hgrow="ALWAYS">
                     <padding>
@@ -105,6 +108,12 @@
             <padding>
                 <Insets top="15" right="0" bottom="0" left="0" />
             </padding>
+
+                        <!-- SEARCH BAR -->
+            <TextField
+                fx:id="txtSearch"
+                promptText="Buscar por nome do fornecedor, data ou preço"
+                styleClass="search-field" />
 
             <!-- CARDS -->
             <ScrollPane

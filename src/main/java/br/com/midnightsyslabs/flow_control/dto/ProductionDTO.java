@@ -1,4 +1,4 @@
-package br.com.midnightsyslabs.flow_control.dto;
+/* package br.com.midnightsyslabs.flow_control.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -74,3 +74,4 @@ public class ProductionDTO {
         this.confirmed                               = productionView.isConfirmed();
     }
 }
+ */

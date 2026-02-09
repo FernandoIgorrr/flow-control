@@ -8,11 +8,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import br.com.midnightsyslabs.flow_control.config.Constants;
 import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
-import br.com.midnightsyslabs.flow_control.view.ClientView;
 import br.com.midnightsyslabs.flow_control.view.PartnerCategory;
 import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import br.com.midnightsyslabs.flow_control.ui.utils.EmailUtils;
-import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.service.SupplierService;
 import br.com.midnightsyslabs.flow_control.repository.CityRepository;
 import br.com.midnightsyslabs.flow_control.domain.entity.partner.City;

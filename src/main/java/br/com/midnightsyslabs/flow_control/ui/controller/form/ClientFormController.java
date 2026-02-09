@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.config.Constants;
 import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 import br.com.midnightsyslabs.flow_control.ui.utils.EmailUtils;
 import br.com.midnightsyslabs.flow_control.service.ClientService;
 import br.com.midnightsyslabs.flow_control.repository.CityRepository;
@@ -149,7 +150,7 @@ public class ClientFormController {
         try {
 
             if (nameField.getText().isEmpty() || selectedCity == null || partnerCategoryComboBox.getValue() == null) {
-                showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+                UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
                         "Por favor, preencha o nome, selecione uma cidade e a categoria de cliente.");
                 return;
             }
@@ -170,29 +171,29 @@ public class ClientFormController {
             }
 
         } catch (IllegalEmailArgumentException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
             return;
         }
 
         catch (IllegalArgumentException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
             return;
         }
 
         catch (DataIntegrityViolationException e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
                     "O CPF, CNPJ, Telefone ou E-mail já existe no banco de dados!");
             return;
         }
 
         catch (ClientNotFoundException e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Cliente não encontrado",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Cliente não encontrado",
                     e.getMessage());
             return;
         }
 
         catch (Exception e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar cliente",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar cliente",
                     "Ocorreu um erro ao tentar cadastrar o cliente: " + e.getMessage());
             System.err.println(e.getMessage());
             return;
@@ -200,7 +201,7 @@ public class ClientFormController {
 
         close();
 
-        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+        UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
                 "Cliente cadastrado com sucesso!");
     }
 
@@ -216,13 +217,5 @@ public class ClientFormController {
     private void close() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
-    }
-
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

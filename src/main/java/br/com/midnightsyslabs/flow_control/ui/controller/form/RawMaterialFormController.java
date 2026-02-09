@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 
 @Controller
 public class RawMaterialFormController {
@@ -32,7 +33,7 @@ public class RawMaterialFormController {
         try {
 
             if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty()) {
-                showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+                UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
                         "Por favor, preencha o nome e a descrição.");
                 return;
             }
@@ -50,16 +51,16 @@ public class RawMaterialFormController {
         }
 
         catch (IllegalArgumentException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
             return;
         }
 
         catch (DataIntegrityViolationException e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
                     "");
             return;
         } catch (Exception e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar Matéria-Prima",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar Matéria-Prima",
                     "Ocorreu um erro ao tentar cadastrar o Matéria-Prima: " + e.getMessage());
             System.err.println(e.getMessage());
             return;
@@ -67,7 +68,7 @@ public class RawMaterialFormController {
 
         close();
 
-          showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+          UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
                     "Insumo cadastrado com sucesso!");
     }
 
@@ -83,13 +84,5 @@ public class RawMaterialFormController {
     private void close() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
-    }
-
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

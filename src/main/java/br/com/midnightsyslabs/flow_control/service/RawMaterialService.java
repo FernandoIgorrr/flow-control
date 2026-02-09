@@ -2,6 +2,7 @@ package br.com.midnightsyslabs.flow_control.service;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,10 @@ public class RawMaterialService {
 
     public List<RawMaterial> getRawMaterials(){
         return rawMaterialRepository.findAll();
+    }
+
+    public Optional<RawMaterial> getRawMaterialById(Short id){
+        return rawMaterialRepository.findById(id);
     }
 
     public RawMaterial getRawMaterialByName(String name){

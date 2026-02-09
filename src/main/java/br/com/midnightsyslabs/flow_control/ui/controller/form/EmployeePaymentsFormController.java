@@ -10,12 +10,12 @@ import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.employee.Employee;
 import br.com.midnightsyslabs.flow_control.service.EmployeeService;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -53,7 +53,7 @@ public class EmployeePaymentsFormController {
 
             TextField wageField = new TextField();
             wageField.setPromptText("Pagamento");
-            configurePriceField(wageField);
+            UiUtils.configurePriceField(wageField);
 
             HBox row = new HBox(12, nameField, wageField);
             row.setAlignment(Pos.CENTER_LEFT);
@@ -63,25 +63,13 @@ public class EmployeePaymentsFormController {
         }
     }
 
-     private void configurePriceField(TextField wageField) {
-        UnaryOperator<TextFormatter.Change> wageFilter = change -> {
-            String text = change.getControlNewText();
-            if (text.matches("\\d*(,\\d{0,2})?")) {
-                return change;
-            }
-            return null;
-        };
-
-        wageField.setTextFormatter(new TextFormatter<>(wageFilter));
-    }
-
     @FXML
     private void onSave() {
         try {
             employeeService.savePayments(paymentsFields, datePicker.getValue());
 
         } catch (Exception e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar pagamentos",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar pagamentos",
                     "Ocorreu um erro ao tentar cadastrar os pagamentos: " + e.getMessage());
             System.err.println(e.getMessage());
             return;
@@ -89,7 +77,7 @@ public class EmployeePaymentsFormController {
 
         close();
 
-        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+        UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
                 "Pagamentos registrados com sucesso!");
     }
 
@@ -105,13 +93,5 @@ public class EmployeePaymentsFormController {
     private void close() {
         Stage stage = (Stage) datePicker.getScene().getWindow();
         stage.close();
-    }
-
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

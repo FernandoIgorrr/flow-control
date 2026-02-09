@@ -64,10 +64,10 @@
             </padding>
 
             <!-- SEARCH BAR -->
-            <!-- <TextField
+            <TextField
                 fx:id="txtSearch"
-                promptText="Buscar por data, tipo, peso/volume ou preço..."
-                styleClass="search-field" />-->
+                promptText="Buscar por data"
+                styleClass="search-field" />
 
             <!-- CARDS -->
             <ScrollPane
@@ -77,17 +77,20 @@
                 style="-fx-background-color: transparent;">
 
                 <content>
-                    <VBox
+                    <TilePane
                         fx:id="cardsPane"
-                        spacing="20"
-                        fillWidth="true"
-                        maxWidth="Infinity">
+                        prefColumns="3"
+                      
+                        vgap="20"
+                        hgap="20"
+                         alignment="TOP_CENTER"
+                        tileAlignment="CENTER">
 
                         <padding>
                             <Insets top="0" right="0" bottom="30" left="0" />
                         </padding>
 
-                    </VBox>
+                    </TilePane>
                 </content>
             </ScrollPane>
         </VBox>

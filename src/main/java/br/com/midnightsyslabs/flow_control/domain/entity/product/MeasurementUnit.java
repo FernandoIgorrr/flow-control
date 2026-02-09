@@ -28,4 +28,22 @@ public class MeasurementUnit {
     @NotNull
     private String unit;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        if (getClass() != o.getClass())
+            return false;
+
+        MeasurementUnit other = (MeasurementUnit) o;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
 }

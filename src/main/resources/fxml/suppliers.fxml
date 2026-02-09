@@ -30,6 +30,9 @@
 
                 <Label text="Gerencie seus fornecedores"
                     styleClass="page-subtitle" />
+
+                <Label fx:id="lblNumberOfSuppliers"
+                    styleClass="total-price-info-grey" />
             </VBox>
 
             <!-- SPACER -->

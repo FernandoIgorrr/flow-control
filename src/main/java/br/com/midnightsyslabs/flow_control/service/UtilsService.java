@@ -17,6 +17,10 @@ public class UtilsService {
         return bigDecimanStr.replace(",", ".");
     }
 
+    public static String solveDot(String bigDecimanStr) {
+        return bigDecimanStr.replace(".", ",");
+    }
+
     public static String formatPrice(BigDecimal price) {
         NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
         return formatter.format(price);

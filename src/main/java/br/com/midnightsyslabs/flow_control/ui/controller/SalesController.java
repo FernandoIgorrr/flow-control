@@ -1,7 +1,9 @@
 package br.com.midnightsyslabs.flow_control.ui.controller;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -83,17 +85,46 @@ public class SalesController {
 
     @FXML
     public void initialize() {
-        
+
         loadSales();
-        
+
         configureTimeIntervalEnumComboBoxFilter();
         configureProductComboBoxFilter();
         configureClientComboBoxFilter();
-        
-        
+
         imgType.setImage(new Image(
                 getClass().getResourceAsStream("/images/game-icons--basket.png")));
         imgType.getStyleClass().add("blue-icon");
+
+        txtSearch.textProperty().addListener((obs, oldValue, newValue) -> {
+            filterCards(newValue);
+        });
+    }
+
+    private void filterCards(String search) {
+
+        if (search == null || search.isBlank()) {
+            renderCards(filteredSalesDTO);
+            renderRecentSilesPriceCard(filteredSalesDTO);
+            return;
+        }
+
+        String query = search.toLowerCase();
+
+        List<SaleDTO> filtered = filteredSalesDTO.stream()
+                .filter(sDTO -> {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+                            "dd 'de' MMMM 'de' yyyy",
+                            Locale.forLanguageTag("pt-BR"));
+                    return safe(sDTO.getClientCategory()).contains(safe(query)) ||
+                            safe(sDTO.getClientName()).contains(safe(query)) ||
+                            safe(sDTO.getDate().format(formatter)).contains(safe(query)) ||
+                            safe(UtilsService.formatPrice(sDTO.getRevenue())).contains(safe(query));
+                })
+                .toList();
+
+        renderCards(filtered);
+        renderRecentSilesPriceCard(filtered);
     }
 
     public void configureTimeIntervalEnumComboBoxFilter() {
@@ -214,7 +245,7 @@ public class SalesController {
         cardsPane.getChildren().clear();
 
         for (var sDTO : salesDTO) {
-           cardsPane.getChildren().add(new SaleCard(sDTO,this::loadSales,saleService));
+            cardsPane.getChildren().add(new SaleCard(sDTO, this::loadSales, saleService));
         }
     }
 
@@ -251,18 +282,22 @@ public class SalesController {
 
         renderCards(filteredSalesDTO);
 
-        renderRecentSilesPriceCard();
+        renderRecentSilesPriceCard(filteredSalesDTO);
     }
 
-    private void renderRecentSilesPriceCard() {
-        lblTotalPrice.setText(UtilsService.formatPrice(saleService.calculateTotalRevenue(filteredSalesDTO)));
-        lblTotalSales.setText("" + filteredSalesDTO.size());
+    private void renderRecentSilesPriceCard(List<SaleDTO> salesDTO) {
+        lblTotalPrice.setText(UtilsService.formatPrice(saleService.calculateTotalRevenue(salesDTO)));
+        lblTotalSales.setText("" + salesDTO.size());
     }
 
     public void loadSales() {
         allSalesDTO = saleService.getSalesDTO();
         filteredSalesDTO = allSalesDTO;
         renderCards(filteredSalesDTO);
-        renderRecentSilesPriceCard();
+        renderRecentSilesPriceCard(filteredSalesDTO);
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value.toLowerCase();
     }
 }

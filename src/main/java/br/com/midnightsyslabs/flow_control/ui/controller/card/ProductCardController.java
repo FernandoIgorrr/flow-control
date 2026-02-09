@@ -97,15 +97,18 @@ public class ProductCardController {
         lblMeasurementUnitSymbol.setText("(" + this.productView.getMeasurementUnitSymbol() + ")");
         lblCurrentPrice.setText("(R$) " + UtilsService.formatPrice(this.productView.getCurrentPrice()));
 
-        if (productView.getCategory().equals("Queijo")) {
+        if (safe(productView.getCategory()).equals("queijo")) {
             imgType.setImage(new Image(
                     getClass().getResourceAsStream("/images/queijo.png")));
-        } else if (productView.getCategory().equals("Nata")) {
+        } else if (safe(productView.getCategory()).equals("nata")) {
             imgType.setImage(new Image(
                     getClass().getResourceAsStream("/images/nata.png")));
-        } else if (productView.getCategory().equals("Iogurte")) {
+        } else if (safe(productView.getCategory()).equals("iogurte")) {
             imgType.setImage(new Image(
                     getClass().getResourceAsStream("/images/iogurte.png")));
+        } else if (safe(productView.getCategory()).equals("manteiga")) {
+            imgType.setImage(new Image(
+                    getClass().getResourceAsStream("/images/twemoji--butter.png")));
         }
 
     }
@@ -222,5 +225,9 @@ public class ProductCardController {
         if (onDataChanged != null) {
             onDataChanged.run();
         }
+    }
+
+    public String safe (String str){
+        return str.toLowerCase();
     }
 }

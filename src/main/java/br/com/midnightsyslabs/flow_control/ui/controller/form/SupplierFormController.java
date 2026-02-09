@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.config.Constants;
 import br.com.midnightsyslabs.flow_control.ui.utils.MaskUtils;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 import br.com.midnightsyslabs.flow_control.ui.utils.EmailUtils;
 import br.com.midnightsyslabs.flow_control.service.SupplierService;
 import br.com.midnightsyslabs.flow_control.repository.CityRepository;
@@ -56,8 +57,7 @@ public class SupplierFormController {
     @FXML
     private TextField cityField;
 
-    
-    private Runnable onDataChanged; 
+    private Runnable onDataChanged;
 
     public SupplierFormController(
             SupplierService supplierService,
@@ -149,14 +149,13 @@ public class SupplierFormController {
         try {
 
             if (nameField.getText().isEmpty() || selectedCity == null || partnerCategoryComboBox.getValue() == null) {
-                showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+                UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
                         "Por favor, preencha o nome, selecione uma cidade e a categoria de fornecedor.");
                 return;
             }
 
-              String  document = documentField.getText().replaceAll("\\D", "");
-            String  phone = phoneField.getText().replaceAll("\\D", "");
-
+            String document = documentField.getText().replaceAll("\\D", "");
+            String phone = phoneField.getText().replaceAll("\\D", "");
 
             supplierService.saveSupplier(
                     nameField.getText(),
@@ -165,37 +164,36 @@ public class SupplierFormController {
                     emailField.getText(),
                     selectedCity,
                     partnerCategoryComboBox.getValue());
-            
-                if(onDataChanged != null){
-                    onDataChanged.run();
-                }
 
-      
+            if (onDataChanged != null) {
+                onDataChanged.run();
+            }
 
         } catch (IllegalEmailArgumentException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
             return;
         }
 
         catch (IllegalArgumentException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
             return;
         }
 
         catch (DataIntegrityViolationException e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
                     "O CPF, CNPJ, Telefone ou E-mail já existe no banco de dados!");
             return;
         }
 
         catch (SupplierNotFoundException e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Fornecedor não encontrado",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Fornecedor não encontrado",
                     e.getMessage());
             return;
         }
 
         catch (Exception e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar fornecedor",
+
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar fornecedor",
                     "Ocorreu um erro ao tentar cadastrar o fornecedor: " + e.getMessage());
             System.err.println(e.getMessage());
             return;
@@ -203,8 +201,8 @@ public class SupplierFormController {
 
         close();
 
-               showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
-                    "Fornecedor cadastrado com sucesso!");
+        UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+                "Fornecedor cadastrado com sucesso!");
     }
 
     @FXML
@@ -212,7 +210,6 @@ public class SupplierFormController {
         close();
     }
 
-    
     public void setOnDataChanged(Runnable onDataChanged) {
         this.onDataChanged = onDataChanged;
     }
@@ -222,11 +219,4 @@ public class SupplierFormController {
         stage.close();
     }
 
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 }

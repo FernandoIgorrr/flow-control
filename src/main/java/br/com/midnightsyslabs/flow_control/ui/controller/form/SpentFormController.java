@@ -10,6 +10,7 @@ import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
 import br.com.midnightsyslabs.flow_control.repository.spent.SpentCategoryRepository;
 import br.com.midnightsyslabs.flow_control.service.EmojiService;
 import br.com.midnightsyslabs.flow_control.service.SpentService;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
@@ -48,7 +49,7 @@ public class SpentFormController {
     @FXML
     public void initialize() {
         configureSpentCategoryComboBox();
-        configurePriceField();
+        UiUtils.configurePriceField(amountPaid);
         datePicker.setValue(LocalDate.now());
         datePicker.setEditable(false);
     }
@@ -81,23 +82,11 @@ public class SpentFormController {
 
     }
 
-    private void configurePriceField() {
-        UnaryOperator<TextFormatter.Change> priceFilter = change -> {
-            String text = change.getControlNewText();
-            if (text.matches("\\d*(,\\d{0,2})?")) {
-                return change;
-            }
-            return null;
-        };
-
-        amountPaid.setTextFormatter(new TextFormatter<>(priceFilter));
-    }
-
     @FXML
     public void onSave() {
 
         if (amountPaid.getText().isBlank()) {
-            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "A quantia paga está vazia");
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção", "A quantia paga está vazia");
             return;
         }
 
@@ -109,13 +98,13 @@ public class SpentFormController {
                 onDataChanged.run();
             }
         } catch (Exception e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algo deu errado!" + e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção", "Algo deu errado!" + e.getMessage());
             return;
         }
 
         close();
 
-        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+        UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
                 "Despesa cadastrada com sucesso!");
     }
 
@@ -131,13 +120,5 @@ public class SpentFormController {
 
     public void setOnDataChanged(Runnable onDataChanged) {
         this.onDataChanged = onDataChanged;
-    }
-
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

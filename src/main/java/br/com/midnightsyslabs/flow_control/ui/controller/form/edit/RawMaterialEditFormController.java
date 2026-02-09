@@ -1,12 +1,10 @@
 package br.com.midnightsyslabs.flow_control.ui.controller.form.edit;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
-import br.com.midnightsyslabs.flow_control.exception.ProductNotFoundException;
 import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -41,7 +39,7 @@ public class RawMaterialEditFormController {
 
     public void loadRawMaterialData() {
         if (this.rawMaterial == null) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro", "Dados incogruentes da matéria-prima.");
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro", "Dados incogruentes da matéria-prima.");
             return;
         }
 
@@ -61,19 +59,19 @@ public class RawMaterialEditFormController {
         try {
 
             if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty()) {
-                showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+                UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
                         "Por favor, preencha o nome e a descrição.");
                 return;
             }
             rawMaterialService.editRawMaterial(rawMaterial, nameField.getText(), descriptionField.getText());
 
         } catch (IllegalArgumentException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
             return;
         }
 
         catch (Exception e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar produto",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar produto",
                     "Ocorreu um erro ao tentar cadastrar o produto: " + e.getMessage());
             System.err.println(e.getMessage());
             return;
@@ -89,13 +87,5 @@ public class RawMaterialEditFormController {
 
     public void editRawMaterialForm(RawMaterial rawMaterial) {
         this.rawMaterial = rawMaterial;
-    }
-
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

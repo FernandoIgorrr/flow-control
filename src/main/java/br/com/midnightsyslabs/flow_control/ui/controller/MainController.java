@@ -30,8 +30,8 @@ public class MainController {
     @FXML
     private Button productsButton;
 
-    @FXML
-    private Button rawMaterialsButton;
+    /* @FXML
+    private Button rawMaterialsButton; */
 
     @FXML
     private Button clientsButton;
@@ -100,11 +100,11 @@ public class MainController {
         setActive(productsButton);
     }
 
-    @FXML
+    /* @FXML
     public void goToRawMaterials() {
         navService.navigateTo("/fxml/raw-materials.fxml");
         setActive(rawMaterialsButton);
-    }
+    } */
 
     @FXML
     public void goToClients() {

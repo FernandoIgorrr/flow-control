@@ -34,7 +34,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-public class SaleCard extends StackPane implements card {
+public class SaleCard extends StackPane implements Card {
 
     private final SaleService saleService;
 
@@ -150,7 +150,7 @@ public class SaleCard extends StackPane implements card {
         buttonsBox = new VBox();
         buttonsBox.setPadding(new Insets(22, 0, 0, 0));
 
-        btnConfirm = createIconButton("btn-action-close", "icon-close", "/images/line-md--confirm-circle.png");
+        btnConfirm = createIconButton("btn-action-confirm", "icon-confirm", "/images/line-md--confirm-circle.png");
         btnDelete = createIconButton("btn-action-delete", "icon-delete", "/images/delete.png");
 
         btnConfirm.setOnAction(e -> {
@@ -324,5 +324,4 @@ public class SaleCard extends StackPane implements card {
 
         }
     }
-
 }

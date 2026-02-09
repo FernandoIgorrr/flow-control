@@ -7,14 +7,13 @@ import java.util.function.UnaryOperator;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import br.com.midnightsyslabs.flow_control.service.ProductService;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 import jakarta.validation.ConstraintViolationException;
-import br.com.midnightsyslabs.flow_control.exception.ClientNotFoundException;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
 import br.com.midnightsyslabs.flow_control.domain.entity.product.ProductCategory;
 import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentException;
 import br.com.midnightsyslabs.flow_control.repository.product.MeasurementUnitRepository;
 import br.com.midnightsyslabs.flow_control.repository.product.ProductCategoryRepository;
-import br.com.midnightsyslabs.flow_control.repository.product.ProductRepository;
 import javafx.fxml.FXML;
 
 import javafx.stage.Stage;
@@ -23,7 +22,6 @@ import javafx.scene.control.Label;
 import javafx.util.StringConverter;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 
 @Controller
 public class ProductFormController {
@@ -75,8 +73,8 @@ public class ProductFormController {
 
         configureProductCategoryComboBox();
         configureMeasurementUnitComboBox();
-        configurePriceField();
-        configureQuantityField();
+        UiUtils.configurePriceField(priceField);
+        UiUtils.configureQuantityField(quantityField);
     }
 
     private void configureProductCategoryComboBox() {
@@ -135,37 +133,13 @@ public class ProductFormController {
         }
     }
 
-    private void configurePriceField() {
-        UnaryOperator<TextFormatter.Change> priceFilter = change -> {
-            String text = change.getControlNewText();
-            if (text.matches("\\d*(,\\d{0,2})?")) {
-                return change;
-            }
-            return null;
-        };
-
-        priceField.setTextFormatter(new TextFormatter<>(priceFilter));
-    }
-
-    private void configureQuantityField() {
-        UnaryOperator<TextFormatter.Change> quantityFilter = change -> {
-            String text = change.getControlNewText();
-            if (text.matches("\\d*(,\\d{0,3})?")) {
-                return change;
-            }
-            return null;
-        };
-
-        quantityField.setTextFormatter(new TextFormatter<>(quantityFilter));
-    }
-
     @FXML
     public void onSave() {
         try {
 
             if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty() || priceField.getText().isEmpty()
                     || selectedMeasurementUnit == null || measurementUnitComboBox.getValue() == null) {
-                showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+                UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
                         "Por favor, preencha o nome, descrição, preço, selecione um tipo de unidade.");
                 return;
             }
@@ -183,27 +157,25 @@ public class ProductFormController {
             }
 
         } catch (IllegalEmailArgumentException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
             return;
         }
 
         catch (IllegalArgumentException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
             return;
         }
 
         catch (DataIntegrityViolationException e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
                     "");
             return;
-        } 
-        catch (ConstraintViolationException e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Dados Inválidos",
+        } catch (ConstraintViolationException e) {
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Dados Inválidos",
                     "O dados númericos tem que ser maior que zero!");
             return;
-        } 
-        catch (Exception e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar produto",
+        } catch (Exception e) {
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar produto",
                     "Ocorreu um erro ao tentar cadastrar o produto: " + e.getMessage());
             System.err.println(e.getMessage());
             return;
@@ -211,7 +183,7 @@ public class ProductFormController {
 
         close();
 
-        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+        UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
                 "Produto cadastrado com sucesso!");
 
     }
@@ -228,13 +200,5 @@ public class ProductFormController {
     private void close() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
-    }
-
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

@@ -26,13 +26,11 @@ import br.com.midnightsyslabs.flow_control.service.UtilsService;
 import br.com.midnightsyslabs.flow_control.ui.cards.EmployeePaymentCard;
 import br.com.midnightsyslabs.flow_control.ui.cards.PurchaseCard;
 import br.com.midnightsyslabs.flow_control.ui.cards.SpentCard;
-import br.com.midnightsyslabs.flow_control.ui.controller.card.SpentCardController;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.SpentFormController;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -233,7 +231,7 @@ public class ExpensesController {
                 if (expense.getSpentCategory().getId() == 1) {
 
                     cardsPane.getChildren()
-                            .add(new PurchaseCard((PurchaseView) expense, this::loadExpenses, purchaseService));
+                            .add(new PurchaseCard((PurchaseView) expense, this::loadExpenses, purchaseService,context));
 
                 } else if (expense.getSpentCategory().getId() == 2) {
 

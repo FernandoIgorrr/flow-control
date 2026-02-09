@@ -1,4 +1,4 @@
-package br.com.midnightsyslabs.flow_control.repository.view;
+/* package br.com.midnightsyslabs.flow_control.repository.view;
 
 import java.util.List;
 
@@ -17,3 +17,4 @@ public interface ProductionRawMaterialPurchaseViewRepository
             WHERE p.id.productionId = :id""")
     List<ProductionRawMaterialPurchaseView> findAllByProductionId(@Param("id") Integer id);
 }
+ */

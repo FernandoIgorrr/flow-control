@@ -1,4 +1,4 @@
-package br.com.midnightsyslabs.flow_control.view;
+/* package br.com.midnightsyslabs.flow_control.view;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -58,3 +58,4 @@ public class ProductionRawMaterialPurchaseView implements Expense{
     }
 
 }
+ */

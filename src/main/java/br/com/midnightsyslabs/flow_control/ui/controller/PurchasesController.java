@@ -1,7 +1,9 @@
 package br.com.midnightsyslabs.flow_control.ui.controller;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.config.TimeIntervalEnum;
 import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
+import br.com.midnightsyslabs.flow_control.dto.SaleDTO;
 import br.com.midnightsyslabs.flow_control.service.DateService;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
@@ -25,6 +28,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -72,26 +76,61 @@ public class PurchasesController {
     private Label lblTotalPurchases;
 
     @FXML
-    private Label lblTotalPrice;
+    private Label lblTotalSpent;
 
     @FXML
-    private ComboBox<RawMaterial> rawMaterialComboBoxFilter;
+    private Label lblTotalInLiters;
+
+    // @FXML
+    // private ComboBox<RawMaterial> rawMaterialComboBoxFilter;
 
     @FXML
     private ComboBox<SupplierView> supplierComboBoxFilter;
+
+    @FXML
+    private TextField txtSearch;
 
     @FXML
     public void initialize() {
 
         loadPurchases();
         configureTimeIntervalEnumComboBoxFilter();
-        configureRawMateialComboBoxFilter();
+        // configureRawMateialComboBoxFilter();
         configureSupplierComboBoxFilter();
 
         imgType.setImage(new Image(
                 getClass().getResourceAsStream("/images/game-icons--basket.png")));
         imgType.getStyleClass().add("blue-icon");
 
+        txtSearch.textProperty().addListener((obs, oldValue, newValue) -> {
+            filterCards(newValue);
+        });
+
+    }
+
+    private void filterCards(String search) {
+
+        if (search == null || search.isBlank()) {
+            renderCards(filteredPurchases);
+            renderRecentPurchasesPriceCard(filteredPurchases);
+            return;
+        }
+
+        String query = search.toLowerCase();
+
+        List<PurchaseView> filtered = filteredPurchases.stream()
+                .filter(pView -> {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+                            "dd 'de' MMMM 'de' yyyy",
+                            Locale.forLanguageTag("pt-BR"));
+                    return safe(pView.getPartnerName()).contains(safe(query)) ||
+                            safe(pView.getDate().format(formatter)).contains(safe(query)) ||
+                            safe(UtilsService.formatPrice(pView.getExpense())).contains(safe(query));
+                })
+                .toList();
+
+        renderCards(filtered);
+        renderRecentPurchasesPriceCard(filtered);
     }
 
     @FXML
@@ -158,29 +197,32 @@ public class PurchasesController {
         this.timeIntervalEnumComboBoxFilter.getSelectionModel().selectFirst();
     }
 
-    private void configureRawMateialComboBoxFilter() {
-        rawMaterialComboBoxFilter.getItems().setAll(
-                rawMaterialService.getRawMaterials());
-
-        rawMaterialComboBoxFilter.getItems().add(new RawMaterial());
-        rawMaterialComboBoxFilter.setConverter(new StringConverter<RawMaterial>() {
-            @Override
-            public String toString(RawMaterial rm) {
-                return (rm == null || rm.getName() == null) ? "Todos" : rm.getName();
-            }
-
-            @Override
-            public RawMaterial fromString(String s) {
-                return null;
-            }
-        });
-
-        rawMaterialComboBoxFilter.valueProperty().addListener((obs, old, newVal) -> {
-
-            applyFilters();
-        });
-        rawMaterialComboBoxFilter.getSelectionModel().selectLast();
-    }
+    /*
+     * private void configureRawMateialComboBoxFilter() {
+     * rawMaterialComboBoxFilter.getItems().setAll(
+     * rawMaterialService.getRawMaterials());
+     * 
+     * rawMaterialComboBoxFilter.getItems().add(new RawMaterial());
+     * rawMaterialComboBoxFilter.setConverter(new StringConverter<RawMaterial>() {
+     * 
+     * @Override
+     * public String toString(RawMaterial rm) {
+     * return (rm == null || rm.getName() == null) ? "Todos" : rm.getName();
+     * }
+     * 
+     * @Override
+     * public RawMaterial fromString(String s) {
+     * return null;
+     * }
+     * });
+     * 
+     * rawMaterialComboBoxFilter.valueProperty().addListener((obs, old, newVal) -> {
+     * 
+     * applyFilters();
+     * });
+     * rawMaterialComboBoxFilter.getSelectionModel().selectLast();
+     * }
+     */
 
     private void configureSupplierComboBoxFilter() {
         supplierComboBoxFilter.getItems().setAll(
@@ -212,9 +254,12 @@ public class PurchasesController {
         filteredPurchases = allPurchasesView.stream()
 
                 // 🔹 filtro por matéria-prima
-                .filter(p -> rawMaterialComboBoxFilter.getValue() == null
-                        || rawMaterialComboBoxFilter.getValue().getName() == null ||
-                        p.getRawMaterialName().equals(rawMaterialComboBoxFilter.getValue().getName()))
+                /*
+                 * .filter(p -> rawMaterialComboBoxFilter.getValue() == null
+                 * || rawMaterialComboBoxFilter.getValue().getName() == null ||
+                 * p.getRawMaterialName().equals(rawMaterialComboBoxFilter.getValue().getName())
+                 * )
+                 */
 
                 // 🔹 filtro por fornecedor
                 .filter(p -> supplierComboBoxFilter.getValue() == null
@@ -237,7 +282,7 @@ public class PurchasesController {
 
         renderCards(filteredPurchases);
 
-        renderRecentPurchasesPriceCard();
+        renderRecentPurchasesPriceCard(filteredPurchases);
     }
 
     private void renderCards(List<PurchaseView> purchasesView) {
@@ -245,11 +290,9 @@ public class PurchasesController {
         cardsPane.getChildren().clear();
 
         for (PurchaseView purchaseView : purchasesView) {
-            cardsPane.getChildren().add(new PurchaseCard(purchaseView, this::loadPurchases,purchaseService));
+            cardsPane.getChildren().add(new PurchaseCard(purchaseView, this::loadPurchases, purchaseService,context));
         }
     }
-
-   
 
     /*
      * private void renderCards(List<PurchaseView> purchasesView) {
@@ -278,9 +321,12 @@ public class PurchasesController {
      * }
      */
 
-    private void renderRecentPurchasesPriceCard() {
-        lblTotalPrice.setText(UtilsService.formatPrice(purchaseService.calculateTotalSpent(this.filteredPurchases)));
-        lblTotalPurchases.setText("" + filteredPurchases.size());
+    private void renderRecentPurchasesPriceCard(List<PurchaseView> purchases) {
+        lblTotalSpent.setText(UtilsService.formatPrice(purchaseService.calculateTotalSpent(purchases)));
+        lblTotalPurchases.setText("" + purchases.size());
+        lblTotalInLiters.setText(
+                UtilsService.formatQuantity(purchaseService.calculateTotalTotalInLiters(purchases))
+                        + " Litros (L) ");
     }
 
     private String safe(String value) {
@@ -293,7 +339,7 @@ public class PurchasesController {
         filteredPurchases = allPurchasesView;
 
         renderCards(filteredPurchases);
-        renderRecentPurchasesPriceCard();
+        renderRecentPurchasesPriceCard(filteredPurchases);
     }
 
 }

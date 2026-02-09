@@ -170,7 +170,7 @@ public class EmployeesController {
                 iconConnect.setFitWidth(36);
                 iconConnect.setFitHeight(36);
                 iconConnect.setPreserveRatio(true);
-                iconConnect.getStyleClass().add("icon-edit");
+                iconConnect.getStyleClass().add("icon-confirm");
 
                 btnConnect.setGraphic(iconConnect);
                 btnConnect.getStyleClass().add("btn-action-edit");

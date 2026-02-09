@@ -74,6 +74,38 @@ public class PurchaseService {
         purchaseRepository.save(purchase);
     }
 
+
+
+     @Transactional
+    public void updatePurchase(
+            Purchase purchase,
+            Partner partner,
+            String quantity,
+            String price,
+            LocalDate date,
+            String note) {
+
+        var price_ = solveComma(price);
+        var quantity_ = solveComma(quantity);
+
+        partner.setConfirmed(true);
+
+        purchase.setPartner(partner);
+
+        try {
+            purchase.setPricePerUnit(new BigDecimal(price_));
+            purchase.setQuantity(new BigDecimal(quantity_));
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Tem algo errado com formato do preço ou com a quantidade!");
+        }
+
+        purchase.setDate(date);
+        purchase.setNote(note);
+
+        partnerRepository.save(partner);
+        purchaseRepository.save(purchase);
+    }
+
     @Transactional
     public void confirmPurchase(Purchase purchase) {
         purchase.setConfirmed(true);
@@ -144,6 +176,12 @@ public class PurchaseService {
     public BigDecimal calculateTotalSpent(List<PurchaseView> purchasesView) {
         return purchasesView.stream()
                 .map(PurchaseView::getExpense)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+     public BigDecimal calculateTotalTotalInLiters(List<PurchaseView> purchasesView) {
+        return purchasesView.stream()
+                .map(PurchaseView::getQuantity)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 

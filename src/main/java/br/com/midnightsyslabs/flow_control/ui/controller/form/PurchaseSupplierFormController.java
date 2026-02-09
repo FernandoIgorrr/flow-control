@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.SupplierService;
+import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
 import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
 import br.com.midnightsyslabs.flow_control.exception.SupplierNotFoundException;
 import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRepository;
@@ -94,8 +95,8 @@ public class PurchaseSupplierFormController {
     public void initialize() {
         configureMeasurementUnitComboBox();
 
-        configurePriceField();
-        configureQuantityField();
+        UiUtils.configurePriceField(priceField);
+        UiUtils.configureQuantityField(quantityField);
         datePicker.setValue(LocalDate.now());
         datePicker.setEditable(false);
     }
@@ -108,11 +109,11 @@ public class PurchaseSupplierFormController {
             rawMaterialLeite = rawMaterialService.getRawMaterialByName("Leite");
             rawMaterialField.setText(rawMaterialLeite.getName());
         } catch (RawMaterialNotFoundException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Dado não encontrado",
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Dado não encontrado",
                     "A matéria prima / Insumo com nome de \"Leite\" não foi encontrado!");
             return;
         } catch (Exception e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Algo deu errado!", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Algo deu errado!", e.getMessage());
             return;
         }
     }
@@ -149,30 +150,6 @@ public class PurchaseSupplierFormController {
         }
     }
 
-    private void configureQuantityField() {
-        UnaryOperator<TextFormatter.Change> quantityFilter = change -> {
-            String text = change.getControlNewText();
-            if (text.matches("\\d*(,\\d{0,3})?")) {
-                return change;
-            }
-            return null;
-        };
-
-        quantityField.setTextFormatter(new TextFormatter<>(quantityFilter));
-    }
-
-    private void configurePriceField() {
-        UnaryOperator<TextFormatter.Change> priceFilter = change -> {
-            String text = change.getControlNewText();
-            if (text.matches("\\d*(,\\d{0,2})?")) {
-                return change;
-            }
-            return null;
-        };
-
-        priceField.setTextFormatter(new TextFormatter<>(priceFilter));
-    }
-
     @FXML
     public void onSave() {
 
@@ -181,7 +158,7 @@ public class PurchaseSupplierFormController {
             if (priceField.getText().isEmpty()
                     || quantityField.getText().isEmpty() || measurementUnitComboBox.getValue() == null
                     || datePicker.getValue() == null) {
-                showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
+                UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
                         "Por favor, preencha todas os campos!.");
                 return;
             }
@@ -201,28 +178,28 @@ public class PurchaseSupplierFormController {
             }
 
         } catch (IllegalEmailArgumentException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Erro de email", e.getMessage());
             return;
         }
 
         catch (IllegalArgumentException e) {
-            showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
+            UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Dados Inválidos", e.getMessage());
             return;
         }
 
         catch (DataIntegrityViolationException e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro de Integridade de Dados",
                     "");
             return;
         } catch (Exception e) {
-            showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar produto",
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro ao cadastrar produto",
                     "Ocorreu um erro ao tentar cadastrar o produto: " + e.getMessage());
             return;
         }
 
         close();
 
-        showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
+        UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
                 "Compra cadastrada com sucesso!");
     }
 
@@ -238,13 +215,5 @@ public class PurchaseSupplierFormController {
 
     public void setOnDataChanged(Runnable onDataChanged) {
         this.onDataChanged = onDataChanged;
-    }
-
-    private void showLabelAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // Remove o cabeçalho extra para ficar mais limpo
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

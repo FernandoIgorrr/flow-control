@@ -29,7 +29,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-public class EmployeePaymentCard extends StackPane implements card {
+public class EmployeePaymentCard extends StackPane implements Card {
 
     private final EmojiService emojiService;
     private final EmployeeService employeeService;
@@ -146,7 +146,7 @@ public class EmployeePaymentCard extends StackPane implements card {
         // --- BUTTONS BOX ---
         buttonsBox.setPadding(new Insets(22, 0, 0, 0));
 
-        btnConfirm = createIconButton("btn-action-close", "icon-close", "/images/line-md--confirm-circle.png");
+        btnConfirm = createIconButton("btn-action-confirm", "icon-confirm", "/images/line-md--confirm-circle.png");
         btnDelete = createIconButton("btn-action-delete", "icon-delete", "/images/delete.png");
 
         btnConfirm.setOnAction(event -> {

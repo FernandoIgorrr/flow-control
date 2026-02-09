@@ -1,4 +1,4 @@
-package br.com.midnightsyslabs.flow_control.domain.entity.production;
+/* package br.com.midnightsyslabs.flow_control.domain.entity.production;
 
 import java.io.Serializable;
 
@@ -20,3 +20,4 @@ public class ProductionRawMaterialsPurchaseId implements Serializable {
     private Integer productionId;
     private Integer purchaseId;
 }
+ */

@@ -1,22 +1,21 @@
-package br.com.midnightsyslabs.flow_control.ui.controller.form;
+package br.com.midnightsyslabs.flow_control.ui.controller.form.edit;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.ui.utils.UiUtils;
+import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import br.com.midnightsyslabs.flow_control.view.SupplierView;
 import br.com.midnightsyslabs.flow_control.service.SupplierService;
+import br.com.midnightsyslabs.flow_control.service.UtilsService;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
-import br.com.midnightsyslabs.flow_control.service.RawMaterialService;
 import br.com.midnightsyslabs.flow_control.exception.SupplierNotFoundException;
 import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRepository;
-import br.com.midnightsyslabs.flow_control.domain.entity.product.MeasurementUnit;
-import br.com.midnightsyslabs.flow_control.domain.entity.raw_material.RawMaterial;
+import br.com.midnightsyslabs.flow_control.domain.entity.purchase.Purchase;
 import br.com.midnightsyslabs.flow_control.exception.IllegalEmailArgumentException;
-import br.com.midnightsyslabs.flow_control.repository.product.MeasurementUnitRepository;
+import br.com.midnightsyslabs.flow_control.exception.PurchaseNotFoundException;
 
 import javafx.fxml.FXML;
 import javafx.util.StringConverter;
@@ -31,25 +30,27 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.DatePicker;
 
 @Controller
-public class PurchaseFormController {
+public class PurchaseEditFormController {
 
     private final PurchaseService purchaseService;
 
     private final SupplierService supplierService;
 
-    private final RawMaterialService rawMaterialService;
-
-    private final MeasurementUnitRepository measurementUnitRepository;
-
     private final PartnerRepository partnerRepository;
 
     private Runnable onDataChanged;
+
+    private boolean loadingData = false;
+
+    private PurchaseView purchaseView;
+
+    private Purchase purchase;
 
     @FXML
     private ComboBox<SupplierView> supplierComboBox;
 
     @FXML
-    private ComboBox<RawMaterial> rawMaterialComboBox;
+    private TextField rawMaterialField;
 
     @FXML
     private Label lblQuantity;
@@ -58,7 +59,7 @@ public class PurchaseFormController {
     private TextField quantityField;
 
     @FXML
-    private ComboBox<MeasurementUnit> measurementUnitComboBox;
+    private TextField measurementUnitField;
 
     @FXML
     private TextFlow textFlowPrice;
@@ -75,16 +76,12 @@ public class PurchaseFormController {
     @FXML
     private TextField noteField;
 
-    PurchaseFormController(
+    public PurchaseEditFormController(
             PurchaseService purchaseService,
             SupplierService supplierService,
-            RawMaterialService rawMaterialService,
-            MeasurementUnitRepository measurementUnitRepository,
             PartnerRepository partnerRepository) {
         this.purchaseService = purchaseService;
         this.supplierService = supplierService;
-        this.rawMaterialService = rawMaterialService;
-        this.measurementUnitRepository = measurementUnitRepository;
         this.partnerRepository = partnerRepository;
     }
 
@@ -92,13 +89,44 @@ public class PurchaseFormController {
     public void initialize() {
 
         configureSupplierComboBox();
-        configureRawMaterialComboBox();
-        configureMeasurementUnitComboBox();
 
         UiUtils.configurePriceField(priceField);
         UiUtils.configureQuantityField(quantityField);
-        datePicker.setValue(LocalDate.now());
+        // datePicker.setValue(LocalDate.now());
         datePicker.setEditable(false);
+
+        loadPurchaseData();
+    }
+
+    public void loadPurchaseData() {
+
+        if (purchaseView == null) {
+            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro", "Dados incogruentes da compra.");
+            return;
+        }
+
+        loadingData = true;
+
+        purchaseService.findById(purchaseView.getId()).ifPresentOrElse(purchase -> {
+            this.purchase = purchase;
+            supplierComboBox.getItems()
+                    .stream()
+                    .filter(s -> s.getId().equals(purchase.getPartner().getId()))
+                    .findFirst()
+                    .ifPresent(supplierComboBox.getSelectionModel()::select);
+
+            fillFields(UtilsService.solveDot(purchase.getQuantity().toString()),
+                    UtilsService.solveDot(purchase.getPricePerUnit().toString()),
+                    purchase.getMeasurementUnit().getUnit(),
+                    purchase.getRawMaterial().getName(),
+                    purchase.getMeasurementUnit().getName() + " " + "(" + purchase.getMeasurementUnit().getSymbol()
+                            + ")",
+                    purchase.getNote(),
+                    purchase.getDate());
+
+        }, PurchaseNotFoundException::new);
+
+        loadingData = false;
     }
 
     public void configureSupplierComboBox() {
@@ -126,96 +154,38 @@ public class PurchaseFormController {
         }
     }
 
-    public void configureRawMaterialComboBox() {
-        var rawMaterial = rawMaterialService.getRawMaterialById((short) 1);
-
-        if (rawMaterial.isEmpty()) {
-            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro ao encontrar Matéria-prima ID: 1",
-                    "");
-            close();
-            return;
-        }
-
-        rawMaterialComboBox.getItems().setAll(rawMaterial.get());
-
-        rawMaterialComboBox.setConverter(new StringConverter<RawMaterial>() {
-
-            @Override
-            public String toString(RawMaterial rawMaterial) {
-                return rawMaterial == null
-                        ? ""
-                        : rawMaterial.getName();
-            }
-
-            @Override
-            public RawMaterial fromString(String string) {
-                return null;
-            }
-        });
-        rawMaterialComboBox.getSelectionModel().selectFirst();
-        rawMaterialComboBox.setDisable(true);
+    private void fillFields(String volume, String price, String meansurementUnitUnit, String rawMaterial,
+            String meansurementUnitSymbol, String note, LocalDate date) {
+        quantityField.setText(volume);
+        priceField.setText(price);
+        lblQuantity.setText(meansurementUnitUnit);
+        rawMaterialField.setText(rawMaterial);
+        measurementUnitField.setText(meansurementUnitSymbol);
+        noteField.setText(note);
+        datePicker.setValue(date);
     }
 
-    private void configureMeasurementUnitComboBox() {
-
-        var measurementUnits = measurementUnitRepository.findById((short) 2);
-
-        if (measurementUnits.isEmpty()) {
-            UiUtils.showLabelAlert(Alert.AlertType.ERROR, "Erro ao encontrar unidade em Litros ID: 2",
-                    "");
-            close();
-            return;
-        }
-
-        measurementUnitComboBox.getItems().setAll(List.of(measurementUnits.get()));
-
-        measurementUnitComboBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(MeasurementUnit unit) {
-                return unit == null
-                        ? ""
-                        : unit.getName() + " (" + unit.getSymbol() + ")";
-            }
-
-            @Override
-            public MeasurementUnit fromString(String string) {
-                return null;
-            }
-        });
-
-        measurementUnitComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-                lblQuantity.setText(newValue.getUnit() + " *");
-                txtPriceTitle.setText(newValue.getName() + " (R$)*");
-            }
-        });
-
-        if (!measurementUnits.isEmpty()) {
-            measurementUnitComboBox.getSelectionModel().selectFirst();
-        }
-
-        measurementUnitComboBox.setDisable(true);
+    public void editPurchaseForm(PurchaseView purchaseView) {
+        this.purchaseView = purchaseView;
     }
 
     @FXML
-    public void onSave() {
+    public void onEdit() {
 
         try {
 
-            if (supplierComboBox.getValue() == null || rawMaterialComboBox.getValue() == null
-                    || priceField.getText().isEmpty()
-                    || quantityField.getText().isEmpty() || measurementUnitComboBox.getValue() == null
-                    || datePicker.getValue() == null) {
+            if (priceField.getText().isEmpty()
+                    || quantityField.getText().isEmpty() || datePicker.getValue() == null) {
                 UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Campos Obrigatórios",
                         "Por favor, preencha todas os campos!.");
                 return;
             }
 
             partnerRepository.findById(supplierComboBox.getValue().getId()).ifPresentOrElse(partner -> {
-                purchaseService.savePurchase(partner,
-                        rawMaterialComboBox.getValue(),
+                purchaseService.updatePurchase(
+                        purchase,
+                        partner,
                         quantityField.getText(),
-                        measurementUnitComboBox.getValue(),
                         priceField.getText(),
                         datePicker.getValue(),
                         noteField.getText());

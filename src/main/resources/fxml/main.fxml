@@ -111,7 +111,7 @@
                         </Button>
 
 
-                        <Button
+                       <!--  <Button
                             fx:id="rawMaterialsButton"
                             text="Matérias-primas"
                             onAction="#goToRawMaterials"
@@ -124,13 +124,13 @@
                                             preserveRatio="true"
                                             styleClass="sidebar-icon">
                                             <image>
-                                                <Image url="@/images/material-symbols--grocery.png" />
+                                                <Image url="@/images/material-symbolsgrocery.png" />
                                             </image>
                                         </ImageView>
                                     </children>
                                 </StackPane>
                             </graphic>
-                        </Button>
+                        </Button> -->
 
                         <Button
                             fx:id="clientsButton"
@@ -219,7 +219,7 @@
 
                         <Button
                             fx:id="purchasesButton"
-                            text="Compras"
+                            text="Compras de leite"
                             onAction="#goToPurchases"
                             styleClass="sidebar-button">
                             <graphic>
@@ -230,7 +230,7 @@
                                             preserveRatio="true"
                                             styleClass="sidebar-icon">
                                             <image>
-                                                <Image url="@/images/bx--purchase-tag.png" />
+                                                <Image url="@/images/icon-park-outline--milk.png" />
                                             </image>
                                         </ImageView>
                                     </children>
