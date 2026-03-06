@@ -4,20 +4,34 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.springframework.context.ApplicationContext;
+
 import br.com.midnightsyslabs.flow_control.domain.entity.spent.Spent;
 import br.com.midnightsyslabs.flow_control.exception.SaleNotFoundException;
 import br.com.midnightsyslabs.flow_control.exception.SpentNotFoundException;
+import br.com.midnightsyslabs.flow_control.repository.partner.PartnerRepository;
+import br.com.midnightsyslabs.flow_control.repository.spent.SpentCategoryRepository;
 import br.com.midnightsyslabs.flow_control.service.EmojiService;
+import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.SpentService;
+import br.com.midnightsyslabs.flow_control.service.SupplierService;
 import br.com.midnightsyslabs.flow_control.service.UtilsService;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.PurchaseEditFormController;
+import br.com.midnightsyslabs.flow_control.ui.controller.form.edit.SpentEditFormController;
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -27,12 +41,17 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 public class SpentCard extends StackPane implements Card {
 
     private final SpentService spentService;
 
     private final EmojiService emojiService;
+
+    private ApplicationContext context;
 
     private Spent spent;
 
@@ -46,15 +65,16 @@ public class SpentCard extends StackPane implements Card {
 
     private Button btnDelete;
 
-    private Button btnConfirm;
+    private Button btnEdit;
 
     private VBox buttonsBox = new VBox();
 
-    public SpentCard(Spent spent, Runnable onDataChanged, SpentService spentService, EmojiService emojiService) {
+    public SpentCard(Spent spent, Runnable onDataChanged, SpentService spentService, EmojiService emojiService, ApplicationContext context) {
         this.spent = spent;
         this.onDataChanged = onDataChanged;
         this.spentService = spentService;
         this.emojiService = emojiService;
+        this.context = context;
         mountCard();
     }
 
@@ -145,30 +165,21 @@ public class SpentCard extends StackPane implements Card {
         // --- BUTTONS BOX ---
         buttonsBox.setPadding(new Insets(22, 0, 0, 0));
 
-        btnConfirm = createIconButton("btn-action-confirm", "icon-confirm", "/images/line-md--confirm-circle.png");
+        btnEdit = createIconButton("btn-action-edit", "icon-edit", "/images/edit.png");
         btnDelete = createIconButton("btn-action-delete", "icon-delete", "/images/delete.png");
 
-        btnConfirm.setOnAction(event -> {
-            confirmSpent();
-            buttonsBox.setVisible(false);
-            buttonsBox.setManaged(false);
-        });
+        btnEdit.setOnAction(this::editSpent);
 
         btnDelete.setOnAction(event -> {
             deleteSpent();
         });
 
-        buttonsBox.getChildren().addAll(btnConfirm, btnDelete);
+        buttonsBox.getChildren().addAll(btnEdit, btnDelete);
 
         // Montagem final da hierarquia
         headerHBox.getChildren().addAll(leftInfoBox, spacer, rightInfoBox, buttonsBox);
         contentVBox.getChildren().add(headerHBox);
         this.getChildren().add(contentVBox);
-
-        if (spent.isConfirmed()) {
-            buttonsBox.setVisible(false);
-            buttonsBox.setManaged(false);
-        }
     }
 
     private Button createIconButton(String btnStyle, String iconStyle, String imgPath) {
@@ -193,7 +204,7 @@ public class SpentCard extends StackPane implements Card {
         return btn;
     }
 
-    private void confirmSpent() {
+    /* private void confirmSpent() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("⚠️ CONFIRMAÇÃO");
         alert.setHeaderText("VOCÊ TEM CERTEZA QUE VAI CONFIRMAR A COMPRA?");
@@ -217,7 +228,7 @@ public class SpentCard extends StackPane implements Card {
                 alertt.show();
             }
         }
-    }
+    } */
 
     private void deleteSpent() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -265,6 +276,59 @@ public class SpentCard extends StackPane implements Card {
                 }
             }, SpentNotFoundException::new);
 
+        }
+    }
+
+
+      private void editSpent(ActionEvent event) {
+        try {
+
+              Button sourceButton = (Button) event.getSource();
+
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/spent-edit-form.fxml"));
+
+            var controller = new SpentEditFormController(
+                    context.getBean(SpentCategoryRepository.class),
+                    context.getBean(EmojiService.class),
+                    context.getBean(SpentService.class));
+
+            controller.editSpentForm(spent);
+            controller.setOnDataChanged(onDataChanged);
+            loader.setControllerFactory(ctr -> controller);
+
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            double width = screenBounds.getWidth() * 0.3;
+            double height = screenBounds.getHeight() * 0.6;
+
+            Stage dialog = new Stage();
+
+            dialog.setTitle("Editar Despesa");
+
+            dialog.setScene(new Scene(loader.load(), width, height));
+
+           
+            Stage mainStage = (Stage) sourceButton.getScene().getWindow();
+
+            dialog.initOwner(mainStage);
+            dialog.initModality(Modality.WINDOW_MODAL);
+
+            dialog.setResizable(false);
+            // stage.showAndWait();
+
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.8);
+            mainStage.getScene().getRoot().setEffect(darken);
+
+            dialog.setOnHidden(e -> mainStage.getScene().getRoot().setEffect(null));
+
+            dialog.showAndWait();
+
+            if (onDataChanged != null)
+                onDataChanged.run();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

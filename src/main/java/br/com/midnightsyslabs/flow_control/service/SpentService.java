@@ -37,6 +37,23 @@ public class SpentService {
         spentRepository.save(spent);
 
     }
+    @Transactional
+    public void updateSpent(Spent spent,String amountPaid,SpentCategory category,String description, LocalDate date){
+       
+        var amountPaid_ = UtilsService.solveComma(amountPaid);
+
+        try{
+            spent.setAmountPaid(new BigDecimal(amountPaid_));
+        } catch (Exception e){
+            throw e;
+        }
+
+        spent.setCategory(category);
+        spent.setDescription(description);
+        spent.setDate(date);
+
+        spentRepository.save(spent);
+    }
 
     @Transactional
     public void deleteSpent(Spent spent){

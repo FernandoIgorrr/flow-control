@@ -51,6 +51,23 @@
     -fx-pref-height: 50px;
 }
 
+.sidebar-button2 {
+    /* -fx-background-color: transparent;
+     */
+     -fx-text-fill: #000000;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 16;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-graphic-text-gap: 15px;
+    -fx-translate-x: 20;
+
+    -fx-pref-width: 260px;
+    -fx-pref-height: 50px;
+}
+
 /* ÍCONE PADRÃO */
 .sidebar-button .sidebar-icon {
     -fx-effect: innershadow(gaussian, #000000, 10, 0.5, 0, 0);

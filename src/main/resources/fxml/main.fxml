@@ -282,6 +282,28 @@
                             </graphic>
                         </Button>
 
+                         <Button
+                            fx:id="bbtnBackupn"
+                            text="Fazer backup dos dados"
+                            onAction="#doBackup"
+                            styleClass="sidebar-button2"
+                            >
+                            <graphic>
+                                <StackPane prefWidth="32" prefHeight="32" maxWidth="32"
+                                    maxHeight="32">
+                                    <children>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0"
+                                            preserveRatio="true"
+                                            >
+                                            <image>
+                                                <Image url="@/images/carbon--data-backup.png" />
+                                            </image>
+                                        </ImageView>
+                                    </children>
+                                </StackPane>
+                            </graphic>
+                        </Button>
+
                     </VBox>
                 </content>
             </ScrollPane>

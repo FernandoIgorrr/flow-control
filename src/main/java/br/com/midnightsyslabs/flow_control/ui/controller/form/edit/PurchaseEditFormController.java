@@ -218,7 +218,7 @@ public class PurchaseEditFormController {
         close();
 
         UiUtils.showLabelAlert(Alert.AlertType.INFORMATION, "SUCESSO",
-                "Compra cadastrada com sucesso!");
+                "Compra atualizada com sucesso!");
     }
 
     @FXML

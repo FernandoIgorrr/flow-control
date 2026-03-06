@@ -110,8 +110,8 @@
                 onAction="#onCancel"
                 styleClass="btn-secondary" />
 
-            <Button text="Salvar"
-                onAction="#onSave"
+            <Button text="Editar"
+                onAction="#onEdit"
                 styleClass="btn-primary" />
         </HBox>
     </bottom>

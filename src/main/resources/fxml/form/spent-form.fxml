@@ -54,7 +54,7 @@
                                 GridPane.columnIndex="0">
                                 <Label text="Quantia paga *" />
                                 <TextField
-                                    fx:id="amountPaid"
+                                    fx:id="amountPaidField"
                                     maxWidth="Infinity" />
                             </VBox>
 

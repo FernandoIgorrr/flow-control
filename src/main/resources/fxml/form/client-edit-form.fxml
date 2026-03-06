@@ -96,7 +96,7 @@
                 onAction="#onCancel"
                 styleClass="btn-secondary" />
 
-            <Button text="Salvar"
+            <Button text="Editar"
                 onAction="#onEdit"
                 styleClass="btn-primary" />
         </HBox>

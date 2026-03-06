@@ -239,7 +239,7 @@ public class ExpensesController {
                             employeeService, emojiService));
                 } else {
 
-                    cardsPane.getChildren().add(new SpentCard((Spent) expense, this::loadExpenses, spentService,emojiService));
+                    cardsPane.getChildren().add(new SpentCard((Spent) expense, this::loadExpenses, spentService,emojiService,context));
                 }
 
             } catch (Exception e) {

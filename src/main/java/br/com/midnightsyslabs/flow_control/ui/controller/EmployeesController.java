@@ -20,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -146,7 +147,6 @@ public class EmployeesController {
                 ImageView iconDisconnect = new ImageView(
                         new Image(getClass().getResourceAsStream("/images/carbon--close-outline.png")));
 
-
                 iconDisconnect.setFitWidth(32);
                 iconDisconnect.setFitHeight(32);
                 iconDisconnect.setPreserveRatio(true);
@@ -176,29 +176,29 @@ public class EmployeesController {
                 btnConnect.getStyleClass().add("btn-action-edit");
             }
 
-           @Override
-        protected void updateItem(Void item, boolean empty) {
-            super.updateItem(item, empty);
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
 
-            if (empty) {
-                setGraphic(null);
-                return;
+                if (empty) {
+                    setGraphic(null);
+                    return;
+                }
+
+                Employee employee = getTableView()
+                        .getItems()
+                        .get(getIndex());
+
+                if (!(employee.getDeletedAt() == null)) {
+                    btnConnect.setOnAction(e -> connectEmployee(employee));
+                    setGraphic(btnConnect);
+                } else {
+                    btnDisconnect.setOnAction(e -> disconnectEmployee(employee));
+                    setGraphic(btnDisconnect);
+                }
             }
-
-            Employee employee = getTableView()
-                    .getItems()
-                    .get(getIndex());
-
-            if (!(employee.getDeletedAt() == null)) {
-                btnConnect.setOnAction(e -> connectEmployee(employee));
-                setGraphic(btnConnect);
-            } else {
-                btnDisconnect.setOnAction(e -> disconnectEmployee(employee));
-                setGraphic(btnDisconnect);
-            }
-        }
-    });
-}
+        });
+    }
 
     @FXML
     public void onAddEmployeePayments() {
@@ -250,6 +250,7 @@ public class EmployeesController {
             }
         });
     }
+
     public void connectEmployee(Employee employee) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmação");
@@ -305,6 +306,9 @@ public class EmployeesController {
         addDisconnectButton();
 
         employeeTable.getItems().setAll(filteredEmployees);
+        // ATUALIZA O HEADER DA COLUNA
+        colName.setText(
+                "Funcionários (" + allEmployees.stream().filter(e -> e.getDeletedAt() == null).toList().size() + ")");
     }
 
     public void reloadEmployees() {

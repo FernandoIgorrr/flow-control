@@ -403,5 +403,4 @@ public class PurchaseCard extends StackPane implements Card {
 
         }
     }
-
 }

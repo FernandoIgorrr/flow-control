@@ -112,7 +112,7 @@ public class ProductEditFormController {
     }
 
     @FXML
-    public void onSave() {
+    public void onEdit() {
         try {
 
             if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty()

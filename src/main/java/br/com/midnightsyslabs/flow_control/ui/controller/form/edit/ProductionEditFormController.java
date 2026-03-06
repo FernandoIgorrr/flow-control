@@ -267,7 +267,7 @@ public class ProductionEditFormController {
     }
 
     @FXML
-    private void onSave() {
+    private void onEdit() {
 
         try {
 

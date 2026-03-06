@@ -97,7 +97,7 @@
                 styleClass="table-clean">
 
                 <columns>
-                    <TableColumn text="Funcionário" fx:id="colName"
+                    <TableColumn text="Funcionários" fx:id="colName"
                         style="-fx-font-size: 16;-fx-alignment: CENTER;" />
 
                     <TableColumn text="Desligar"
