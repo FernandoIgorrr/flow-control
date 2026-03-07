@@ -38,7 +38,7 @@ public class SpentFormController {
     private ComboBox<SpentCategory> spentCategoryComboBox;
 
     @FXML
-    private TextField amountPaid;
+    private TextField amountPaidField;
 
     @FXML
     private TextField spentDescriptionField;
@@ -49,7 +49,7 @@ public class SpentFormController {
     @FXML
     public void initialize() {
         configureSpentCategoryComboBox();
-        UiUtils.configurePriceField(amountPaid);
+        UiUtils.configurePriceField(amountPaidField);
         datePicker.setValue(LocalDate.now());
         datePicker.setEditable(false);
     }
@@ -85,13 +85,13 @@ public class SpentFormController {
     @FXML
     public void onSave() {
 
-        if (amountPaid.getText().isBlank()) {
+        if (amountPaidField.getText().isBlank()) {
             UiUtils.showLabelAlert(Alert.AlertType.WARNING, "Atenção", "A quantia paga está vazia");
             return;
         }
 
         try {
-            spentService.saveSpent(amountPaid.getText(), spentCategoryComboBox.getValue(),
+            spentService.saveSpent(amountPaidField.getText(), spentCategoryComboBox.getValue(),
                     spentDescriptionField.getText(), datePicker.getValue());
 
             if (onDataChanged != null) {

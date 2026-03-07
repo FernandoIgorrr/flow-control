@@ -101,7 +101,7 @@ public class ExpensesController {
 
         loadExpenses();
 
-        configureTimeIntervalEnumComboBoxFilter();
+        //configureTimeIntervalEnumComboBoxFilter();
         configureSpentCategoryComboBoxFilter();
         configureEmployeeComboBoxFilter();
 
@@ -297,6 +297,8 @@ public class ExpensesController {
         allExpenses = expenseService.getAllExpenses();
 
         filteredExpenses = allExpenses;
+
+        configureTimeIntervalEnumComboBoxFilter();
 
         renderCards(filteredExpenses);
         renderRecentExpenseAmountCard();
