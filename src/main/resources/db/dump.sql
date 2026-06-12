@@ -779,6 +779,7 @@ CREATE VIEW public.sale_product_full AS
     prod.id AS product_id,
     prod.name AS product_name,
     prod.description AS product_description,
+    prod.quantity AS product_weight,
     mu.unit AS product_measurement_unit_unit,
     mu.name AS product_measurement_unit_name,
     mu.plural_name AS product_measurement_unit_plural_name,
