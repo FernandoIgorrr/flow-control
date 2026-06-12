@@ -32,6 +32,8 @@ public class SaleProductView{
     
     private String productDescription;
 
+    private BigDecimal productWeight;
+
     private String productMeasurementUnitUnit;
 
     private String productMeasurementUnitName;

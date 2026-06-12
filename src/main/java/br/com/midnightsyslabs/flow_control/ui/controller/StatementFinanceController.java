@@ -1,9 +1,12 @@
 package br.com.midnightsyslabs.flow_control.ui.controller;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,6 +24,8 @@ import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.SaleService;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import br.com.midnightsyslabs.flow_control.view.SaleProductView;
+
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -76,9 +81,13 @@ public class StatementFinanceController {
     @FXML
     private TabPane tabPane;
 
+    private static final Locale ptBr = Locale.forLanguageTag("pt-BR");
+
     private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
     private static final DateTimeFormatter BR_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(ptBr));
 
     @FXML
     public void initialize() {
@@ -108,14 +117,21 @@ public class StatementFinanceController {
         handleFiltrar();
     }
 
-    private void applyCurrencyTooltip(XYChart.Data<String, Number> data, String labelPrefix) {
+    private void applyCurrencyTooltip(XYChart.Data<String, Number> data, String labelPrefix, String quantity) {
         data.nodeProperty().addListener((obs, oldNode, newNode) -> {
             if (newNode != null) {
                 BigDecimal value = new BigDecimal(data.getYValue().toString());
 
-                Tooltip tooltip = new Tooltip(
-                        data.getXValue() + "\n" +
-                                labelPrefix + ": " + CURRENCY_FORMAT.format(value));
+                // Monta o texto base com o valor financeiro
+                String tooltipText = data.getXValue() + "\n" + labelPrefix + ": " + CURRENCY_FORMAT.format(value);
+
+                // Se houver quantidade, adiciona na linha de baixo
+                if (quantity != null) {
+                    tooltipText += "\n" + quantity;
+
+                }
+
+                Tooltip tooltip = new Tooltip(tooltipText);
 
                 tooltip.setStyle("""
                             -fx-font-size: 16px;
@@ -177,55 +193,115 @@ public class StatementFinanceController {
         categoryPieChart.setData(pieData);
     }
 
-    public void updateClientChart(List<SaleDTO> sales) {
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Faturamento por Cliente");
+   public void updateClientChart(List<SaleDTO> sales) {
+    XYChart.Series<String, Number> series = new XYChart.Series<>();
+    series.setName("Faturamento por Cliente");
 
-        Map<String, BigDecimal> clientMap = sales.stream()
-                .collect(Collectors.groupingBy(
-                        s -> s.getClientName() != null ? s.getClientName() : "Cliente não identificado",
-                        Collectors.mapping(
-                                SaleDTO::getRevenue,
-                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
+    // Classe utilitária local para guardar o faturamento e o detalhamento de pesos por produto
+    record ClientStats(BigDecimal faturamento, Map<String, BigDecimal> pesosPorProduto) {}
 
-        clientMap.entrySet().stream()
-                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
-                .limit(10)
-                .forEach(entry -> {
-                    XYChart.Data<String, Number> data = new XYChart.Data<>(entry.getKey(), entry.getValue());
+    Map<String, ClientStats> clientMap = sales.stream()
+            .collect(Collectors.groupingBy(
+                    s -> s.getClientName() != null ? s.getClientName() : "Cliente não identificado",
+                    Collectors.collectingAndThen(
+                            Collectors.toList(),
+                            list -> {
+                                // 1. Calcula o faturamento total do cliente
+                                BigDecimal totalFaturamento = list.stream()
+                                        .map(SaleDTO::getRevenue)
+                                        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                    applyCurrencyTooltip(data, "Total gasto");
+                                // 2. Agrupa e soma o peso vendido de cada produto para este cliente
+                                Map<String, BigDecimal> pesosProdutos = list.stream()
+                                        .filter(s -> s.getSaleProductsView() != null)
+                                        .flatMap(s -> s.getSaleProductsView().stream())
+                                        .collect(Collectors.groupingBy(
+                                                SaleProductView::getProductName,
+                                                Collectors.reducing(
+                                                        BigDecimal.ZERO,
+                                                        p -> p.getProductWeight() != null 
+                                                             ? p.getProductWeight().multiply(p.getProductQuantitySold()) 
+                                                             : BigDecimal.ZERO,
+                                                        BigDecimal::add
+                                                )
+                                        ));
 
-                    series.getData().add(data);
+                                return new ClientStats(totalFaturamento, pesosProdutos);
+                            }
+                    )));
+
+    clientMap.entrySet().stream()
+            .sorted((e1, e2) -> e2.getValue().faturamento().compareTo(e1.getValue().faturamento())) // Ordena por faturamento
+            .limit(10)
+            .forEach(entry -> {
+                XYChart.Data<String, Number> data = new XYChart.Data<>(entry.getKey(), entry.getValue().faturamento());
+
+                // 3. Monta a String do Tooltip com a quebra de linha contendo os produtos e seus respectivos pesos
+                StringBuilder stringBuilder = new StringBuilder("\n--- Produtos Vendidos ---");
+                
+                entry.getValue().pesosPorProduto().forEach((produto, pesoTotal) -> {
+                    if (pesoTotal.compareTo(BigDecimal.ZERO) > 0) {
+                        stringBuilder.append("\n• ")
+                                     .append(produto)
+                                     .append(": ")
+                                     .append(DECIMAL_FORMAT.format(pesoTotal))
+                                     .append(" Kg");
+                    }
                 });
 
-        clientBarChart.getData().setAll(series);
-    }
+                // Se o cliente não comprou nenhum produto com peso cadastrado
+                String tooltipComplemento = stringBuilder.toString();
+
+                // Passa o faturamento e a lista de pesos montada para o método utilitário de Tooltip
+                applyCurrencyTooltip(data, "Total faturado", tooltipComplemento);
+
+                series.getData().add(data);
+            });
+
+    clientBarChart.getData().setAll(series);
+}
 
     public void updatePurchaseChart(List<PurchaseView> purchases) {
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Gastos por Fornecedor");
+    XYChart.Series<String, Number> series = new XYChart.Series<>();
+    series.setName("Gastos por Fornecedor");
 
-        Map<String, BigDecimal> purchaseMap = purchases.stream()
-                .collect(Collectors.groupingBy(
-                        p -> p.getPartnerName() != null ? p.getPartnerName() : "Fornecedor não inentificao",
-                        Collectors.mapping(
-                                PurchaseView::getExpense,
-                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
+    // 1. Agrupamento calculando Gasto Total e Litros Totais ao mesmo tempo
+    Map<String, PartnerPurchaseTotals> purchaseMap = purchases.stream()
+            .collect(Collectors.groupingBy(
+                    p -> p.getPartnerName() != null ? p.getPartnerName() : "Fornecedor não identificado",
+                    Collectors.reducing(
+                            new PartnerPurchaseTotals(BigDecimal.ZERO, BigDecimal.ZERO),
+                            p -> {
+                                BigDecimal expense = p.getExpense() != null ? p.getExpense() : BigDecimal.ZERO;
+                                BigDecimal quantity = p.getQuantity() != null ? p.getQuantity() : BigDecimal.ZERO;
+                                return new PartnerPurchaseTotals(expense, quantity);
+                            },
+                            PartnerPurchaseTotals::merge
+                    )
+            ));
 
-        purchaseMap.entrySet().stream()
-                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
-                .limit(10)
-                .forEach(entry -> {
-                    XYChart.Data<String, Number> data = new XYChart.Data<>(entry.getKey(), entry.getValue());
+    // 2. Ordenação pelo total gasto e montagem do gráfico
+    purchaseMap.entrySet().stream()
+            .sorted(Map.Entry.<String, PartnerPurchaseTotals>comparingByValue(
+                    Comparator.comparing(PartnerPurchaseTotals::totalExpense)
+            ).reversed())
+            .limit(10)
+            .forEach(entry -> {
+                // Passa o valor financeiro para a barra do gráfico
+                XYChart.Data<String, Number> data = new XYChart.Data<>(entry.getKey(), entry.getValue().totalExpense());
 
-                    applyCurrencyTooltip(data, "Total gasto");
+                // Formata os litros para exibir no Tooltip ao passar o mouse
+                //String tooltipComplemento = String.format("Volume: %.2f L", entry.getValue().totalQuantity());
 
-                    series.getData().add(data);
-                });
+                String tooltipComplemento = "Volume: " + DECIMAL_FORMAT.format(entry.getValue().totalQuantity()) + " L";
 
-        purchaseBarChart.getData().setAll(series);
-    }
+                applyCurrencyTooltip(data, "Total gasto", tooltipComplemento);
+
+                series.getData().add(data);
+            });
+
+    purchaseBarChart.getData().setAll(series);
+}
 
     public void updateLineChart(List<SaleDTO> revenues, List<Expense> expenses) {
         XYChart.Series<String, Number> revSeries = new XYChart.Series<>();
@@ -281,22 +357,42 @@ public class StatementFinanceController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Faturamento por Produto");
 
-        Map<String, BigDecimal> productMap = sales.stream()
+        Map<String, ProductTotals> productMap = sales.stream()
                 .filter(s -> s.getSaleProductsView() != null)
                 .flatMap(sale -> sale.getSaleProductsView().stream())
                 .collect(Collectors.groupingBy(
                         SaleProductView::getProductName,
-                        Collectors.mapping(
-                                p -> p.getProductPriceOnSaleDate().multiply(p.getProductQuantitySold()),
-                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
+                        Collectors.reducing(
+                                new ProductTotals(BigDecimal.ZERO, BigDecimal.ZERO),
+                                p -> {
+                                    // Calcula o faturamento deste item
+                                    BigDecimal revenue = p.getProductPriceOnSaleDate()
+                                            .multiply(p.getProductQuantitySold());
+
+                                    // Calcula o peso total deste item (peso unitário * quantidade vendida)
+                                    BigDecimal weight = p.getProductWeight() != null
+                                            ? p.getProductWeight().multiply(p.getProductQuantitySold())
+                                            : BigDecimal.ZERO;
+
+                                    return new ProductTotals(revenue, weight);
+                                },
+                                ProductTotals::merge)));
 
         productMap.entrySet().stream()
-                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+                // 1. Mudou aqui: Comparator agora extrai o faturamento (totalRevenue) do objeto
+                // ProductTotals
+                .sorted(Map.Entry.<String, ProductTotals>comparingByValue(
+                        Comparator.comparing(ProductTotals::totalRevenue)).reversed())
                 .limit(10)
                 .forEach(entry -> {
-                    XYChart.Data<String, Number> data = new XYChart.Data<>(entry.getKey(), entry.getValue());
+                    // 2. Mudou aqui: Passamos o faturamento para o valor do gráfico
+                    XYChart.Data<String, Number> data = new XYChart.Data<>(entry.getKey(),
+                            entry.getValue().totalRevenue());
 
-                    applyCurrencyTooltip(data, "Faturamento");
+                    // Dica bônus: Você pode passar o peso acumulado para o Tooltip se quiser exibir
+                    // ao passar o mouse!
+                    String tooltipComplemento = "Peso total: " + DECIMAL_FORMAT.format(entry.getValue().totalWeight()) + " Kg";
+                    applyCurrencyTooltip(data, "Faturamento", tooltipComplemento);
 
                     series.getData().add(data);
                 });
