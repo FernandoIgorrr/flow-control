@@ -42,6 +42,9 @@ public class MainController {
     @FXML
     private VBox sidebarButtons;
 
+    @FXML
+    private Button statementFinanceButton;
+
     /*
      * @FXML
      * private Button dashboardButton;
@@ -76,8 +79,8 @@ public class MainController {
     @FXML
     private Button employeesButton;
 
-    @FXML
-    private Button statementFinanceButton;
+    @FXML 
+    private Button vehiclesButton;
 
     @FXML
     private ImageView logo;
@@ -174,6 +177,12 @@ public class MainController {
     public void goToEmployees() {
         navService.navigateTo("/fxml/employees.fxml");
         setActive(employeesButton);
+    }
+    
+    @FXML
+    public void goToVehicles() {
+        navService.navigateTo("/fxml/vehicles.fxml");
+        setActive(vehiclesButton);
     }
 
     @FXML

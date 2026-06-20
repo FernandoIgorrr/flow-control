@@ -37,7 +37,7 @@
                 <Region HBox.hgrow="ALWAYS" />
 
                 <!-- RIGHT: BUTTON -->
-           
+
                 <Button
                     fx:id="btnAddSpent"
                     text="Registrar despesa"
@@ -94,12 +94,22 @@
                     <ComboBox fx:id="spentCategoryComboBoxFilter" maxWidth="200" />
                 </HBox>
 
-                <HBox spacing="12" styleClass="card-generic" HBox.hgrow="ALWAYS">
+                <HBox fx:id="employeeFilterContainer" spacing="12" styleClass="card-generic"
+                    HBox.hgrow="ALWAYS">
                     <padding>
                         <Insets top="24" bottom="12" left="24" right="24" />
                     </padding>
                     <Label text="Funcionário" styleClass="client-name" />
                     <ComboBox fx:id="employeeComboBoxFilter" maxWidth="200" />
+                </HBox>
+
+                <HBox fx:id="vehicleFilterContainer" spacing="12" styleClass="card-generic"
+                    HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets top="24" bottom="12" left="24" right="24" />
+                    </padding>
+                    <Label text="Veículo" styleClass="client-name" />
+                    <ComboBox fx:id="vehicleComboBoxFilter" maxWidth="200" />
                 </HBox>
 
             </HBox>

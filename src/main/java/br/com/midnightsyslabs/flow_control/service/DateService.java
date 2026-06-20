@@ -33,9 +33,7 @@ public class DateService {
                         .withMonth(1)
                         .withDayOfMonth(1);
             case TimeIntervalEnum.CURRENT_MONTH:
-                return today
-                        .withMonth(1)
-                        .withDayOfMonth(1);
+               return today.withDayOfMonth(1);
             case TimeIntervalEnum.CURRENT_YEAR:
                 return today
                         .withMonth(1)

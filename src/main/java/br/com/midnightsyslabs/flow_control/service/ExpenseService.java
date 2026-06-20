@@ -22,6 +22,9 @@ public class ExpenseService {
     private PurchaseService purchaseService;
 
     @Autowired
+    private VehicleSpentService vehicleSpentService;
+
+    @Autowired
     private SpentRepository spentRepository;
 
     @Autowired
@@ -34,6 +37,7 @@ public class ExpenseService {
         expenses.addAll(purchaseService.getPurchasesView());
         expenses.addAll(spentRepository.findAll());
         expenses.addAll(employeeService.getEmployeePayments());
+        expenses.addAll(vehicleSpentService.getVehicleSpents());
 
         var result = expenses.stream().sorted(Comparator.comparing(Expense::getDate).reversed())
                 .toList();

@@ -1,39 +1,22 @@
-
 /* Área das abas */
 .tab-pane .tab-header-area {
     -fx-padding: 0;
 }
 
-/* Região onde as abas ficam */
+/* Região onde ficam as abas */
 .tab-pane .headers-region {
     -fx-background-color: transparent;
 }
 
-/* Cada aba divide o espaço */
+/* Cada aba */
 .tab-pane .tab {
     -fx-background-insets: 0;
     -fx-padding: 10 0 10 0;
 }
 
-/* Força o header a usar toda a largura */
-/*.tab-pane .headers-region > .tab {
-    -fx-pref-width: 0;
-    -fx-max-width: Infinity;
-}*/
-
-.tab-pane .tab-header-area .headers-region .tab {
-    /* Ajuste o valor baseado na largura total dividida pelo número de abas */
-    -fx-min-width: 210px; 
-    -fx-pref-width: 210px;
-    -fx-alignment: CENTER;
-}
-
-.tab-pane {
-    -fx-tab-min-width: 210px;
-}
-/* Centraliza texto */
+/* Texto */
 .tab-pane .tab-label {
-    -fx-alignment: CENTER;
-    -fx-max-width: Infinity;
+    -fx-alignment: center;
     -fx-font-weight: bold;
+    -fx-wrap-text: true;
 }

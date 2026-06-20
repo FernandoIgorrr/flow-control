@@ -112,7 +112,7 @@
             </Tab>
 
             <!-- Aba 3 -->
-            <Tab text="Produtos Mais vendidos" >
+            <Tab text="Produtos Mais vendidos">
                 <content>
                     <ScrollPane fitToWidth="true">
                         <VBox spacing="10" style="-fx-padding: 20;">
@@ -168,6 +168,30 @@
                             <PieChart fx:id="categoryPieChart"
                                 labelsVisible="true"
                                 minHeight="500" />
+                        </VBox>
+                    </ScrollPane>
+                </content>
+            </Tab>
+
+              <!-- Aba 6 -->
+            <Tab text="Gasto por Veículos">
+                <content>
+                    <ScrollPane fitToWidth="true">
+                        <VBox spacing="10"
+                            style="-fx-padding: 20;">
+                            <Label text="Gastos por Veículo"
+                                style="-fx-font-weight: bold;" />
+
+                            <BarChart fx:id="vehicleBarChart"
+                                legendVisible="false"
+                                minHeight="500">
+                                <xAxis>
+                                    <CategoryAxis />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis />
+                                </yAxis>
+                            </BarChart>
                         </VBox>
                     </ScrollPane>
                 </content>

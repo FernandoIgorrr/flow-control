@@ -15,6 +15,8 @@ import br.com.midnightsyslabs.flow_control.domain.entity.employee.EmployeePaymen
 import br.com.midnightsyslabs.flow_control.domain.entity.expense.Expense;
 import br.com.midnightsyslabs.flow_control.domain.entity.spent.Spent;
 import br.com.midnightsyslabs.flow_control.domain.entity.spent.SpentCategory;
+import br.com.midnightsyslabs.flow_control.domain.entity.spent.VehicleSpent;
+import br.com.midnightsyslabs.flow_control.domain.entity.vehicle.Vehicle;
 import br.com.midnightsyslabs.flow_control.repository.spent.SpentCategoryRepository;
 import br.com.midnightsyslabs.flow_control.service.DateService;
 import br.com.midnightsyslabs.flow_control.service.EmojiService;
@@ -23,9 +25,12 @@ import br.com.midnightsyslabs.flow_control.service.ExpenseService;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.SpentService;
 import br.com.midnightsyslabs.flow_control.service.UtilsService;
+import br.com.midnightsyslabs.flow_control.service.VehicleService;
+import br.com.midnightsyslabs.flow_control.service.VehicleSpentService;
 import br.com.midnightsyslabs.flow_control.ui.cards.EmployeePaymentCard;
 import br.com.midnightsyslabs.flow_control.ui.cards.PurchaseCard;
 import br.com.midnightsyslabs.flow_control.ui.cards.SpentCard;
+import br.com.midnightsyslabs.flow_control.ui.cards.VehicleSpentCard;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.SpentFormController;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import javafx.fxml.FXML;
@@ -38,6 +43,7 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -55,6 +61,12 @@ public class ExpensesController {
 
     @Autowired
     private PurchaseService purchaseService;
+
+    @Autowired
+    private VehicleService vehicleService;
+
+    @Autowired
+    private VehicleSpentService vehicleSpentService;
 
     @Autowired
     private EmployeeService employeeService;
@@ -97,17 +109,100 @@ public class ExpensesController {
     private Label lblTotalExpensesSpend;
 
     @FXML
+    private HBox employeeFilterContainer;
+
+    @FXML
+    private HBox vehicleFilterContainer;
+
+    @FXML
+    private ComboBox<Vehicle> vehicleComboBoxFilter;
+
+    @FXML
     public void initialize() {
 
         loadExpenses();
 
-        //configureTimeIntervalEnumComboBoxFilter();
+        // configureTimeIntervalEnumComboBoxFilter();
         configureSpentCategoryComboBoxFilter();
         configureEmployeeComboBoxFilter();
+        configureVehicleComboBoxFilter();
+        configureVisibilityControl(); // 🔹 Nova chamada aqui
 
         imgType.setImage(new Image(
                 getClass().getResourceAsStream("/images/game-icons--basket.png")));
         imgType.getStyleClass().add("blue-icon");
+    }
+
+    private void configureVehicleComboBoxFilter() {
+        // Carrega a lista de veículos do seu service/banco
+        vehicleComboBoxFilter.getItems().setAll(vehicleService.getVehicles());
+
+        // Exemplo simulado de mock ou add do "Todos":
+        vehicleComboBoxFilter.getItems().add(new Vehicle()); // Instância vazia para representar o "Todos"
+
+        vehicleComboBoxFilter.setConverter(new StringConverter<Vehicle>() {
+            @Override
+            public String toString(Vehicle v) {
+                // Ajuste o método de pegar o nome/placa do veículo (ex: v.getPlate() ou
+                // v.getName())
+                return (v == null || v.getNumberPlate() == null) ? "Todos" : v.getNumberPlate();
+            }
+
+            @Override
+            public Vehicle fromString(String s) {
+                return null;
+            }
+        });
+
+        vehicleComboBoxFilter.getSelectionModel().selectLast(); // Seleciona o "Todos"
+
+        vehicleComboBoxFilter.valueProperty().addListener((obs, old, newVal) -> {
+            applyFilters();
+        });
+    }
+
+    private void configureVisibilityControl() {
+        // Vincula as propriedades managed ao visible para ambos sumirem sem deixar
+        // buraco
+        employeeFilterContainer.managedProperty().bind(employeeFilterContainer.visibleProperty());
+        vehicleFilterContainer.managedProperty().bind(vehicleFilterContainer.visibleProperty());
+
+        // Escuta a mudança da categoria de gasto
+        spentCategoryComboBoxFilter.valueProperty().addListener((obs, oldCategory, newCategory) -> {
+            if (newCategory != null && newCategory.getId() != null) {
+                long id = newCategory.getId();
+
+                // Lógica do Funcionário (ID 2)
+                if (id == 2) {
+                    employeeFilterContainer.setVisible(true);
+                } else {
+                    employeeComboBoxFilter.getSelectionModel().selectLast();
+                    employeeFilterContainer.setVisible(false);
+                }
+
+                // 🔥 VEÍCULOS agora inclui também o grupo (-1)
+                if (id == 10 || id == 11 || id == -1) {
+                    vehicleFilterContainer.setVisible(true);
+                } else {
+                    vehicleComboBoxFilter.getSelectionModel().selectLast();
+                    vehicleFilterContainer.setVisible(false);
+                }
+            } else {
+                // Se for nulo ou "Todos", esconde ambos
+                employeeComboBoxFilter.getSelectionModel().selectLast();
+                employeeFilterContainer.setVisible(false);
+
+                vehicleComboBoxFilter.getSelectionModel().selectLast();
+                vehicleFilterContainer.setVisible(false);
+            }
+        });
+
+        // Estado inicial
+        SpentCategory currentCategory = spentCategoryComboBoxFilter.getValue();
+        long currentId = (currentCategory != null && currentCategory.getId() != null) ? currentCategory.getId() : -1;
+
+        employeeFilterContainer.setVisible(currentId == 2);
+        vehicleFilterContainer.setVisible(currentId == 10 || currentId == 11);
     }
 
     public void configureTimeIntervalEnumComboBoxFilter() {
@@ -137,6 +232,12 @@ public class ExpensesController {
     private void configureSpentCategoryComboBoxFilter() {
         spentCategoryComboBoxFilter.getItems().setAll(
                 spentCategoryRepository.findAll());
+
+        SpentCategory vehicleGroup = new SpentCategory();
+        vehicleGroup.setId((short) -1L); // ID virtual
+        vehicleGroup.setName("Veículos");
+
+        spentCategoryComboBoxFilter.getItems().add(vehicleGroup);
 
         spentCategoryComboBoxFilter.getItems().add(new SpentCategory());
         spentCategoryComboBoxFilter.setConverter(new StringConverter<SpentCategory>() {
@@ -231,15 +332,22 @@ public class ExpensesController {
                 if (expense.getSpentCategory().getId() == 1) {
 
                     cardsPane.getChildren()
-                            .add(new PurchaseCard((PurchaseView) expense, this::loadExpenses, purchaseService,context));
+                            .add(new PurchaseCard((PurchaseView) expense, this::loadExpenses, purchaseService,
+                                    context));
 
                 } else if (expense.getSpentCategory().getId() == 2) {
 
                     cardsPane.getChildren().add(new EmployeePaymentCard((EmployeePayment) expense, this::loadExpenses,
                             employeeService, emojiService));
+                } else if (expense.getSpentCategory().getId() == 10 || expense.getSpentCategory().getId() == 11) {
+
+                    cardsPane.getChildren().add(new VehicleSpentCard((VehicleSpent) expense, this::loadExpenses,
+                            vehicleSpentService, context));
+
                 } else {
 
-                    cardsPane.getChildren().add(new SpentCard((Spent) expense, this::loadExpenses, spentService,emojiService,context));
+                    cardsPane.getChildren().add(
+                            new SpentCard((Spent) expense, this::loadExpenses, spentService, emojiService, context));
                 }
 
             } catch (Exception e) {
@@ -253,9 +361,27 @@ public class ExpensesController {
         filteredExpenses = allExpenses.stream()
 
                 // 🔹 filtro por categoria de gasto
-                .filter(expense -> spentCategoryComboBoxFilter.getValue() == null
-                        || spentCategoryComboBoxFilter.getValue().getName() == null ||
-                        expense.getSpentCategory().getId().equals(spentCategoryComboBoxFilter.getValue().getId()))
+                .filter(expense -> {
+
+                    SpentCategory selected = spentCategoryComboBoxFilter.getValue();
+
+                    if (selected == null || selected.getName() == null) {
+                        return true;
+                    }
+
+                    Short selectedId = selected.getId();
+
+                    // 🔥 NOVA OPÇÃO: VEÍCULOS (10 + 11)
+                    if (selectedId != null && selectedId == -1L) {
+                        return expense.getSpentCategory() != null &&
+                                (expense.getSpentCategory().getId() == 10
+                                        || expense.getSpentCategory().getId() == 11);
+                    }
+
+                    // 🔥 FILTRO NORMAL
+                    return expense.getSpentCategory() != null &&
+                            expense.getSpentCategory().getId().equals(selectedId);
+                })
 
                 // 🔹 filtro por funcionário
                 .filter(expense -> employeeComboBoxFilter.getValue() == null
@@ -263,6 +389,16 @@ public class ExpensesController {
                         || (expense instanceof EmployeePayment ep
                                 && ep.getEmployee().getId()
                                         .equals(employeeComboBoxFilter.getValue().getId())))
+
+                // 🔹 NOVO: filtro por veículo (só aplica se for uma instância de VehicleSpent)
+                .filter(expense -> vehicleComboBoxFilter.getValue() == null
+                        || vehicleComboBoxFilter.getValue().getNumberPlate() == null // Ajuste para o atributo que
+                                                                                     // valida o
+                        // "Todos"
+                        || (expense instanceof VehicleSpent vs
+                                && vs.getVehicle().getNumberPlate() // Ajuste conforme os getters da sua classe
+                                                                    // VehicleSpent
+                                        .equals(vehicleComboBoxFilter.getValue().getNumberPlate())))
 
                 // 🔹 filtro por intervalo de datas
                 .filter(expense -> {
@@ -279,7 +415,6 @@ public class ExpensesController {
                 .toList();
 
         renderCards(filteredExpenses);
-
         renderRecentExpenseAmountCard();
     }
 

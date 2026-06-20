@@ -19,9 +19,11 @@ public class EmojiService {
         spantCategoryToEmoji.put((short) 7, "🧾");
         spantCategoryToEmoji.put((short) 8, "📦");
         spantCategoryToEmoji.put((short) 9, "📌");
+        spantCategoryToEmoji.put((short) 10, "⛽");
+        spantCategoryToEmoji.put((short) 11, "👨‍🔧");
     }
 
     public String getEmoji(Short i){
-        return (i > 9 || i < 1) ? "" : spantCategoryToEmoji.get(i);
+        return (i > 11 || i < 1) ? "" : spantCategoryToEmoji.get(i);
     }
 }

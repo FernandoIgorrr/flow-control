@@ -111,7 +111,7 @@
                         </Button>
 
 
-                       <!--  <Button
+                        <!--  <Button
                             fx:id="rawMaterialsButton"
                             text="Matérias-primas"
                             onAction="#goToRawMaterials"
@@ -260,7 +260,7 @@
                             </graphic>
                         </Button>
 
-                        
+
                         <Button
                             fx:id="employeesButton"
                             text="Funcionários"
@@ -282,19 +282,41 @@
                             </graphic>
                         </Button>
 
-                         <Button
-                            fx:id="bbtnBackupn"
-                            text="Fazer backup dos dados"
-                            onAction="#doBackup"
-                            styleClass="sidebar-button2"
-                            >
+                        <Button
+                            fx:id="vehiclesButton"
+                            text="Veículos"
+                            onAction="#goToVehicles"
+                            styleClass="sidebar-button">
                             <graphic>
                                 <StackPane prefWidth="32" prefHeight="32" maxWidth="32"
                                     maxHeight="32">
                                     <children>
                                         <ImageView fitHeight="32.0" fitWidth="32.0"
                                             preserveRatio="true"
-                                            >
+                                            styleClass="sidebar-icon">
+                                            <image>
+                                                <Image
+                                                    url="@/images/mdi--car-lifted-pickup.png" />
+                                            </image>
+                                        </ImageView>
+                                    </children>
+                                </StackPane>
+                            </graphic>
+                        </Button>
+
+                        <Button
+                            fx:id="btnBackup"
+                            text="Fazer backup dos dados"
+                            onAction="#doBackup"
+                            styleClass="sidebar-button2"
+                        >
+                            <graphic>
+                                <StackPane prefWidth="32" prefHeight="32" maxWidth="32"
+                                    maxHeight="32">
+                                    <children>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0"
+                                            preserveRatio="true"
+                                        >
                                             <image>
                                                 <Image url="@/images/carbon--data-backup.png" />
                                             </image>

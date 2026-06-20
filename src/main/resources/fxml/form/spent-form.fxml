@@ -48,43 +48,39 @@
                         </columnConstraints>
 
                         <children>
-
-                            <VBox spacing="4"
-                                GridPane.rowIndex="0"
-                                GridPane.columnIndex="0">
+                            <VBox spacing="4" GridPane.rowIndex="0" GridPane.columnIndex="0">
                                 <Label text="Quantia paga *" />
-                                <TextField
-                                    fx:id="amountPaidField"
-                                    maxWidth="Infinity" />
+                                <TextField fx:id="amountPaidField" maxWidth="Infinity" />
                             </VBox>
 
-                            <VBox spacing="4"
-                                GridPane.rowIndex="0"
-                                GridPane.columnIndex="1">
+                            <VBox spacing="4" GridPane.rowIndex="0" GridPane.columnIndex="1">
                                 <Label text="Categoria da despesa *" />
-                                <ComboBox
-                                    fx:id="spentCategoryComboBox"
-                                    maxWidth="Infinity" />
+                                <ComboBox fx:id="spentCategoryComboBox" maxWidth="Infinity" />
                             </VBox>
 
-                            <VBox spacing="4"
-                                GridPane.rowIndex="1"
-                                GridPane.columnIndex="0"
+                            <VBox fx:id="vehicleFieldContainer" spacing="4"
+                                GridPane.rowIndex="1" GridPane.columnIndex="0"
+                                visible="false" managed="false">
+                                <Label text="Veículo *" />
+                                <ComboBox fx:id="vehicleComboBox" maxWidth="Infinity" />
+                            </VBox>
+
+                            <VBox fx:id="quantityFieldContainer" spacing="4"
+                                GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                visible="false" managed="false">
+                                <Label text="Quantidade (Litros/Itens) *" />
+                                <TextField fx:id="quantityField" maxWidth="Infinity" />
+                            </VBox>
+                            <VBox spacing="4" GridPane.rowIndex="2" GridPane.columnIndex="0"
                                 GridPane.columnSpan="2">
                                 <Label text="Descrição *" />
-                                <TextField
-                                    fx:id="spentDescriptionField"
-                                    maxWidth="Infinity" />
+                                <TextField fx:id="spentDescriptionField" maxWidth="Infinity" />
                             </VBox>
 
-                            <VBox spacing="4"
-                                GridPane.rowIndex="2"
-                                GridPane.columnIndex="0"
+                            <VBox spacing="4" GridPane.rowIndex="3" GridPane.columnIndex="0"
                                 GridPane.columnSpan="2">
                                 <Label text="Data *" />
-                                <DatePicker
-                                    fx:id="datePicker"
-                                    maxWidth="Infinity" />
+                                <DatePicker fx:id="datePicker" maxWidth="Infinity" />
                             </VBox>
                         </children>
                     </GridPane>

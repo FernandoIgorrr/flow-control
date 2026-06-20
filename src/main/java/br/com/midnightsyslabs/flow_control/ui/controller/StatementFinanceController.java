@@ -18,12 +18,15 @@ import org.springframework.stereotype.Controller;
 
 import br.com.midnightsyslabs.flow_control.domain.entity.expense.Expense;
 import br.com.midnightsyslabs.flow_control.domain.entity.revenue.Revenue;
+import br.com.midnightsyslabs.flow_control.domain.entity.spent.VehicleSpent;
 import br.com.midnightsyslabs.flow_control.dto.SaleDTO;
 import br.com.midnightsyslabs.flow_control.service.ExpenseService;
 import br.com.midnightsyslabs.flow_control.service.PurchaseService;
 import br.com.midnightsyslabs.flow_control.service.SaleService;
+import br.com.midnightsyslabs.flow_control.service.VehicleSpentService;
 import br.com.midnightsyslabs.flow_control.view.PurchaseView;
 import br.com.midnightsyslabs.flow_control.view.SaleProductView;
+import br.com.midnightsyslabs.flow_control.view.VehicleSpentView;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,6 +53,9 @@ public class StatementFinanceController {
         @Autowired
         private PurchaseService purchaseService;
 
+        @Autowired
+        private VehicleSpentService vehicleSpentService;
+
         @FXML
         private DatePicker dpInicio;
         @FXML
@@ -69,6 +75,9 @@ public class StatementFinanceController {
 
         @FXML
         private BarChart<String, Number> productBarChart;
+
+        @FXML
+        private BarChart<String, Number> vehicleBarChart;
 
         @FXML
         private Label lblTotalReceita;
@@ -91,7 +100,15 @@ public class StatementFinanceController {
 
         @FXML
         public void initialize() {
-                tabPane.tabMinWidthProperty().bind(tabPane.widthProperty().divide(5).subtract(2));
+                // tabPane.tabMinWidthProperty().bind(tabPane.widthProperty().divide(5).subtract(2));
+
+                tabPane.tabMinWidthProperty().bind(
+                                tabPane.widthProperty()
+                                                .divide(tabPane.getTabs().size())
+                                                .subtract(2));
+
+                tabPane.tabMaxWidthProperty().bind(
+                                tabPane.tabMinWidthProperty());
 
                 // Define o mês atual por padrão
                 dpInicio.setValue(LocalDate.now().withDayOfYear(1));
@@ -104,14 +121,17 @@ public class StatementFinanceController {
                 CategoryAxis xAxisProduct = (CategoryAxis) productBarChart.getXAxis();
                 CategoryAxis xAxisClient = (CategoryAxis) clientBarChart.getXAxis();
                 CategoryAxis xAxisPurchase = (CategoryAxis) purchaseBarChart.getXAxis();
+                CategoryAxis xAxisVehicle = (CategoryAxis) vehicleBarChart.getXAxis();
 
                 xAxisClient.setTickLabelRotation(45);
                 xAxisProduct.setTickLabelRotation(45);
                 xAxisPurchase.setTickLabelRotation(45);
+                xAxisVehicle.setTickLabelRotation(45);
 
                 configureCategoryAxis(productBarChart);
                 configureCategoryAxis(clientBarChart);
                 configureCategoryAxis(purchaseBarChart);
+                configureCategoryAxis(vehicleBarChart);
 
                 // Chama o filtro inicial para carregar os dados
                 handleFiltrar();
@@ -180,13 +200,16 @@ public class StatementFinanceController {
                         List<PurchaseView> purchases = purchaseService.getPurchasesFromDate(
                                         purchaseService.getPurchasesView(),
                                         start, end);
+                        List<VehicleSpentView> vehicleSpents = vehicleSpentService.searchBetweenView(start, end);
 
                         updatePieChart(exps);
                         updateClientChart(revs);
                         updatePurchaseChart(purchases);
                         updateLineChart(revs, exps);
+                        updateVehicleChart(vehicleSpents);
                         updateProductChart(revs);
                         atualizarLabelsTotais(revs, exps);
+
                 }
         }
 
@@ -437,5 +460,87 @@ public class StatementFinanceController {
                                 });
 
                 productBarChart.getData().setAll(series);
+        }
+
+        public void updateVehicleChart(List<VehicleSpentView> spends) {
+
+                record VehicleChartData(
+                                BigDecimal fuel,
+                                BigDecimal maintenance) {
+                }
+
+                XYChart.Series<String, Number> series = new XYChart.Series<>();
+                series.setName("Gastos por Veículo");
+
+                /*
+                 * Map<String, BigDecimal> vehicleMap =
+                 * spends.stream().collect(Collectors.groupingBy(
+                 * s -> s.getVehicleNumberPlate() + " - " + s.getModel(),
+                 * Collectors.reducing(BigDecimal.ZERO, VehicleSpentView::getExpense,
+                 * BigDecimal::add)));
+                 */
+
+                Map<String, VehicleChartData> vehicleMap = spends.stream()
+                                .collect(Collectors.groupingBy(s -> s.getVehicleNumberPlate() + " - " + s.getModel(),
+                                                Collectors.collectingAndThen(
+                                                                Collectors.toList(),
+                                                                list -> {
+
+                                                                        BigDecimal fuel = list.stream()
+                                                                                        .filter(v -> v.getSpentCategory()
+                                                                                                        .getId() == 10)
+                                                                                        .map(VehicleSpentView::getExpense)
+                                                                                        .reduce(BigDecimal.ZERO,
+                                                                                                        BigDecimal::add);
+
+                                                                        BigDecimal maintenance = list.stream()
+                                                                                        .filter(v -> v.getSpentCategory()
+                                                                                                        .getId() == 11)
+                                                                                        .map(VehicleSpentView::getExpense)
+                                                                                        .reduce(BigDecimal.ZERO,
+                                                                                                        BigDecimal::add);
+
+                                                                        return new VehicleChartData(fuel, maintenance);
+                                                                })));
+
+                vehicleMap.entrySet().stream()
+                                .sorted((e1, e2) -> e2.getValue().fuel().add(e2.getValue().maintenance())
+                                                .compareTo(
+                                                                e1.getValue().fuel().add(e1.getValue().maintenance())))
+                                .limit(10)
+                                .forEach(entry -> {
+
+                                        XYChart.Data<String, Number> data = new XYChart.Data<>(
+                                                        entry.getKey(),
+                                                        entry.getValue()
+                                                                        .fuel()
+                                                                        .add(entry.getValue().maintenance()));
+
+                                        StringBuilder sb = new StringBuilder("\n--- Gastos por Categoria ---");
+
+                                        if (entry.getValue().fuel().compareTo(BigDecimal.ZERO) > 0) {
+                                                sb.append("\n⛽ Combustível: ")
+                                                                .append(DECIMAL_FORMAT.format(entry.getValue().fuel()))
+                                                                .append(" R$");
+                                        }
+
+                                        if (entry.getValue().maintenance().compareTo(BigDecimal.ZERO) > 0) {
+                                                sb.append("\n🔧 Manutenção: ")
+                                                                .append(DECIMAL_FORMAT
+                                                                                .format(entry.getValue().maintenance()))
+                                                                .append(" R$");
+                                        }
+
+                                        String tooltipComplemento = sb.toString();
+
+                                        applyCurrencyTooltip(
+                                                        data,
+                                                        "Total gasto",
+                                                        tooltipComplemento);
+
+                                        series.getData().add(data);
+                                });
+
+                vehicleBarChart.getData().setAll(series);
         }
 }
