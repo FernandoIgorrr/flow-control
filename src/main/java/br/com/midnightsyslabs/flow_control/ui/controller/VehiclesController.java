@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 
-import br.com.midnightsyslabs.flow_control.domain.entity.employee.Employee;
 import br.com.midnightsyslabs.flow_control.domain.entity.vehicle.Vehicle;
 import br.com.midnightsyslabs.flow_control.service.VehicleService;
-import br.com.midnightsyslabs.flow_control.ui.controller.form.EmployeeFormController;
 import br.com.midnightsyslabs.flow_control.ui.controller.form.VehicleFormController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -59,9 +57,6 @@ public class VehiclesController {
 
     @FXML
     private Button btnAddVehicle;
-
-    @FXML
-    private Button btnAddVehicleCost;
 
     @FXML
     private TextField txtSearch;
@@ -203,41 +198,6 @@ public class VehiclesController {
         }
     }
 
-    @FXML
-    public void onAddVehicleCost() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/form/employee-payments-form.fxml"));
-
-            loader.setControllerFactory(context::getBean);
-
-            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            double width = screenBounds.getWidth() * 0.3;
-            double height = screenBounds.getHeight() * 0.5;
-
-            Stage dialog = new Stage();
-            dialog.setTitle("Cadastrar Pagamentos");
-            dialog.setScene(new Scene(loader.load(), width, height));
-
-            Stage mainStage = (Stage) btnAddVehicleCost.getScene().getWindow();
-
-            dialog.initOwner(mainStage);
-            dialog.initModality(Modality.WINDOW_MODAL);
-
-            dialog.setResizable(false);
-            // stage.showAndWait();
-
-            ColorAdjust darken = new ColorAdjust();
-            darken.setBrightness(-0.8);
-            mainStage.getScene().getRoot().setEffect(darken);
-
-            dialog.setOnHidden(e -> mainStage.getScene().getRoot().setEffect(null));
-
-            dialog.showAndWait();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private void addDisconnectButton() {
         colDisconnect.setCellFactory(param -> new TableCell<>() {

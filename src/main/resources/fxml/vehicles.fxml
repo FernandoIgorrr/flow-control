@@ -55,24 +55,7 @@
                     </StackPane>
                 </graphic>
             </Button>
-            <Button
-                fx:id="btnAddVehicleCost"
-                text="Registrar Gasto de Veículo"
-                onAction="#onAddVehicleCost"
-                styleClass="btn-primary-red">
-                <graphic>
-                    <StackPane prefWidth="22" prefHeight="22" maxWidth="22" maxHeight="22">
-                        <children>
-                            <ImageView fitHeight="22.0" fitWidth="22.0" preserveRatio="true"
-                                styleClass="btn-primary-icon">
-                                <image>
-                                    <Image url="@/images/ic--baseline-plus.png" />
-                                </image>
-                            </ImageView>
-                        </children>
-                    </StackPane>
-                </graphic>
-            </Button>
+           
         </HBox>
     </top>
 
